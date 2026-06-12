@@ -8,7 +8,12 @@ export class L1ReviewController {
   constructor(private svc: L1ReviewService) {}
 
   private assertManager(req: any) {
-    if (req.user?.role !== 'MANAGER') throw new ForbiddenException('仅管理员可见');
+    // HENG_L1_REVIEW_ACCOUNTS: 账号级豁免(平台登录名,逗号分隔),不改全局 role
+    const allow = (process.env.HENG_L1_REVIEW_ACCOUNTS || '')
+      .split(',').map((s: string) => s.trim()).filter(Boolean);
+    if (req.user?.role !== 'MANAGER' && !allow.includes(req.user?.id)) {
+      throw new ForbiddenException('仅管理员可见');
+    }
   }
 
   @Get()
