@@ -1,0 +1,21 @@
+# wewe-rss + commentary-ingest 国内容器节点部署(阶段二)
+# 凭据经 .env 注入(AUTH_CODE / ALERT_WEBHOOK_URL),.env 不入 git。
+# 阶段一(Mac)可不用本文件,直接 docker run wewe-rss + cron 跑 ingest。
+services:
+  wewe-rss:
+    image: cooderl/wewe-rss-sqlite:latest
+    container_name: wewe-rss
+    restart: unless-stopped
+    ports:
+      - "4000:4000"          # QR 扫码管理页 + feed;按需收敛到内网/反代
+    environment:
+      DATABASE_TYPE: sqlite
+      AUTH_CODE: ${WEWE_AUTH_CODE}
+      SERVER_ORIGIN_URL: http://localhost:4000
+      FEED_MODE: fulltext
+      ENABLE_CLEAN_HTML: "true"
+      # discovery 每天 1 次(用户敲定 2026-06-08):token 损耗源,最省 token/最少扫码。
+      # 6 字段 cron(秒 分 时 日 月 周);默认 07:00。改频率只动这里。
+      CRON_EXPRESSION: "0 0 7 * * *"
+    volumes:
+      - ./data:/app/data     # SQLite + token;映射到国内节点持久盘

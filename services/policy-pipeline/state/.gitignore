@@ -1,0 +1,32 @@
+# 默认 state/ 子目录内容不进 git
+# 各子目录可以单独配 .gitignore 例外保留(如 STATUS.md / last_run.json)
+# 子目录被放行后,内部仍需各自的 .gitignore 控制(否则全部进 git)
+*
+!.gitignore
+!STATUS.md
+!last_run.json
+# 任务子目录放行 + 内容放行(由各子目录自己的 .gitignore 控制具体内容)
+!T2/
+!T2/**
+!T3/
+!T3/**
+!T1_channels/
+!T1_channels/**
+!T1_scan_raw/
+!T1_scan_raw/**
+!T1_candidate/
+!T1_candidate/**
+!T1_fetched/
+!T1_fetched/**
+!T1_extracted/
+!T1_extracted/**
+!T1_quarantine/
+!T1_quarantine/**
+!T1_ingest_log/
+!T1_ingest_log/**
+# commentary_ingest:仅放行目录占位;台账/last_run/正文均为运行态,不进 git
+!commentary_ingest/
+!commentary_ingest/.gitkeep
+# source_ready:market_intel manifest 是审定种子(23 行),入 git 分发到服务器(WP-3b)
+!source_ready/
+!source_ready/market_intel_manifest.jsonl
