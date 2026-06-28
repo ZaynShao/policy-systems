@@ -51,6 +51,7 @@ def collect_policy_rows(vault: Path, pipeline_version: int) -> tuple[list[dict],
         reg = rec.raw_fm.get("region")
         region_name = reg.get("name") if isinstance(reg, dict) else _norm_region(reg)
         region_level = reg.get("level") if isinstance(reg, dict) else None
+        region_code = reg.get("code") if isinstance(reg, dict) else None
         core = {
             "title": rec.title,
             "issuer": "、".join(issuer_list),
@@ -60,6 +61,7 @@ def collect_policy_rows(vault: Path, pipeline_version: int) -> tuple[list[dict],
             "source_url": rec.url or None,
             "region": region_name,
             "level": region_level,
+            "adcode": str(region_code).strip() if region_code not in (None, "") else None,
         }
         try:
             rows.append(map_policy_row(bv, core, pipeline_version))

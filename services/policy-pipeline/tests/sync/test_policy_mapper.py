@@ -70,6 +70,7 @@ def test_map_policy_row_includes_core_and_pipeline_fields():
         "source_url": "https://example.com",
         "region": "全国",
         "level": "省",
+        "adcode": "370000",
     }
     row = map_policy_row(_bv(), core, pipeline_version=1)
     assert row["title"] == "核心标题"
@@ -77,6 +78,7 @@ def test_map_policy_row_includes_core_and_pipeline_fields():
     assert row["content"] == "正文"
     assert row["source"] == "AUTO"
     assert row["level"] == "省"
+    assert row["adcode"] == "370000"
     assert row["issue_date"] == datetime.date(2025, 5, 27)
     assert row["pipeline_pid"] == "P_2024_NDRC_718"
     assert row["importance"] == "MAJOR"
