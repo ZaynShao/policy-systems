@@ -9770,7 +9770,7 @@
   province: 福建省
   level: 省
   city_code: '350000'
-  channel_type: 政府网
+  channel_type: 工信
   root_domain: gxt.fujian.gov.cn
   list_url: https://gxt.fujian.gov.cn/
   source: discovery
@@ -9782,7 +9782,7 @@
   province: 河北省
   level: 省
   city_code: '130000'
-  channel_type: 政府网
+  channel_type: 工信
   root_domain: gxt.hebei.gov.cn
   list_url: https://gxt.hebei.gov.cn/
   source: discovery
@@ -9794,7 +9794,7 @@
   province: 河南省
   level: 省
   city_code: '410000'
-  channel_type: 政府网
+  channel_type: 工信
   root_domain: gxt.henan.gov.cn
   list_url: https://gxt.henan.gov.cn/
   source: discovery
@@ -9806,7 +9806,7 @@
   province: 湖南省
   level: 省
   city_code: '430000'
-  channel_type: 政府网
+  channel_type: 工信
   root_domain: gxt.hunan.gov.cn
   list_url: https://gxt.hunan.gov.cn/
   source: discovery
@@ -9814,6 +9814,18 @@
   last_probed_at: '2026-06-07T16:02:40+08:00'
   probe_result: structure_unknown
   notes: ''
+- city: 江苏省
+  province: 江苏省
+  level: 省
+  city_code: '320000'
+  channel_type: 工信
+  root_domain: gxt.jiangsu.gov.cn
+  list_url: https://gxt.jiangsu.gov.cn/col/col89736/index.html
+  source: manual
+  status: 验证
+  last_probed_at: '2026-06-29T15:02:51+08:00'
+  probe_result: ok
+  notes: verified-2026-06-29-policy-list
 - city: 福建省
   province: 福建省
   level: 省

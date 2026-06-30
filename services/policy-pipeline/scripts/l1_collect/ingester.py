@@ -54,7 +54,7 @@ def _issuer_short(issuer: Optional[str], city_code: Optional[str] = None,
         prov = PROVINCE_SHORT_BY_CODE.get(city_code[:2], "OTHER")
         # 市级用 prov_<channel> 区分(避免一个市的多个 channel 撞 id)
         ct_short = {"发改委": "FGW", "能源局": "NYJ", "政府网": "GOV",
-                    "经信委": "JXW", "商务局": "SWJ"}.get(channel_type or "", "X")
+                    "经信委": "JXW", "工信": "GX", "商务局": "SWJ"}.get(channel_type or "", "X")
         return f"{prov}_{ct_short}"
     return "OTHER"
 
