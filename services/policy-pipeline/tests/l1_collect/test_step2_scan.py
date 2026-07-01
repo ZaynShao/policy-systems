@@ -62,6 +62,14 @@ def test_paginate_urls_uses_index_n_pattern():
     assert any("index_1" in u or "index_2" in u for u in urls)
 
 
+def test_default_scan_depth_is_10_pages():
+    """下钻深度默认 10 页(2026-06 由 5 调整,治政府站列表浅扫漏老政策)。"""
+    from scripts.l1_collect.step2_scan import _page_urls, MAX_PAGES
+    assert MAX_PAGES == 10
+    urls = _page_urls("https://x.gov.cn/zcwj/index.html")  # 不传 max_pages → 用默认
+    assert len(urls) == 10
+
+
 def test_keywords_cover_oil_retail_and_market_reg():
     from scripts.l1_collect.step2_scan import KEYWORDS
     for kw in ("加油站", "成品油零售", "平台经济", "反垄断", "市场监管", "网络交易"):
