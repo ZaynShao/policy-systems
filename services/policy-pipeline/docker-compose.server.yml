@@ -31,6 +31,24 @@ services:
     networks: [platform-net]
     restart: "no"
 
+  # 政策原文对外只读 API(独立镜像;详见 docs/runbooks/policy-corpus-external-api.md)。
+  # 只挂语料包与令牌注册表,**从不挂 vault**:派生产物在部署形态上不可达。
+  # 语料包由 operator 按需跑 scripts.public_export.run 生成(对方提需求时响应,无 cron)。
+  policy-corpus:
+    build:
+      context: .
+      dockerfile: docker/corpus.Dockerfile
+    image: policy-corpus:latest
+    container_name: policy-corpus
+    environment:
+      POLICY_CORPUS_BUNDLE: /bundle
+      POLICY_CORPUS_REGISTRY: /run/corpus-tokens.json
+    volumes:
+      - /root/policy-corpus/dist:/bundle:ro
+      - /etc/policy-pipeline/corpus-tokens.json:/run/corpus-tokens.json:ro
+    networks: [platform-net]
+    restart: unless-stopped
+
 networks:
   platform-net:
     external: true
