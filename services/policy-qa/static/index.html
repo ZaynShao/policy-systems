@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>政策问答助手</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --panel: #fff; --ink: #1c1f23; --muted: #6b7280;
+    --line: #e3e6ea; --accent: #1a6fd4; --mine: #1a6fd4; --mine-ink: #fff;
+    --warn: #b45309; --warn-bg: #fef6e7;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16181c; --panel: #1e2126; --ink: #e8eaed; --muted: #9aa3ad;
+      --line: #2c3138; --accent: #64a6f5; --mine: #2b6cb0; --mine-ink: #fff;
+      --warn: #f0b45e; --warn-bg: #2e2618;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.65 -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    display: flex; flex-direction: column; height: 100vh;
+  }
+  header {
+    padding: 12px 18px; background: var(--panel); border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+  }
+  header h1 { font-size: 15px; margin: 0; font-weight: 600; }
+  header .sub { color: var(--muted); font-size: 12.5px; margin-right: auto; }
+  button {
+    font: inherit; font-size: 13px; padding: 5px 12px; border-radius: 6px;
+    border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); color: var(--accent); }
+  #log { flex: 1; overflow-y: auto; padding: 20px 18px; }
+  .wrap { max-width: 780px; margin: 0 auto; }
+  .msg { margin-bottom: 18px; display: flex; }
+  .msg.me { justify-content: flex-end; }
+  .bubble {
+    padding: 10px 14px; border-radius: 10px; max-width: 88%;
+    white-space: pre-wrap; word-break: break-word;
+  }
+  .me .bubble { background: var(--mine); color: var(--mine-ink); }
+  .bot .bubble { background: var(--panel); border: 1px solid var(--line); }
+  .tools { max-width: 780px; margin: 0 auto 10px; }
+  .tool {
+    color: var(--muted); font-size: 12.5px; padding: 2px 0 2px 14px;
+    border-left: 2px solid var(--line);
+  }
+  .cites { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+  .cite {
+    border: 1px solid var(--line); border-radius: 8px; padding: 8px 11px;
+    background: var(--panel); font-size: 13px;
+  }
+  .cite a { color: var(--accent); text-decoration: none; }
+  .cite a:hover { text-decoration: underline; }
+  .cite .meta { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .cite .caveat {
+    color: var(--warn); background: var(--warn-bg); border-radius: 5px;
+    padding: 5px 8px; margin-top: 6px; font-size: 12px;
+  }
+  .err { color: #b91c1c; font-size: 13.5px; }
+  footer {
+    border-top: 1px solid var(--line); background: var(--panel);
+    padding: 12px 18px; flex-shrink: 0;
+  }
+  .composer { max-width: 780px; margin: 0 auto; display: flex; gap: 8px; }
+  textarea {
+    flex: 1; resize: none; font: inherit; padding: 9px 11px; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--bg); color: var(--ink); height: 44px;
+  }
+  textarea:focus { outline: none; border-color: var(--accent); }
+  .hint { max-width: 780px; margin: 6px auto 0; color: var(--muted); font-size: 12px; }
+  .empty { color: var(--muted); text-align: center; padding: 40px 0; font-size: 14px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>政策问答助手</h1>
+  <span class="sub" id="status">对内使用 · 数据来自公司政策库</span>
+  <button id="reset">新对话</button>
+  <button id="retoken">更换令牌</button>
+</header>
+
+<div id="log"><div class="wrap"><div class="empty">
+  问点什么，比如「最近对充电业务影响大的政策有哪些」或「解读一下车网互动那个文件」。
+</div></div></div>
+
+<footer>
+  <div class="composer">
+    <textarea id="input" placeholder="输入问题，Enter 发送，Shift+Enter 换行"></textarea>
+    <button id="send">发送</button>
+  </div>
+  <div class="hint">回答由模型基于政策原文生成，关键结论请点开引用核对原文。</div>
+</footer>
+
+<script>
+const TOKEN_KEY = 'policy_qa_token';
+const $log = document.getElementById('log');
+const $input = document.getElementById('input');
+const $send = document.getElementById('send');
+const $status = document.getElementById('status');
+let history = [];
+let busy = false;
+
+// 部署在平台里时鉴权走平台登录态,前端不需要令牌;独立部署(本地开发)才需要。
+// 所以不上来就问,先直接发;真收到 401 再问一次并重试。
+function storedToken() {
+  return localStorage.getItem(TOKEN_KEY) || '';
+}
+
+function askToken() {
+  const t = (prompt('该服务需要访问令牌') || '').trim();
+  if (t) localStorage.setItem(TOKEN_KEY, t);
+  return t;
+}
+
+function authHeaders() {
+  const t = storedToken();
+  const h = { 'Content-Type': 'application/json' };
+  if (t) h['Authorization'] = 'Bearer ' + t;
+  return h;
+}
+
+function wrap() {
+  let w = $log.querySelector('.wrap');
+  const empty = w && w.querySelector('.empty');
+  if (empty) empty.remove();
+  return w;
+}
+
+function addMessage(who, text) {
+  const div = document.createElement('div');
+  div.className = 'msg ' + who;
+  const b = document.createElement('div');
+  b.className = 'bubble';
+  b.textContent = text;
+  div.appendChild(b);
+  wrap().appendChild(div);
+  $log.scrollTop = $log.scrollHeight;
+  return b;
+}
+
+function addToolLine() {
+  const box = document.createElement('div');
+  box.className = 'tools';
+  wrap().appendChild(box);
+  return box;
+}
+
+const TOOL_LABEL = {
+  search_policies: '检索政策',
+  get_policy_fulltext: '读取原文',
+  get_policy_relations: '查关联政策',
+  get_policy_commentary: '查行业评论',
+};
+
+function renderCitations(container, cites) {
+  if (!cites || !cites.length) return;
+  const box = document.createElement('div');
+  box.className = 'cites';
+  for (const c of cites) {
+    const el = document.createElement('div');
+    el.className = 'cite';
+    const title = document.createElement('div');
+    if (c.source_url) {
+      const a = document.createElement('a');
+      a.href = c.source_url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+      a.textContent = c.title || c.pid;
+      title.appendChild(a);
+    } else {
+      title.textContent = c.title || c.pid;
+    }
+    el.appendChild(title);
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    meta.textContent = [c.doc_number, c.pid].filter(Boolean).join(' · ');
+    el.appendChild(meta);
+    if (c.caveat) {
+      const w = document.createElement('div');
+      w.className = 'caveat';
+      w.textContent = c.caveat;
+      el.appendChild(w);
+    }
+    box.appendChild(el);
+  }
+  container.parentElement.appendChild(box);
+  $log.scrollTop = $log.scrollHeight;
+}
+
+async function send() {
+  const q = $input.value.trim();
+  if (!q || busy) return;
+  busy = true; $send.disabled = true; $input.value = '';
+  addMessage('me', q);
+  history.push({ role: 'user', content: q });
+
+  const toolBox = addToolLine();
+  const bubble = addMessage('bot', '');
+  let answer = '';
+
+  try {
+    let resp = await fetch('v1/chat', {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({ messages: history }),
+    });
+    if (resp.status === 401) {
+      // 平台登录态下不该走到这里;走到了说明是独立部署,问一次令牌再重试一次。
+      localStorage.removeItem(TOKEN_KEY);
+      if (askToken()) {
+        resp = await fetch('v1/chat', {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({ messages: history }),
+        });
+      }
+      if (resp.status === 401) {
+        bubble.className = 'bubble err';
+        bubble.textContent = '未通过鉴权。若这是平台内页面，请重新登录平台；若为独立部署，请点右上角「更换令牌」。';
+        return;
+      }
+    }
+    if (!resp.ok) {
+      bubble.className = 'bubble err';
+      bubble.textContent = '请求失败（HTTP ' + resp.status + '）';
+      return;
+    }
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let buf = '';
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += decoder.decode(value, { stream: true });
+      // SSE 以空行分帧；最后一段可能不完整，留在缓冲里等下一块
+      const frames = buf.split('\n\n');
+      buf = frames.pop();
+      for (const frame of frames) {
+        let event = null, data = null;
+        for (const line of frame.split('\n')) {
+          if (line.startsWith('event: ')) event = line.slice(7).trim();
+          else if (line.startsWith('data: ')) { try { data = JSON.parse(line.slice(6)); } catch (e) {} }
+        }
+        if (!event) continue;
+        if (event === 'delta' && data && data.text) {
+          answer += data.text;
+          bubble.textContent = answer;
+          $log.scrollTop = $log.scrollHeight;
+        } else if (event === 'tool' && data && data.status === 'start') {
+          const line = document.createElement('div');
+          line.className = 'tool';
+          const label = TOOL_LABEL[data.name] || data.name;
+          line.textContent = label + (data.args_preview ? '：' + data.args_preview : '');
+          toolBox.appendChild(line);
+          $log.scrollTop = $log.scrollHeight;
+        } else if (event === 'done' && data) {
+          renderCitations(bubble, data.citations);
+          if (data.usage) {
+            $status.textContent = '上轮：工具调用 ' + (data.usage.tool_calls || 0)
+              + ' 次 · token ' + ((data.usage.prompt_tokens || 0) + (data.usage.completion_tokens || 0));
+          }
+        } else if (event === 'error' && data) {
+          const e = document.createElement('div');
+          e.className = 'tool err';
+          e.textContent = data.message || '生成失败';
+          toolBox.appendChild(e);
+        }
+      }
+    }
+    if (answer) history.push({ role: 'assistant', content: answer });
+    else if (!bubble.textContent) bubble.textContent = '（没有生成内容）';
+  } catch (err) {
+    bubble.className = 'bubble err';
+    bubble.textContent = '连接中断：' + err.message;
+  } finally {
+    busy = false; $send.disabled = false; $input.focus();
+  }
+}
+
+$send.onclick = send;
+$input.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+});
+document.getElementById('reset').onclick = () => {
+  history = [];
+  $log.innerHTML = '<div class="wrap"><div class="empty">已开始新对话。</div></div>';
+  $status.textContent = '对内使用 · 数据来自公司政策库';
+};
+document.getElementById('retoken').onclick = () => {
+  localStorage.removeItem(TOKEN_KEY);
+  askToken();
+};
+$input.focus();
+</script>
+</body>
+</html>
