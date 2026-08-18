@@ -27,6 +27,7 @@ def _cfg(**kw) -> Config:
         log_dir="/tmp",
         max_tool_rounds=8,
         request_timeout_s=120,
+        pg_maxconn=8,
     )
     base.update(kw)
     return Config(**base)
@@ -212,6 +213,59 @@ async def test_tool_budget_degrades_gracefully(vault_store):
     assert sum(1 for s in returns if BUDGET_EXHAUSTED not in s) == 3, "只有前 3 次真干活"
     text = "".join(d["text"] for n, d in events if n == "delta")
     assert "上限" in text
+
+
+@pytest.mark.asyncio
+async def test_store_failure_degrades_instead_of_killing_the_run(vault_store):
+    """单个检索失败**不抛错**:那一条认领错误,其余材料照样能拿来作答。
+
+    真机第一次接 heng-pg 就撞上了:模型一轮并行发七个检索,连接池只有四条,
+    多出来的当场 PoolError;pydantic-ai 的并行执行里一个工具抛异常会连带取消
+    同批其余调用,于是七条全废、整轮回答归零,用户只看到"政策库暂时不可用"。
+    """
+    from app.agent import STORE_UNAVAILABLE
+    from app.store import StoreError
+
+    class _FlakyStore:
+        """第一次检索失败,第二次成功——模拟并发打满时只有部分调用中招。"""
+
+        def __init__(self, inner):
+            self._inner = inner
+            self.attempts = 0
+
+        def __getattr__(self, name):
+            return getattr(self._inner, name)
+
+        def search_policies(self, **kw):
+            self.attempts += 1
+            if self.attempts == 1:
+                raise StoreError("查询失败: PoolError")
+            return self._inner.search_policies(**kw)
+
+    returns: list[str] = []
+
+    def fn(messages, info):
+        if messages:
+            for p in getattr(messages[-1], "parts", []):
+                if getattr(p, "part_kind", "") == "tool-return":
+                    returns.append(str(p.content))
+        if len(returns) < 2:
+            return ModelResponse(
+                parts=[ToolCallPart(tool_name="search_policies", args={"business_line": "充电"})]
+            )
+        return ModelResponse(parts=[TextPart(content="部分检索未成功,以下基于已取得的材料:……")])
+
+    store = _FlakyStore(vault_store)
+    agent = build_agent(_model(fn))
+    events = await _collect(agent, store, [{"role": "user", "content": "充电有什么新政策"}])
+
+    names = [n for n, _ in events]
+    assert "error" not in names, "单次检索失败不该让整轮回答归零"
+    assert names[-1] == "done"
+    assert sum(1 for s in returns if STORE_UNAVAILABLE in s) == 1, "失败那次应回提示语"
+    assert sum(1 for s in returns if STORE_UNAVAILABLE not in s) == 1, "成功那次应回真结果"
+    text = "".join(d["text"] for n, d in events if n == "delta")
+    assert "已取得的材料" in text
 
 
 @pytest.mark.asyncio

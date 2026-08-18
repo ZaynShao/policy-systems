@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import datetime
 import json
+import logging
 from dataclasses import dataclass, field
 from typing import Any, AsyncIterator, Iterable
 
@@ -28,7 +29,9 @@ from pydantic_ai.usage import UsageLimits
 
 from .config import Config
 from .prompts import build_system_prompt
-from .store import DEFAULT_LIMIT, MAX_LIMIT, PolicyCard, PolicyStore
+from .store import DEFAULT_LIMIT, MAX_LIMIT, PolicyCard, PolicyStore, StoreError
+
+logger = logging.getLogger("policy-qa")
 
 #: 列表类工具结果的字符上限(检索/关系/评论)。
 TOOL_RESULT_MAX_CHARS = 12000
@@ -39,6 +42,8 @@ FULLTEXT_RESULT_MAX_CHARS = 26000
 FULLTEXT_MAX_CHARS = 20000
 #: 全部输入消息的字符上限,超了从最老的一轮开始丢
 HISTORY_MAX_CHARS = 60000
+#: 会话日志里记的完整工具入参上限。UI 摘要只有 60 字,排查不够用。
+ARGS_FULL_MAX_CHARS = 500
 
 #: 达到检索上限后,工具不再干活,改回这句。**不抛错**——抛错会让用户什么都拿不到,
 #: 而此时模型手里通常已经有足够材料。让它自己收尾,比中断体验好得多。
@@ -46,6 +51,16 @@ BUDGET_EXHAUSTED = (
     "已达本轮检索次数上限,不能再检索了。请立即基于你已经读到的材料作答,"
     "并在开头说明「检索轮次已达上限,以下基于已检索到的部分」;"
     "不要再调用任何工具,也不要因为材料不全就编造内容。"
+)
+
+#: 单次检索失败时回给模型的话。同样**不抛错**,理由比预算那条更硬:
+#: pydantic-ai 并行执行同一轮的工具调用,任何一个抛异常都会连带取消同批其余调用
+#: (实测:七个并行检索里一个失败,另外五个被取消,整轮回答归零)。
+#: 让失败的那个自己认领错误,模型就能带着其余结果继续作答。
+STORE_UNAVAILABLE = (
+    "本次检索失败(政策库暂时不可用),这一条没有结果。不要重复同一个检索。"
+    "请基于其余已成功取得的材料继续作答,并在开头说明「部分检索未成功,"
+    "以下基于已取得的材料」;材料不足时如实说明,不要编造。"
 )
 
 
@@ -107,17 +122,21 @@ def build_agent(model: Any) -> Agent[RunState, str]:
         """
         if not ctx.deps.spend():
             return BUDGET_EXHAUSTED
-        res = ctx.deps.store.search_policies(
-            keyword=keyword,
-            business_line=business_line,
-            date_from=date_from,
-            date_to=date_to,
-            region_keyword=region_keyword,
-            min_importance=min_importance,
-            issuer_keyword=issuer_keyword,
-            order=order,
-            limit=min(int(limit or DEFAULT_LIMIT), MAX_LIMIT),
-        )
+        try:
+            res = ctx.deps.store.search_policies(
+                keyword=keyword,
+                business_line=business_line,
+                date_from=date_from,
+                date_to=date_to,
+                region_keyword=region_keyword,
+                min_importance=min_importance,
+                issuer_keyword=issuer_keyword,
+                order=order,
+                limit=min(int(limit or DEFAULT_LIMIT), MAX_LIMIT),
+            )
+        except StoreError as exc:
+            logger.warning("search_policies 失败,已降级: %s", exc)
+            return STORE_UNAVAILABLE
         return _dump(
             {
                 "total": res.total,
@@ -138,7 +157,11 @@ def build_agent(model: Any) -> Agent[RunState, str]:
         """
         if not ctx.deps.spend():
             return BUDGET_EXHAUSTED
-        detail = ctx.deps.store.get_policy(pid, max_chars=FULLTEXT_MAX_CHARS, offset=offset)
+        try:
+            detail = ctx.deps.store.get_policy(pid, max_chars=FULLTEXT_MAX_CHARS, offset=offset)
+        except StoreError as exc:
+            logger.warning("get_policy_fulltext 失败,已降级: %s", exc)
+            return STORE_UNAVAILABLE
         if detail is None:
             return _dump({"found": False, "pid": pid, "hint": "库内无此 pid,不要编造该件内容"})
         ctx.deps.cited[detail.pid] = detail
@@ -152,7 +175,11 @@ def build_agent(model: Any) -> Agent[RunState, str]:
         """
         if not ctx.deps.spend():
             return BUDGET_EXHAUSTED
-        edges = ctx.deps.store.get_relations(pid)
+        try:
+            edges = ctx.deps.store.get_relations(pid)
+        except StoreError as exc:
+            logger.warning("get_policy_relations 失败,已降级: %s", exc)
+            return STORE_UNAVAILABLE
         return _dump(
             {"pid": pid, "count": len(edges), "edges": [e.model_dump(exclude_none=True) for e in edges]}
         )
@@ -165,7 +192,11 @@ def build_agent(model: Any) -> Agent[RunState, str]:
         """
         if not ctx.deps.spend():
             return BUDGET_EXHAUSTED
-        items = ctx.deps.store.get_commentary(pid)
+        try:
+            items = ctx.deps.store.get_commentary(pid)
+        except StoreError as exc:
+            logger.warning("get_policy_commentary 失败,已降级: %s", exc)
+            return STORE_UNAVAILABLE
         return _dump(
             {"pid": pid, "count": len(items), "items": [i.model_dump(exclude_none=True) for i in items]}
         )
@@ -217,6 +248,23 @@ def _args_preview(args: Any) -> str:
         return str(args)[:60]
     parts = [f"{k}={v}" for k, v in args.items() if v not in (None, "", 0)]
     return ", ".join(parts)[:60] or "(无参数)"
+
+
+def _args_full(args: Any) -> str:
+    """完整入参,给会话日志用。
+
+    UI 那个 60 字的摘要够看,但排查不够用:2026-08-18 排查线上故障时,
+    恰恰是被截掉的 `region_keyword` 才是触发失败的那个参数,
+    日志里看不见它,平白多绕了好几圈。
+    """
+    if isinstance(args, str):
+        try:
+            args = json.loads(args)
+        except ValueError:
+            return args[:ARGS_FULL_MAX_CHARS]
+    return _truncate(
+        json.dumps(args, ensure_ascii=False, default=str), ARGS_FULL_MAX_CHARS
+    )
 
 
 # --- 流式驱动 ---------------------------------------------------------------
@@ -295,6 +343,8 @@ async def stream_answer(
                                 "seq": seq,
                                 "name": event.part.tool_name,
                                 "args_preview": _args_preview(event.part.args),
+                                # 完整入参只进会话日志,UI 用上面那个摘要
+                                "args_full": _args_full(event.part.args),
                                 "status": "start",
                             }
                         elif isinstance(event, FunctionToolResultEvent):

@@ -73,6 +73,7 @@ DEEPSEEK_API_KEY=sk-xxx \
 | `POLICY_QA_TRUST_PLATFORM_AUTH` | 见右 | 关 | 设 `1` 表示鉴权由上游 nginx 的平台登录态完成,服务不再要 bearer。**它与上一行必须至少配一个,否则启动即失败** |
 | `POLICY_QA_LOG_DIR` | | `./qa_logs` | 会话 jsonl |
 | `POLICY_QA_MAX_TOOL_ROUNDS` | | `18` | 单次回答的工具调用上限;耗尽后工具停摆让模型收尾,不报错 |
+| `POLICY_QA_PG_MAXCONN` | | `8` | 连接池大小,也是并发查询上限。模型一轮会并行发多个检索,超出的排队等待。调大前先看 heng-pg 还剩多少连接 |
 | `POLICY_QA_REQUEST_TIMEOUT_S` | | `120` | |
 
 ## 接口
@@ -92,13 +93,16 @@ DEEPSEEK_API_KEY=sk-xxx \
 
 ```
 event: meta   data: {"request_id":"...","history_truncated":false}
-event: tool   data: {"seq":1,"name":"search_policies","args_preview":"business_line=充电","status":"start"}
+event: tool   data: {"seq":1,"name":"search_policies","args_preview":"business_line=充电","args_full":"{\"business_line\":\"充电\"}","status":"start"}
 event: tool   data: {"seq":1,"name":"search_policies","status":"done","result_chars":2317}
 event: delta  data: {"text":"……"}
 event: delta_reset  data: {}
 event: done   data: {"citations":[...],"usage":{...}}
 event: error  data: {"message":"..."}
 ```
+
+`args_preview` 是给 UI 显示的一行摘要(60 字上限);`args_full` 是完整入参,
+会话日志记的是它。别把两者搞反——排查故障时,决定成败的参数往往正好在被截掉的那段里。
 
 `delta_reset` 的意思是「刚才发的 delta 不算数,清空重来」。模型在**还要接着调工具**的
 轮次里也会输出文本,那是规划自语(实测:"我先做几轮并行检索…现在深挖几篇原文");
@@ -108,6 +112,17 @@ event: error  data: {"message":"..."}
 
 流开始之后出错只能以 `error` 事件收尾(HTTP 状态码已经发出去了)。错误文本经过脱敏,
 不回显异常细节。
+
+## 启动自检(pg backend)
+
+服务启动时核对 heng-pg 的 `"Policy"` 表有没有本服务要读的列(`sqlbuild.REQUIRED_POLICY_COLUMNS`),
+缺了**直接不启动**,并把缺的列名打出来。
+
+这是拿事故换来的:2026-08-18 上线当天,库里没有 `adcode` 列(heng 的 2026-06-28 迁移加的),
+于是**每个带地区词的检索都失败**,而 `/v1/health` 一路绿灯——它只查 count 和两个 max,
+根本碰不到那些列。用户看到的只有一句脱敏的"政策库暂时不可用"。
+
+缺列多半意味着 `POLICY_QA_PG_DB` 指向的库落后于 heng 的 Prisma 迁移,或者干脆指错了库。
 
 ## 已知限制
 
@@ -134,10 +149,11 @@ event: error  data: {"message":"..."}
    或被本件废止的旧文件的文号(实测:浙江分时电价件的 `浙发改价格〔2024〕21号` 其实是
    被它废止的旧件)。prompt 里有专门规则要求模型识别并如实说明,不许拿发布年份去凑文号
    ——这条是真模型冒烟时抓到编造后补的。
-9. **真库行为未验证。** 本地只验过 vault backend,以及 pg backend 的 Python 侧语义
-   (契约测试用注入的 fake executor)。**SQL 从未在真 Postgres 上执行过**——
-   `::text IN`、`@> ::jsonb`、`ILIKE` 转义这些写错了本地测试照样绿。
-   首次连真 heng-pg 是部署时,`docs/runbook-deploy.md` §3/§5 就是为此设的关卡。
+9. **SQL 已在真 Postgres 上验过**(2026-08-18)。`tests/test_pg_integration.py` 按
+   heng 的 Prisma schema 建表,把每种 WHERE 组合、详情/关系/评论三条路径都让服务器
+   真解析一遍;默认跳过,设 `POLICY_QA_TEST_DATABASE_URL` 才跑,办法见
+   `docs/dev-postgres.md`。**仍未覆盖的是真实数据的形状**——线上是 pipeline 投影出来的
+   真行,fixture 只有四行手写数据,列里的脏值(乱码、超长正文、异常 JSON)测不到。
 
 ## 测试
 

@@ -30,7 +30,7 @@ def build_store(cfg: Config):
         return VaultStore(cfg.vault_dir or "")
     from .store.pg import PgStore
 
-    return PgStore(cfg.database_url or "")
+    return PgStore(cfg.database_url or "", maxconn=cfg.pg_maxconn)
 
 
 def build_model(cfg: Config):
@@ -49,6 +49,9 @@ async def lifespan(app: FastAPI):
     cfg: Config = getattr(app.state, "config", None) or load_config()
     app.state.config = cfg
     app.state.store = getattr(app.state, "store", None) or build_store(cfg)
+    preflight = getattr(app.state.store, "preflight", None)
+    if preflight is not None:
+        preflight()
     app.state.chatlog = getattr(app.state, "chatlog", None) or ChatLog(cfg.log_dir)
     if getattr(app.state, "agent", None) is None:
         app.state.agent = build_agent(build_model(cfg))

@@ -12,6 +12,9 @@ Backend = Literal["pg", "vault"]
 
 DEFAULT_BASE_URL = "https://api.deepseek.com/v1"
 DEFAULT_MODEL = "deepseek-chat"
+#: 与 store.pg.DEFAULT_MAXCONN 保持一致;这里重复一份是为了 config 不依赖 store
+#: (vault backend 下 store.pg 根本不导入)。
+DEFAULT_PG_MAXCONN = 8
 
 
 class ConfigError(RuntimeError):
@@ -35,6 +38,14 @@ def _int_env(name: str, default: int) -> int:
         raise ConfigError(f"环境变量 {name} 必须是整数，实际为 {raw!r}") from exc
 
 
+def _positive_int_env(name: str, default: int) -> int:
+    """连接池大小配成 0 或负数会让服务起来但一个查询都跑不了，启动期就挡掉。"""
+    value = _int_env(name, default)
+    if value < 1:
+        raise ConfigError(f"环境变量 {name} 必须大于 0，实际为 {value}")
+    return value
+
+
 @dataclass(frozen=True)
 class Config:
     backend: Backend
@@ -48,6 +59,7 @@ class Config:
     log_dir: str
     max_tool_rounds: int
     request_timeout_s: int
+    pg_maxconn: int
 
     @property
     def safe_summary(self) -> dict:
@@ -57,6 +69,7 @@ class Config:
             "model": self.model_name,
             "base_url": self.base_url,
             "max_tool_rounds": self.max_tool_rounds,
+            "pg_maxconn": self.pg_maxconn,
             "auth": "平台登录态(上游 nginx)" if self.trust_platform_auth else "服务自带令牌",
         }
 
@@ -119,4 +132,5 @@ def load_config(env: dict | None = None) -> Config:
         log_dir=(os.getenv("POLICY_QA_LOG_DIR") or "").strip() or "./qa_logs",
         max_tool_rounds=_int_env("POLICY_QA_MAX_TOOL_ROUNDS", 18),
         request_timeout_s=_int_env("POLICY_QA_REQUEST_TIMEOUT_S", 120),
+        pg_maxconn=_positive_int_env("POLICY_QA_PG_MAXCONN", DEFAULT_PG_MAXCONN),
     )

@@ -32,6 +32,16 @@ from . import sqlbuild
 
 Executor = Callable[[str, dict], list[tuple]]
 
+#: 连接池大小。模型一轮里会并行发多个检索(prompt 明确要求盘点式问题至少扫四轮),
+#: 每个同步工具占一个线程,所以池子必须容得下一轮的并行度。heng-pg 是与 heng
+#: 共用的库,不能开太大。
+DEFAULT_MAXCONN = 8
+#: 等一个连接槽位的上限。到点仍拿不到就报错,而不是让请求无限期挂着。
+ACQUIRE_TIMEOUT_S = 30
+#: 服务端语句超时(毫秒)。慢查询会一直占着槽位,把后面排队的全拖死;
+#: 让数据库自己掐断比在客户端等更可靠。
+STATEMENT_TIMEOUT_MS = 25000
+
 
 def _s(value: Any) -> str | None:
     if value is None:
@@ -72,13 +82,26 @@ def row_to_card(row: Sequence, business_line: str | None) -> PolicyCard:
 
 
 class PgStore:
-    def __init__(self, dsn: str, *, executor: Executor | None = None, maxconn: int = 4):
+    def __init__(
+        self,
+        dsn: str,
+        *,
+        executor: Executor | None = None,
+        maxconn: int = DEFAULT_MAXCONN,
+        acquire_timeout_s: float = ACQUIRE_TIMEOUT_S,
+    ):
         self._dsn = dsn
-        self._lock = threading.Lock()
+        self._maxconn = max(1, maxconn)
+        self._acquire_timeout_s = acquire_timeout_s
+        # 把并发查询数卡在池子大小上,多出来的调用在这里**排队等待**。
+        # ThreadedConnectionPool 满了是直接抛 PoolError 而不是阻塞,少了这道闸,
+        # 模型一轮并行发五六个检索就会有几个当场失败(实测:池 4、并发 7,
+        # 五个被取消,整轮回答归零)。
+        self._slots = threading.BoundedSemaphore(self._maxconn)
         self._pool = None
         self._executor = executor or self._pooled_query
         if executor is None:
-            self._init_pool(maxconn)
+            self._init_pool(self._maxconn)
 
     def _init_pool(self, maxconn: int) -> None:
         try:
@@ -88,10 +111,14 @@ class PgStore:
         try:
             self._pool = pg_pool.ThreadedConnectionPool(
                 1,
-                max(1, maxconn),
+                maxconn,
                 dsn=self._dsn,
-                # 连接级只读:即便误用了可写角色,写操作也会被数据库拒绝
-                options="-c default_transaction_read_only=on",
+                # 连接级只读:即便误用了可写角色,写操作也会被数据库拒绝。
+                # statement_timeout 兜住慢查询,免得它一直占着槽位。
+                options=(
+                    "-c default_transaction_read_only=on "
+                    f"-c statement_timeout={STATEMENT_TIMEOUT_MS}"
+                ),
             )
         except Exception as exc:
             # 不把 DSN 带进异常文本——里面有口令
@@ -100,10 +127,13 @@ class PgStore:
     def _pooled_query(self, sql: str, params: dict) -> list[tuple]:
         if self._pool is None:  # pragma: no cover
             raise StoreError("连接池未初始化")
+        if not self._slots.acquire(timeout=self._acquire_timeout_s):
+            raise StoreError(f"等待数据库连接超时({self._acquire_timeout_s}s)")
         conn = None
         try:
-            with self._lock:
-                conn = self._pool.getconn()
+            # 槽位已经限住了并发数,getconn 必然拿得到,不会走到 PoolError 那支。
+            # ThreadedConnectionPool 自身是线程安全的,这里不需要再加锁。
+            conn = self._pool.getconn()
             with conn.cursor() as cur:
                 cur.execute(sql, params)
                 rows = cur.fetchall() if cur.description else []
@@ -120,8 +150,30 @@ class PgStore:
             raise StoreError(f"查询失败: {type(exc).__name__}") from exc
         finally:
             if conn is not None:
-                with self._lock:
-                    self._pool.putconn(conn)
+                self._pool.putconn(conn)
+            self._slots.release()
+
+    def preflight(self) -> None:
+        """核对 Policy 表有没有本服务要读的列,缺了就别启动。
+
+        2026-08-18 线上第一课:heng 的 `adcode` 列(2026-06-28 迁移加的)在库里
+        不存在,于是**每个带地区词的检索都失败**,而用户只看到一句脱敏的
+        "政策库暂时不可用"。健康检查照样绿——它只查 count 和两个 max,
+        碰不到那些列。查了几个小时才定位到。
+
+        与其等用户提问才炸,不如启动时就把缺的列名喊出来。
+        """
+        sql, params = sqlbuild.build_required_columns_sql()
+        present = {str(r[0]) for r in self._executor(sql, params)}
+        if not present:
+            raise StoreError('库里找不到 "Policy" 表,POLICY_QA_PG_DB 是不是指错库了?')
+        missing = [c for c in sqlbuild.REQUIRED_POLICY_COLUMNS if c not in present]
+        if missing:
+            raise StoreError(
+                'heng-pg 的 "Policy" 表缺少本服务需要的列: ' + ", ".join(missing) +
+                "。多半是这个库落后于 heng 的 Prisma 迁移,或者 POLICY_QA_PG_DB "
+                "指向了一份没上迁移链的旧副本。"
+            )
 
     # --- 查询 ---------------------------------------------------------------
 
