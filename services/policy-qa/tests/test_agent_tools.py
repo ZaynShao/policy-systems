@@ -215,6 +215,43 @@ async def test_tool_budget_degrades_gracefully(vault_store):
 
 
 @pytest.mark.asyncio
+async def test_intermediate_planning_text_is_not_streamed(vault_store):
+    """模型在还要接着调工具的轮次里输出的文本是**规划自语**,不能给用户看。
+
+    实测真模型会写"我将用盘点式方法检索…先做几轮并行检索…现在深挖几篇原文",
+    直接转发既难看又误导。只有 FinalResultEvent 之后的文本才是最终答复。
+    """
+    turns = {"n": 0}
+
+    def fn(messages, info):
+        turns["n"] += 1
+        if turns["n"] == 1:
+            # 同一轮里既说话又调工具 —— 这段话是给它自己看的
+            return ModelResponse(
+                parts=[
+                    TextPart(content="我先做几轮并行检索,再深挖原文。"),
+                    ToolCallPart(tool_name="search_policies", args={"keyword": "充电"}),
+                ]
+            )
+        return ModelResponse(parts=[TextPart(content="结论:该通知要求建成充电桩10万个。")])
+
+    agent = build_agent(_model(fn))
+    events = await _collect(agent, vault_store, [{"role": "user", "content": "q"}])
+    names = [n for n, _ in events]
+    assert "delta_reset" in names, "发现本轮有工具调用后必须让前端丢弃已显示文本"
+
+    # 模拟前端:收到 delta_reset 就清空当前累积
+    shown = ""
+    for n, d in events:
+        if n == "delta":
+            shown += d["text"]
+        elif n == "delta_reset":
+            shown = ""
+    assert "我先做几轮并行检索" not in shown, "中间轮次的规划自语不得留在答复里"
+    assert "充电桩10万个" in shown, "最终答复必须完整送达"
+
+
+@pytest.mark.asyncio
 async def test_search_limit_capped(vault_store):
     """模型要 999 条也只能拿到 50 条。"""
     captured = {}

@@ -246,7 +246,11 @@ async function send() {
           else if (line.startsWith('data: ')) { try { data = JSON.parse(line.slice(6)); } catch (e) {} }
         }
         if (!event) continue;
-        if (event === 'delta' && data && data.text) {
+        if (event === 'delta_reset') {
+          // 刚显示的是模型的规划自语(它接着还要调工具),丢掉重来
+          answer = '';
+          bubble.textContent = '';
+        } else if (event === 'delta' && data && data.text) {
           answer += data.text;
           bubble.textContent = answer;
           $log.scrollTop = $log.scrollHeight;

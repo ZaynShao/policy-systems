@@ -21,6 +21,7 @@ from pydantic_ai.messages import (
     PartStartEvent,
     TextPart,
     TextPartDelta,
+    ToolCallPart,
     UserPromptPart,
 )
 from pydantic_ai.usage import UsageLimits
@@ -54,7 +55,7 @@ class RunState:
 
     store: PolicyStore
     cited: dict[str, PolicyCard] = field(default_factory=dict)
-    max_tool_calls: int = 12
+    max_tool_calls: int = 18
     tool_calls: int = 0
 
     def spend(self) -> bool:
@@ -249,20 +250,41 @@ async def stream_answer(
     ) as run:
         async for node in run:
             if Agent.is_model_request_node(node):
+                # 模型在**还要接着调工具**的轮次里也会输出文本,那是给它自己看的规划
+                # 自语("我先做几轮并行检索…现在深挖几篇原文"),不该当成答复给用户。
+                #
+                # 麻烦在于流式下当场分不出来:output_type 是 str,任何文本都"匹配输出
+                # 模式",FinalResultEvent 在规划文本上照样触发。但**一旦这一轮里冒出
+                # 工具调用**,就能确定刚才那段是规划。
+                #
+                # 所以:文本照常实时发(保住流式体验),发现本轮有工具调用时补发一个
+                # delta_reset,让前端把本轮已显示的文本丢掉,并静默本轮后续文本。
+                emitted_this_turn = False
+                suppress_rest = False
+
                 async with node.stream(run.ctx) as stream:
                     async for event in stream:
+                        if isinstance(event, PartStartEvent) and isinstance(
+                            event.part, ToolCallPart
+                        ):
+                            if emitted_this_turn and not suppress_rest:
+                                yield "delta_reset", {}
+                            suppress_rest = True
+                            continue
+                        if suppress_rest:
+                            continue
+                        chunk = ""
                         # 首块文本走 PartStartEvent,后续才是 PartDeltaEvent。
                         # 只接 delta 会把每次回答的开头吞掉。
-                        if isinstance(event, PartStartEvent) and isinstance(
-                            event.part, TextPart
-                        ):
-                            if event.part.content:
-                                yield "delta", {"text": event.part.content}
+                        if isinstance(event, PartStartEvent) and isinstance(event.part, TextPart):
+                            chunk = event.part.content or ""
                         elif isinstance(event, PartDeltaEvent) and isinstance(
                             event.delta, TextPartDelta
                         ):
-                            if event.delta.content_delta:
-                                yield "delta", {"text": event.delta.content_delta}
+                            chunk = event.delta.content_delta or ""
+                        if chunk:
+                            emitted_this_turn = True
+                            yield "delta", {"text": chunk}
             elif Agent.is_call_tools_node(node):
                 async with node.stream(run.ctx) as stream:
                     async for event in stream:

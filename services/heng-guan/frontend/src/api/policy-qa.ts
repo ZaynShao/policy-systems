@@ -1,0 +1,136 @@
+// 政策问答服务(policy-qa)客户端。
+//
+// 注意:它**不在** /heng/ 下 —— policy-qa 是平台里另一个服务,nginx 上是独立的
+// `location /policy-qa/`。所以这里不能用 @/api/client 的 axios 实例(那个 baseURL
+// 是 /heng/api/v1),要走绝对路径。
+//
+// 鉴权同样不归这里管:nginx 是 server 级 auth_request,登录态由平台统一校验,
+// 前端不需要带任何令牌。
+
+/** 统一部署时是 /policy-qa;本地开发由 vite proxy 转发到 nginx。 */
+export const policyQaBase =
+  ((import.meta as any).env?.VITE_POLICY_QA_BASE as string | undefined) || '/policy-qa';
+
+export interface QaMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+export interface QaCitation {
+  pid: string;
+  title: string;
+  doc_number?: string | null;
+  source_url?: string | null;
+  /** 该政策的已知数据缺陷(如同一 pid 对应多份文件),非空时必须让用户看到 */
+  caveat?: string | null;
+}
+
+export interface QaToolEvent {
+  seq: number;
+  name: string;
+  args_preview?: string;
+  status: 'start' | 'done';
+  result_chars?: number;
+}
+
+export interface QaDone {
+  citations: QaCitation[];
+  usage?: { prompt_tokens?: number; completion_tokens?: number; tool_calls?: number };
+}
+
+export interface QaHandlers {
+  onMeta?: (m: { request_id: string; history_truncated: boolean }) => void;
+  onTool?: (t: QaToolEvent) => void;
+  onDelta?: (text: string) => void;
+  /** 本轮已显示的文本其实是模型的规划自语,前端应清空当前累积后重来 */
+  onDeltaReset?: () => void;
+  onDone?: (d: QaDone) => void;
+  onError?: (message: string) => void;
+}
+
+/** 工具名 → 给人看的说法。UI 不该直接把内部工具名甩给业务同事。 */
+export const TOOL_LABELS: Record<string, string> = {
+  search_policies: '检索政策库',
+  get_policy_fulltext: '读取政策原文',
+  get_policy_relations: '查政策上下游关系',
+  get_policy_commentary: '查行业解读',
+};
+
+export async function fetchQaHealth(): Promise<{ ok: boolean; policies?: number; latest_issue_date?: string }> {
+  const resp = await fetch(`${policyQaBase}/v1/health`, { headers: { Accept: 'application/json' } });
+  if (!resp.ok) throw new Error(`健康检查失败 ${resp.status}`);
+  return resp.json();
+}
+
+/**
+ * 发起一轮问答并按 SSE 流式回调。
+ *
+ * 服务端**不存会话**:每次要把完整历史带上(不含 system —— 答题纪律在服务端,
+ * 客户端传 system 会被 400 拒掉)。
+ */
+export async function streamQaChat(
+  messages: QaMessage[],
+  handlers: QaHandlers,
+  signal?: AbortSignal,
+): Promise<void> {
+  let resp: Response;
+  try {
+    resp = await fetch(`${policyQaBase}/v1/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' },
+      body: JSON.stringify({ messages }),
+      signal,
+    });
+  } catch (e: any) {
+    if (e?.name === 'AbortError') return;
+    handlers.onError?.('无法连接政策问答服务');
+    return;
+  }
+
+  if (resp.status === 401 || resp.status === 403) {
+    handlers.onError?.('登录态已失效，请重新登录平台后重试。');
+    return;
+  }
+  if (!resp.ok || !resp.body) {
+    handlers.onError?.(`请求失败（HTTP ${resp.status}）`);
+    return;
+  }
+
+  const reader = resp.body.getReader();
+  const decoder = new TextDecoder();
+  let buf = '';
+
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buf += decoder.decode(value, { stream: true });
+      // SSE 按空行分帧;最后一段可能不完整,留到下一轮再拼
+      const blocks = buf.split('\n\n');
+      buf = blocks.pop() ?? '';
+      for (const block of blocks) {
+        let event = '';
+        let data = '';
+        for (const line of block.split('\n')) {
+          if (line.startsWith('event:')) event = line.slice(6).trim();
+          else if (line.startsWith('data:')) data += line.slice(5).trim();
+        }
+        if (!data) continue;
+        let parsed: any;
+        try {
+          parsed = JSON.parse(data);
+        } catch {
+          continue;
+        }
+        if (event === 'meta') handlers.onMeta?.(parsed);
+        else if (event === 'tool') handlers.onTool?.(parsed);
+        else if (event === 'delta') handlers.onDelta?.(parsed.text ?? '');
+        else if (event === 'delta_reset') handlers.onDeltaReset?.();
+        else if (event === 'done') handlers.onDone?.(parsed);
+        else if (event === 'error') handlers.onError?.(parsed.message ?? '服务出错');
+      }
+    }
+  } catch (e: any) {
+    if (e?.name !== 'AbortError') handlers.onError?.('连接中断');
+  }
+}
