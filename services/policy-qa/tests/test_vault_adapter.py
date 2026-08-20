@@ -81,9 +81,30 @@ def test_negative_impact_is_not_a_match(vault_store):
     assert detail.impact["充电"].startswith("未直接涉及")
 
 
-def test_no_business_line_means_no_snippet(vault_store):
-    res = vault_store.search_policies(keyword="充电")
-    assert res.rows[0].impact_snippet is None
+def test_no_business_line_still_carries_the_impact_analysis(vault_store):
+    """不指定业务线时给**全量影响摘要**,不是留空。
+
+    留空曾经害惨了一次:规划器改成偏好按主题检索之后,主题检索不带 business_line,
+    卡片就只剩标题/日期/机关,模型没有任何判断依据,只能挨个读原文——
+    实测一个盘点式问题读掉 11 篇、总调用 20 次撞爆 18 的上限。
+    而 L2 早把"这件事对各业务线意味着什么"写好了,不给它才是浪费。
+    """
+    card = next(
+        c for c in vault_store.search_policies(keyword="充电").rows
+        if c.pid == "P_2026_TEST_1"
+    )
+    assert card.impact_snippet, "没有业务线时也要带影响分析"
+    assert "充电" in card.impact_snippet
+
+
+def test_impact_digest_drops_the_irrelevant_entries(vault_store):
+    """摘要里不能混进"未直接涉及"——全库六成条目是那句,混进来就全是噪声。"""
+    card = next(
+        c for c in vault_store.search_policies(keyword="储能").rows
+        if c.pid == "P_2026_TEST_3"
+    )
+    assert card.impact_snippet
+    assert "未直接涉及" not in card.impact_snippet
 
 
 def test_date_range(vault_store):

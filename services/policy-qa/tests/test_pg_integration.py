@@ -130,6 +130,31 @@ def test_preflight_catches_a_column_that_the_database_lacks(live_store):
     live_store.preflight()
 
 
+def test_theme_containment_works_on_a_real_server(live_store):
+    """主题过滤走 jsonb 的 `@>` 包含判定,必须让真服务器解析一遍。
+
+    `pipelineThemes` 是 `[{id,isPrimary,isComprehensive}]`,过滤时把探针对象
+    整个丢进 `@>`——`@>` 的语义是"被包含对象的每个键值都要匹配",所以
+    primary_theme_only 不需要拆成两个条件。这套写法只在内存 fixture 上验过,
+    真库上没跑过,而这正是 README 已知限制 #9 说的那类坑。
+    """
+    res = live_store.search_policies(theme_id="charging_infra")
+    assert [c.pid for c in res.rows] == ["P_2026_NDRC_1"]
+
+    primary = live_store.search_policies(theme_id="charging_infra", primary_theme_only=True)
+    assert [c.pid for c in primary.rows] == ["P_2026_NDRC_1"]
+    assert primary.rows[0].primary_theme == "charging_infra"
+
+    # 挂着但不是"主"主题的,primary_theme_only 要把它排除掉
+    assert live_store.search_policies(theme_id="power_market").total == 1
+    assert live_store.search_policies(
+        theme_id="power_market", primary_theme_only=True
+    ).total == 0
+
+    # 不存在的主题给空结果而不是报错
+    assert live_store.search_policies(theme_id="no_such_theme").total == 0
+
+
 def test_manual_rows_never_surface(live_store):
     """pipelinePid 为空的是人工录入行,任何查询都不该带出它。"""
     res = live_store.search_policies()

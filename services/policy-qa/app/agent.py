@@ -107,6 +107,8 @@ def build_agent(model: Any) -> Agent[RunState, str]:
         region_keyword: str | None = None,
         min_importance: str | None = None,
         issuer_keyword: str | None = None,
+        theme_id: str | None = None,
+        primary_theme_only: bool = False,
         order: str = "date_desc",
         limit: int = DEFAULT_LIMIT,
     ) -> str:
@@ -115,6 +117,9 @@ def build_agent(model: Any) -> Agent[RunState, str]:
         keyword 同时匹配标题与文号,多个词空格分隔且必须全部命中。
         business_line 取 加油/充电/电力/乡村,用于回答"对某业务影响大的政策";
         它按内部影响分析筛选,已排除"未直接涉及"的条目。
+        theme_id 按库内主题分类检索(如 charging_infra、energy_storage_theme),
+        比关键词准——主题是库里标好的,关键词只是字面匹配。
+        primary_theme_only=true 时只要那些**主要**讲该主题的,排除顺带提及的。
         date_from/date_to 是 YYYY-MM-DD。region_keyword 匹配区域名、行政区划码或层级
         (国家/省/市/区)。min_importance 取 INFO/GENERAL/MAJOR/STRATEGIC。
         order 取 date_desc(默认)或 importance_desc。limit 最大 50。
@@ -131,6 +136,8 @@ def build_agent(model: Any) -> Agent[RunState, str]:
                 region_keyword=region_keyword,
                 min_importance=min_importance,
                 issuer_keyword=issuer_keyword,
+                theme_id=theme_id,
+                primary_theme_only=primary_theme_only,
                 order=order,
                 limit=min(int(limit or DEFAULT_LIMIT), MAX_LIMIT),
             )

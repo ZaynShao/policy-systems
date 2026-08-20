@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import json
 import os
+from collections import Counter
 import re
 from pathlib import Path
 from typing import Any
@@ -31,11 +32,13 @@ from . import (
     caveat_for,
     clamp_limit,
     impact_match,
+    impact_for_card,
     impact_snippet,
     importance_at_least,
     importance_from_score,
     keyword_match,
     normalize_themes,
+    ThemeInfo,
     sort_key,
     tokenize_keyword,
 )
@@ -136,6 +139,7 @@ class VaultStore:
                     "filename": path.name,
                     "importance": "INFO",
                     "themes": [],
+                    "primary_theme": None,
                     "scores": None,
                     "impact": None,
                 }
@@ -165,6 +169,10 @@ class VaultStore:
                 continue
             row["importance"] = importance_from_score(bv.get("重要性"))
             row["themes"] = normalize_themes(bv.get("themes"))
+            # vault 里主题和"主"主题是两个平级的键;投影到 pg 时才合并成
+            # [{id,isPrimary}]。两边形状不同,但对外语义要一致。
+            primary = str(bv.get("primary_theme") or "").strip()
+            row["primary_theme"] = primary or None
             scores = bv.get("scores")
             if isinstance(scores, dict):
                 row["scores"] = {
@@ -262,6 +270,37 @@ class VaultStore:
 
     # --- 查询 ---------------------------------------------------------------
 
+    def list_themes(self) -> list[ThemeInfo]:
+        """主题登记表。vault 侧读 _meta/themes_registry.yaml——pg 侧读的
+        KnowledgeTheme 就是它的投影,两边取的是同一份东西。"""
+        path = self.root / "_meta" / "themes_registry.yaml"
+        if not path.is_file():
+            return []
+        try:
+            data = yaml.safe_load(_read_text(path))
+        except yaml.YAMLError:
+            return []
+        themes = (data or {}).get("themes") if isinstance(data, dict) else None
+        if not isinstance(themes, list):
+            return []
+        counts = Counter(t for r in self._policies.values() for t in r["themes"])
+        out: list[ThemeInfo] = []
+        for entry in themes:
+            if not isinstance(entry, dict) or not entry.get("id"):
+                continue
+            tid = str(entry["id"])
+            aliases = entry.get("aliases")
+            out.append(
+                ThemeInfo(
+                    id=tid,
+                    name=str(entry.get("zh") or ""),
+                    aliases=[str(a) for a in aliases] if isinstance(aliases, list) else [],
+                    count=counts.get(tid, 0),
+                )
+            )
+        out.sort(key=lambda t: (-t.count, t.id))
+        return out
+
     def _to_card(self, row: dict, business_line: str | None) -> PolicyCard:
         return PolicyCard(
             pid=row["pid"],
@@ -273,7 +312,8 @@ class VaultStore:
             level=row["level"],
             importance=row["importance"],
             themes=row["themes"],
-            impact_snippet=impact_snippet(row["impact"], business_line),
+            primary_theme=row.get("primary_theme"),
+            impact_snippet=impact_for_card(row["impact"], business_line),
             source_url=row["source_url"],
             caveat=caveat_for(row["pid"], self.collisions.get(row["pid"])),
         )
@@ -288,6 +328,8 @@ class VaultStore:
         region_keyword: str | None = None,
         min_importance: str | None = None,
         issuer_keyword: str | None = None,
+        theme_id: str | None = None,
+        primary_theme_only: bool = False,
         order: str = "date_desc",
         limit: int = DEFAULT_LIMIT,
     ) -> SearchResult:
@@ -312,6 +354,12 @@ class VaultStore:
             if issuer_keyword and not (
                 issuer_keyword.lower() in (row["issuer"] or "").lower()
                 or issuer_keyword.lower() in (row["title"] or "").lower()
+            ):
+                continue
+            if theme_id and not (
+                row["primary_theme"] == theme_id
+                if primary_theme_only
+                else theme_id in row["themes"]
             ):
                 continue
             if not importance_at_least(row["importance"], min_importance):

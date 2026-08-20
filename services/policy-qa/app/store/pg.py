@@ -9,6 +9,7 @@ SQL 在 sqlbuild.py(纯函数,单测覆盖结构与参数);本模块只负责连
 from __future__ import annotations
 
 import json
+import logging
 import threading
 from typing import Any, Callable, Sequence
 
@@ -24,11 +25,16 @@ from . import (
     caveat_for,
     clamp_limit,
     impact_match,
+    impact_for_card,
     impact_snippet,
     normalize_themes,
+    primary_theme_of,
     sort_key,
+    ThemeInfo,
 )
 from . import sqlbuild
+
+logger = logging.getLogger("policy-qa")
 
 Executor = Callable[[str, dict], list[tuple]]
 
@@ -75,7 +81,8 @@ def row_to_card(row: Sequence, business_line: str | None) -> PolicyCard:
         level=_s(level),
         importance=str(importance or "INFO"),  # type: ignore[arg-type]
         themes=normalize_themes(themes),
-        impact_snippet=impact_snippet(impact, business_line),
+        primary_theme=primary_theme_of(themes),
+        impact_snippet=impact_for_card(impact, business_line),
         source_url=_s(source_url),
         caveat=caveat_for(str(pid)),
     )
@@ -153,6 +160,34 @@ class PgStore:
                 self._pool.putconn(conn)
             self._slots.release()
 
+    def list_themes(self) -> list[ThemeInfo]:
+        """主题登记表。取不到就返回空——主题只是检索的增强维度,
+        没有它检索照样能跑,不值得让整个服务起不来。但要在日志里说清楚。"""
+        sql, params = sqlbuild.build_themes_sql()
+        try:
+            rows = self._executor(sql, params)
+        except StoreError as exc:
+            logger.warning("读不到 KnowledgeTheme 主题登记表,主题检索将不可用: %s", exc)
+            return []
+        out: list[ThemeInfo] = []
+        for tid, name, aliases, count in rows:
+            if not tid:
+                continue
+            if isinstance(aliases, str):
+                try:
+                    aliases = json.loads(aliases)
+                except ValueError:
+                    aliases = []
+            out.append(
+                ThemeInfo(
+                    id=str(tid),
+                    name=str(name or ""),
+                    aliases=[str(a) for a in aliases] if isinstance(aliases, list) else [],
+                    count=int(count or 0),
+                )
+            )
+        return out
+
     def preflight(self) -> None:
         """核对 Policy 表有没有本服务要读的列,缺了就别启动。
 
@@ -187,6 +222,8 @@ class PgStore:
         region_keyword: str | None = None,
         min_importance: str | None = None,
         issuer_keyword: str | None = None,
+        theme_id: str | None = None,
+        primary_theme_only: bool = False,
         order: str = "date_desc",
         limit: int = DEFAULT_LIMIT,
     ) -> SearchResult:
@@ -197,6 +234,8 @@ class PgStore:
             region_keyword=region_keyword,
             min_importance=min_importance,
             issuer_keyword=issuer_keyword,
+            theme_id=theme_id,
+            primary_theme_only=primary_theme_only,
         )
         rows = self._executor(sql, params)
         # business_line 过滤只能在这里做:pipelineImpact 是存 JSON 的 text 列,
