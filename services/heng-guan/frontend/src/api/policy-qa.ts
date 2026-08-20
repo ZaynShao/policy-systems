@@ -33,6 +33,30 @@ export interface QaToolEvent {
   result_chars?: number;
 }
 
+/** 服务端在检索之前定的计划。展示它是为了让用户看得见"它打算怎么查"。 */
+export interface QaPlan {
+  kind: 'single_policy' | 'survey' | 'other';
+  /** 主题内部 id(charging_infra 之类),排查用 */
+  themes: string[];
+  /** 同序的中文名,显示用。服务端查好一并下发,前端不硬编码分类体系 */
+  theme_labels?: string[];
+  business_lines: string[];
+  keywords: string[];
+  issuers: string[];
+  note?: string;
+}
+
+/**
+ * 事实核验结果。**只在发现问题时才会收到**。
+ *
+ * 服务端拿答案里的文号与引文回本轮检索到的材料做逐字比对,对不上的列在这里。
+ * 它不改写答案,所以前端必须把这条显示出来 —— 不显示就等于这层核验没做。
+ */
+export interface QaVerify {
+  checked: { doc_numbers: number; quotes: number };
+  unsupported: Array<{ kind: 'doc_number' | 'quote'; text: string; hint: string }>;
+}
+
 export interface QaDone {
   citations: QaCitation[];
   usage?: { prompt_tokens?: number; completion_tokens?: number; tool_calls?: number };
@@ -40,10 +64,12 @@ export interface QaDone {
 
 export interface QaHandlers {
   onMeta?: (m: { request_id: string; history_truncated: boolean }) => void;
+  onPlan?: (p: QaPlan) => void;
   onTool?: (t: QaToolEvent) => void;
   onDelta?: (text: string) => void;
   /** 本轮已显示的文本其实是模型的规划自语,前端应清空当前累积后重来 */
   onDeltaReset?: () => void;
+  onVerify?: (v: QaVerify) => void;
   onDone?: (d: QaDone) => void;
   onError?: (message: string) => void;
 }
@@ -123,9 +149,11 @@ export async function streamQaChat(
           continue;
         }
         if (event === 'meta') handlers.onMeta?.(parsed);
+        else if (event === 'plan') handlers.onPlan?.(parsed);
         else if (event === 'tool') handlers.onTool?.(parsed);
         else if (event === 'delta') handlers.onDelta?.(parsed.text ?? '');
         else if (event === 'delta_reset') handlers.onDeltaReset?.();
+        else if (event === 'verify') handlers.onVerify?.(parsed);
         else if (event === 'done') handlers.onDone?.(parsed);
         else if (event === 'error') handlers.onError?.(parsed.message ?? '服务出错');
       }

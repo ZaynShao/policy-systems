@@ -8,6 +8,7 @@ from __future__ import annotations
 import datetime
 import json
 import logging
+import re
 from dataclasses import dataclass, field
 from typing import Any, AsyncIterator, Iterable
 
@@ -30,6 +31,7 @@ from pydantic_ai.usage import UsageLimits
 from .config import Config
 from .planner import make_plan, plan_to_prompt
 from .prompts import build_system_prompt
+from .verifier import EVIDENCE_MAX_CHARS, verify_answer
 from .store import DEFAULT_LIMIT, MAX_LIMIT, PolicyCard, PolicyStore, StoreError
 
 logger = logging.getLogger("policy-qa")
@@ -45,6 +47,68 @@ FULLTEXT_MAX_CHARS = 20000
 HISTORY_MAX_CHARS = 60000
 #: 会话日志里记的完整工具入参上限。UI 摘要只有 60 字,排查不够用。
 ARGS_FULL_MAX_CHARS = 500
+
+#: 思考与答复的分隔标记。标记之前的一律不发给用户。
+#: 用这么一串是因为它几乎不可能出现在政策原文或正常答复里。
+ANSWER_MARKER = "===答复==="
+#: 没等到标记就先攒着的上限。攒够了当作"这轮不用标记",原样放出去。
+#: 定 400 是权衡:实测漏出来的自语在 60~300 字之间,而首字延迟不该为此多等太久。
+HOLD_MAX_CHARS = 400
+
+#: 自语句式。**刻意做成高精度低召回的白名单**,而不是"自称词 + 流程词"那种组合判据:
+#: 组合判据会误伤「我建议重点关注第三条,原文材料显示……」这类正经论述
+#: (有自称也有流程词,却是答复本身)。漏删一句只是难看,**误删正文是事故**,
+#: 而且用户不会知道自己少看了什么。每条模式都对应一个实测样本。
+_CHATTER_PATTERNS = tuple(
+    re.compile(p)
+    for p in (
+        r"^(现在|下面|接下来)[^。]{0,8}(整理|给出|开始|撰写)[^。]{0,8}(答复|回答)",
+        r"^让我(再)?(确认|想想|梳理|整理|看看|检查|核对|修正)",
+        r"^我(已|已经)(读取|读完|看完|检索|查完)",
+        r"^我(有|已有)[^。]{0,6}材料",
+        r"^我(需要|应该|先|来|再)[^。]{0,6}(确认|检索|读|看|整理|梳理|汇总)",
+        r"^(接下来|下一步)我",
+        r"^好的[,,。]?\s*(我|现在|下面)",
+    )
+)
+#: 单句超过这个长度就不当自语了。实测自语都是短句;长句更可能是正经论述。
+_CHATTER_MAX_SENTENCE = 80
+
+
+def _is_chatter(sentence: str) -> bool:
+    return len(sentence) <= _CHATTER_MAX_SENTENCE and any(
+        p.search(sentence) for p in _CHATTER_PATTERNS
+    )
+
+
+def strip_leading_chatter(text: str) -> str:
+    """剥掉答复开头的规划自语。**只从头剥,遇到第一个不像自语的句子就停。**
+
+    为什么需要确定性兜底:prompt 约束这条已经失败两次——先是"不要把思考过程
+    写出来",再是 `===答复===` 分隔标记。实测漏出来的原话:
+    「我已读取了足够多关键文件的原文。现在整理最终答复。」
+    「让我确认一下需要包含的关键信息。」
+    模型**不一定**会用标记,所以标记之外还得有一层。
+
+    只剥开头是刻意的:自语只出现在答复之前,而从中间删句子风险太大。
+    """
+    if not text:
+        return text
+    # 按句末标点和换行切,保留分隔符以便原样拼回
+    pieces = re.split(r"(?<=[。！？!?\n])", text)
+    idx = 0
+    for piece in pieces:
+        stripped = piece.strip()
+        if not stripped:
+            idx += 1
+            continue
+        if not _is_chatter(stripped):
+            break
+        idx += 1
+    remainder = "".join(pieces[idx:]).lstrip("\n 　")
+    # 整段都像自语时保持原样:宁可多显示,也不能把答复整个吞掉
+    return remainder or text
+
 
 #: 达到检索上限后,工具不再干活,改回这句。**不抛错**——抛错会让用户什么都拿不到,
 #: 而此时模型手里通常已经有足够材料。让它自己收尾,比中断体验好得多。
@@ -88,6 +152,18 @@ class RunState:
     #: 读原文单次成本也远高于检索(两万字 vs 几千字),不该和检索抢同一份额度。
     max_reads: int = 6
     reads: int = 0
+    #: 本轮工具返回过的全部内容,拼成一串给事实核验做逐字比对。
+    #: 存原始返回而不是只存读过的原文,是因为"逐字"这条规矩针对的是
+    #: **模型见过的材料**——检索列表里的文号它也见得到,据此转写不算编造。
+    evidence: list[str] = field(default_factory=list)
+    evidence_chars: int = 0
+
+    def remember(self, payload: str) -> str:
+        """记一条工具返回,顺带原样传回,方便在 return 处直接串起来。"""
+        if self.evidence_chars < EVIDENCE_MAX_CHARS:
+            self.evidence.append(payload)
+            self.evidence_chars += len(payload)
+        return payload
 
     def spend(self) -> bool:
         """记一次工具调用。返回 False 表示预算已尽,调用方应回 BUDGET_EXHAUSTED。"""
@@ -178,13 +254,13 @@ def build_agent(model: Any) -> Agent[RunState, str]:
         except StoreError as exc:
             logger.warning("search_policies 失败,已降级: %s", exc)
             return STORE_UNAVAILABLE
-        return _dump(
+        return ctx.deps.remember(_dump(
             {
                 "total": res.total,
                 "returned": len(res.rows),
                 "rows": [r.model_dump(exclude_none=True) for r in res.rows],
             }
-        )
+        ))
 
     @agent.tool
     def get_policy_fulltext(
@@ -209,7 +285,9 @@ def build_agent(model: Any) -> Agent[RunState, str]:
         if detail is None:
             return _dump({"found": False, "pid": pid, "hint": "库内无此 pid,不要编造该件内容"})
         ctx.deps.cited[detail.pid] = detail
-        return _dump({"found": True, **detail.model_dump(exclude_none=True)}, FULLTEXT_RESULT_MAX_CHARS)
+        return ctx.deps.remember(
+            _dump({"found": True, **detail.model_dump(exclude_none=True)}, FULLTEXT_RESULT_MAX_CHARS)
+        )
 
     @agent.tool
     def get_policy_relations(ctx: RunContext[RunState], pid: str) -> str:
@@ -224,9 +302,9 @@ def build_agent(model: Any) -> Agent[RunState, str]:
         except StoreError as exc:
             logger.warning("get_policy_relations 失败,已降级: %s", exc)
             return STORE_UNAVAILABLE
-        return _dump(
+        return ctx.deps.remember(_dump(
             {"pid": pid, "count": len(edges), "edges": [e.model_dump(exclude_none=True) for e in edges]}
-        )
+        ))
 
     @agent.tool
     def get_policy_commentary(ctx: RunContext[RunState], pid: str) -> str:
@@ -241,9 +319,9 @@ def build_agent(model: Any) -> Agent[RunState, str]:
         except StoreError as exc:
             logger.warning("get_policy_commentary 失败,已降级: %s", exc)
             return STORE_UNAVAILABLE
-        return _dump(
+        return ctx.deps.remember(_dump(
             {"pid": pid, "count": len(items), "items": [i.model_dump(exclude_none=True) for i in items]}
-        )
+        ))
 
     return agent
 
@@ -332,6 +410,9 @@ async def stream_answer(
     )
     seq = 0
     pending: dict[str, int] = {}
+    # 累积最终答复,供事实核验逐字比对。delta_reset 时要跟着清空——
+    # 被丢弃的那段是模型的规划自语,不是答复,核它没有意义。
+    answer_buf: list[str] = []
 
     yield "meta", {"history_truncated": truncated}
 
@@ -380,13 +461,26 @@ async def stream_answer(
                 # delta_reset,让前端把本轮已显示的文本丢掉,并静默本轮后续文本。
                 emitted_this_turn = False
                 suppress_rest = False
+                # 上面那套只能挡住"后面还有工具调用"的自语。**最后一轮**的自语挡不住
+                # ——实测漏出来过"我已读取了足够多关键文件的原文。现在整理最终答复。"
+                # 甚至内心纠结("让我修正——我检索用的 date_from=…")。
+                # 所以约定一个分隔标记:标记之前的一律不发,发现标记才开始发。
+                # 模型不给标记时(hold_buf 超过 HOLD_MAX_CHARS)就当它这轮不用标记,
+                # 把攒下的原样放出去——退回旧行为,不会比现在更差。
+                hold_buf: list[str] = []
+                held_chars = 0
+                releasing = False
 
                 async with node.stream(run.ctx) as stream:
                     async for event in stream:
                         if isinstance(event, PartStartEvent) and isinstance(
                             event.part, ToolCallPart
                         ):
+                            # 本轮还要调工具,那刚才那些文字全是规划自语。
+                            # 攒着没发的直接丢掉,已经发出去的补一个 reset。
+                            hold_buf.clear()
                             if emitted_this_turn and not suppress_rest:
+                                answer_buf.clear()
                                 yield "delta_reset", {}
                             suppress_rest = True
                             continue
@@ -401,9 +495,47 @@ async def stream_answer(
                             event.delta, TextPartDelta
                         ):
                             chunk = event.delta.content_delta or ""
-                        if chunk:
+                        if not chunk:
+                            continue
+                        if releasing:
                             emitted_this_turn = True
+                            answer_buf.append(chunk)
                             yield "delta", {"text": chunk}
+                            continue
+
+                        hold_buf.append(chunk)
+                        held_chars += len(chunk)
+                        held = "".join(hold_buf)
+                        # 标记可能被切在两个 chunk 中间,所以每次都在整段里找
+                        idx = held.find(ANSWER_MARKER)
+                        if idx >= 0:
+                            tail = strip_leading_chatter(
+                                held[idx + len(ANSWER_MARKER):].lstrip("\n")
+                            )
+                            hold_buf.clear()
+                            releasing = True
+                            if tail:
+                                emitted_this_turn = True
+                                answer_buf.append(tail)
+                                yield "delta", {"text": tail}
+                        elif held_chars >= HOLD_MAX_CHARS:
+                            # 攒够了还没见标记 —— 这轮它不打算用,别再压着不发
+                            hold_buf.clear()
+                            releasing = True
+                            held = strip_leading_chatter(held)
+                            if held:
+                                emitted_this_turn = True
+                                answer_buf.append(held)
+                                yield "delta", {"text": held}
+
+                # 一轮结束时还压着东西没发:模型给了标记之前的文字却没给标记,
+                # 或者整段都短于阈值。原样放出去,宁可多显示也不能把答复吞掉。
+                if hold_buf and not suppress_rest:
+                    held = strip_leading_chatter("".join(hold_buf))
+                    if held:
+                        emitted_this_turn = True
+                        answer_buf.append(held)
+                        yield "delta", {"text": held}
             elif Agent.is_call_tools_node(node):
                 async with node.stream(run.ctx) as stream:
                     async for event in stream:
@@ -429,6 +561,25 @@ async def stream_answer(
                                 "status": "done",
                                 "result_chars": len(str(getattr(part, "content", "") or "")),
                             }
+
+    # 事实核验:不调模型,纯字面比对。答案已经流出去了,这里不改写它——
+    # 把存疑的地方标出来让用户去点引用核对,比服务端偷偷改字更符合这套纪律。
+    report = verify_answer(
+        "".join(answer_buf), "\n".join(state.evidence), question=prompt
+    )
+    if report.unsupported:
+        logger.warning(
+            "事实核验发现 %d 处无据可依: %s",
+            len(report.unsupported),
+            "; ".join(f"{c.kind}={c.text}" for c in report.unsupported[:5]),
+        )
+        yield "verify", {
+            "checked": {
+                "doc_numbers": report.checked_doc_numbers,
+                "quotes": report.checked_quotes,
+            },
+            "unsupported": [c.model_dump() for c in report.unsupported],
+        }
 
     usage = run.usage
     yield "done", {
