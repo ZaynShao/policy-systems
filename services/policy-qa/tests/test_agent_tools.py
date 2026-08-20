@@ -26,8 +26,10 @@ def _cfg(**kw) -> Config:
         trust_platform_auth=False,
         log_dir="/tmp",
         max_tool_rounds=8,
+        max_reads=6,
         request_timeout_s=120,
         pg_maxconn=8,
+        enable_planner=False,
     )
     base.update(kw)
     return Config(**base)
@@ -213,6 +215,138 @@ async def test_tool_budget_degrades_gracefully(vault_store):
     assert sum(1 for s in returns if BUDGET_EXHAUSTED not in s) == 3, "只有前 3 次真干活"
     text = "".join(d["text"] for n, d in events if n == "delta")
     assert "上限" in text
+
+
+@pytest.mark.asyncio
+async def test_reads_have_their_own_budget_and_do_not_starve_search(vault_store):
+    """精读单独设闸,超了不再给原文,但**检索还能继续**。
+
+    共用一个池子时读原文会把它吃光:实测一个盘点式问题读掉 11 篇、
+    总调用 20 次撞爆 18 的上限,后面的检索全被饿死。
+    """
+    from app.agent import READ_BUDGET_EXHAUSTED
+
+    returns: list[str] = []
+    turns = {"n": 0}
+
+    def fn(messages, info):
+        turns["n"] += 1
+        if messages:
+            for p in getattr(messages[-1], "parts", []):
+                if getattr(p, "part_kind", "") == "tool-return":
+                    returns.append(str(p.content))
+        if turns["n"] <= 3:  # 精读上限 2,第 3 次必然超
+            return ModelResponse(
+                parts=[ToolCallPart(tool_name="get_policy_fulltext", args={"pid": "P_2026_TEST_1"})]
+            )
+        if turns["n"] == 4:  # 精读超额后,检索必须仍然可用
+            return ModelResponse(
+                parts=[ToolCallPart(tool_name="search_policies", args={"keyword": "充电"})]
+            )
+        return ModelResponse(parts=[TextPart(content="基于已有材料作答。")])
+
+    agent = build_agent(_model(fn))
+    events = await _collect(
+        agent, vault_store, [{"role": "user", "content": "q"}], cfg=_cfg(max_reads=2)
+    )
+    assert sum(1 for s in returns if READ_BUDGET_EXHAUSTED in s) == 1, "第 3 次精读应被挡"
+    assert "error" not in [n for n, _ in events]
+    # 第 4 次是检索,不该被精读闸门牵连
+    assert any("total" in s for s in returns), "精读超额后检索仍要能用"
+
+
+@pytest.mark.asyncio
+async def test_continuing_the_same_policy_does_not_cost_a_read(vault_store):
+    """offset>0 是同一篇的后半段,不该再占一次精读额度。"""
+    from app.agent import READ_BUDGET_EXHAUSTED
+
+    returns: list[str] = []
+    turns = {"n": 0}
+
+    def fn(messages, info):
+        turns["n"] += 1
+        if messages:
+            for p in getattr(messages[-1], "parts", []):
+                if getattr(p, "part_kind", "") == "tool-return":
+                    returns.append(str(p.content))
+        if turns["n"] <= 3:
+            return ModelResponse(
+                parts=[
+                    ToolCallPart(
+                        tool_name="get_policy_fulltext",
+                        args={"pid": "P_2026_TEST_1", "offset": turns["n"] * 10},
+                    )
+                ]
+            )
+        return ModelResponse(parts=[TextPart(content="读完了。")])
+
+    agent = build_agent(_model(fn))
+    await _collect(
+        agent, vault_store, [{"role": "user", "content": "q"}], cfg=_cfg(max_reads=1)
+    )
+    assert not [s for s in returns if READ_BUDGET_EXHAUSTED in s], "续读不占额度"
+
+
+@pytest.mark.asyncio
+async def test_plan_reaches_the_model_as_instructions(vault_store):
+    """规划结果要真的进到模型的 instructions 里,并作为 plan 事件发给前端。
+
+    只把计划算出来不注入,等于白花一次模型调用——这条守的就是那根线。
+    """
+    from app.planner import build_planner
+    from pydantic_ai.models.function import FunctionModel
+
+    def planner_fn(messages, info: AgentInfo) -> ModelResponse:
+        return ModelResponse(
+            parts=[
+                ToolCallPart(
+                    tool_name=info.output_tools[0].name,
+                    args={
+                        "kind": "survey",
+                        "theme_ids": ["charging_infra"],
+                        "business_lines": ["充电"],
+                        "date_from": "2026-04-20",
+                        "keywords": [],
+                        "issuer_sweeps": ["财政部"],
+                        "note": "充电盘点",
+                    },
+                )
+            ]
+        )
+
+    seen: dict = {}
+
+    def answer_fn(messages, info: AgentInfo) -> ModelResponse:
+        seen["instructions"] = getattr(info, "instructions", None) or ""
+        return ModelResponse(parts=[TextPart(content="好的。")])
+
+    agent = build_agent(_model(answer_fn))
+    events = []
+    async for name, data in stream_answer(
+        agent,
+        store=vault_store,
+        messages=[{"role": "user", "content": "最近对充电影响大的政策"}],
+        cfg=_cfg(),
+        today=TODAY,
+        planner=build_planner(FunctionModel(planner_fn)),
+    ):
+        events.append((name, data))
+
+    plans = [d for n, d in events if n == "plan"]
+    assert len(plans) == 1, "应当发一个 plan 事件给前端"
+    assert plans[0]["themes"] == ["charging_infra"]
+    assert plans[0]["issuers"] == ["财政部"]
+    assert "charging_infra" in seen["instructions"], "计划必须注入模型 instructions"
+    assert "本轮检索计划" in seen["instructions"]
+
+
+@pytest.mark.asyncio
+async def test_answering_still_works_without_a_planner(vault_store):
+    """规划器是可选增强:不传就是旧行为,一个 plan 事件都不该有。"""
+    agent = build_agent(_scripted("直接回答。"))
+    events = await _collect(agent, vault_store, [{"role": "user", "content": "q"}])
+    assert not [n for n, _ in events if n == "plan"]
+    assert [n for n, _ in events][-1] == "done"
 
 
 @pytest.mark.asyncio

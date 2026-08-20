@@ -14,6 +14,7 @@ from fastapi import FastAPI
 from fastapi.responses import FileResponse
 
 from .agent import build_agent
+from .planner import build_planner
 from .api import router
 from .chatlog import ChatLog
 from .config import Config, load_config
@@ -54,7 +55,11 @@ async def lifespan(app: FastAPI):
         preflight()
     app.state.chatlog = getattr(app.state, "chatlog", None) or ChatLog(cfg.log_dir)
     if getattr(app.state, "agent", None) is None:
-        app.state.agent = build_agent(build_model(cfg))
+        model = build_model(cfg)
+        app.state.agent = build_agent(model)
+        # 规划器与作答共用同一个模型实例:它只是换一套 prompt 和输出类型,
+        # 没必要为它多配一个 provider。
+        app.state.planner = build_planner(model) if cfg.enable_planner else None
     logger.info("policy-qa 就绪: %s", cfg.safe_summary)
     yield
 

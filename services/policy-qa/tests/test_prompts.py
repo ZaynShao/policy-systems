@@ -46,3 +46,23 @@ def test_recent_window_precomputed():
 
 def test_defaults_to_today_when_not_given():
     assert datetime.date.today().isoformat() in build_system_prompt()
+
+
+def test_plan_supersedes_the_hardcoded_sweep_doctrine():
+    """有检索计划时,补扫教条必须被换掉,不能与计划并存。
+
+    2026-08-18 实测:计划里没给机关扫描,模型仍然扫了三轮财税口机关——
+    因为 prompt 里硬写着"必须主动补扫……至少扫财政部、税务总局"。
+    两处指令打架时模型跟更硬的那条,结果规划只加成本不减检索(18 次撞上限)。
+    补扫的判断权要么归规划器,要么归这段话,不能两边都有。
+    """
+    from app.prompts import build_system_prompt
+
+    plain = build_system_prompt(has_plan=False)
+    planned = build_system_prompt(has_plan=True)
+
+    assert "至少扫" in plain, "没有计划时,补扫教条仍是唯一的覆盖面保障"
+    assert "至少扫" not in planned, "有计划时不能再留一份硬编码的机关清单"
+    assert "不要再自行追加" in planned
+    # 两种形态都必须保留"先检索完再读原文"的顺序纪律——它治的是预算被读原文吃光
+    assert "再去读原文" in plain and "再去读原文" in planned

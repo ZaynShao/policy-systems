@@ -73,6 +73,8 @@ DEEPSEEK_API_KEY=sk-xxx \
 | `POLICY_QA_TRUST_PLATFORM_AUTH` | 见右 | 关 | 设 `1` 表示鉴权由上游 nginx 的平台登录态完成,服务不再要 bearer。**它与上一行必须至少配一个,否则启动即失败** |
 | `POLICY_QA_LOG_DIR` | | `./qa_logs` | 会话 jsonl |
 | `POLICY_QA_MAX_TOOL_ROUNDS` | | `18` | 单次回答的工具调用上限;耗尽后工具停摆让模型收尾,不报错 |
+| `POLICY_QA_ENABLE_PLANNER` | | 开 | 回答前先跑一次**检索规划**(无工具的模型调用,产出结构化检索计划)。设 `0` 关掉退回旧的平铺循环。见 `docs/analysis-loop.md` |
+| `POLICY_QA_MAX_READS` | | `6` | 单次回答的**精读**(读原文)上限,与检索预算分开计。读原文单次成本远高于检索,共用一个池子会被它吃光 |
 | `POLICY_QA_PG_MAXCONN` | | `8` | 连接池大小,也是并发查询上限。模型一轮会并行发多个检索,超出的排队等待。调大前先看 heng-pg 还剩多少连接 |
 | `POLICY_QA_REQUEST_TIMEOUT_S` | | `120` | |
 
@@ -93,6 +95,7 @@ DEEPSEEK_API_KEY=sk-xxx \
 
 ```
 event: meta   data: {"request_id":"...","history_truncated":false}
+event: plan   data: {"kind":"survey","themes":["charging_infra"],"business_lines":["充电"],"issuers":["财政部"],"note":"..."}
 event: tool   data: {"seq":1,"name":"search_policies","args_preview":"business_line=充电","args_full":"{\"business_line\":\"充电\"}","status":"start"}
 event: tool   data: {"seq":1,"name":"search_policies","status":"done","result_chars":2317}
 event: delta  data: {"text":"……"}
@@ -100,6 +103,9 @@ event: delta_reset  data: {}
 event: done   data: {"citations":[...],"usage":{...}}
 event: error  data: {"message":"..."}
 ```
+
+`plan` 只在规划开启时出现,且每轮至多一条(规划失败就不发)。客户端可以不处理它——
+它是给用户看"我打算怎么查"的,不影响后续事件的含义。
 
 `args_preview` 是给 UI 显示的一行摘要(60 字上限);`args_full` 是完整入参,
 会话日志记的是它。别把两者搞反——排查故障时,决定成败的参数往往正好在被截掉的那段里。

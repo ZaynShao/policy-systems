@@ -58,8 +58,10 @@ class Config:
     trust_platform_auth: bool
     log_dir: str
     max_tool_rounds: int
+    max_reads: int
     request_timeout_s: int
     pg_maxconn: int
+    enable_planner: bool
 
     @property
     def safe_summary(self) -> dict:
@@ -69,7 +71,9 @@ class Config:
             "model": self.model_name,
             "base_url": self.base_url,
             "max_tool_rounds": self.max_tool_rounds,
+            "max_reads": self.max_reads,
             "pg_maxconn": self.pg_maxconn,
+            "planner": "开" if self.enable_planner else "关",
             "auth": "平台登录态(上游 nginx)" if self.trust_platform_auth else "服务自带令牌",
         }
 
@@ -131,6 +135,12 @@ def load_config(env: dict | None = None) -> Config:
         trust_platform_auth=trust_platform_auth,
         log_dir=(os.getenv("POLICY_QA_LOG_DIR") or "").strip() or "./qa_logs",
         max_tool_rounds=_int_env("POLICY_QA_MAX_TOOL_ROUNDS", 18),
+        max_reads=_positive_int_env("POLICY_QA_MAX_READS", 6),
         request_timeout_s=_int_env("POLICY_QA_REQUEST_TIMEOUT_S", 120),
         pg_maxconn=_positive_int_env("POLICY_QA_PG_MAXCONN", DEFAULT_PG_MAXCONN),
+        # 规划阶段每问多花一次模型调用(无工具、几百 token)。默认开:实测盲扫
+        # 一个问题就能烧掉八次检索,一次规划换回来的检索次数远不止一次。
+        # 出问题时可以一键关掉退回旧行为。
+        enable_planner=(os.getenv("POLICY_QA_ENABLE_PLANNER") or "1").strip()
+        not in ("0", "false", "no"),
     )

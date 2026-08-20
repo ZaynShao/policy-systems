@@ -28,6 +28,7 @@ from pydantic_ai.messages import (
 from pydantic_ai.usage import UsageLimits
 
 from .config import Config
+from .planner import make_plan, plan_to_prompt
 from .prompts import build_system_prompt
 from .store import DEFAULT_LIMIT, MAX_LIMIT, PolicyCard, PolicyStore, StoreError
 
@@ -53,6 +54,16 @@ BUDGET_EXHAUSTED = (
     "不要再调用任何工具,也不要因为材料不全就编造内容。"
 )
 
+#: 精读额度用尽时回给模型的话。**指路而不只是拒绝**——检索结果里本来就带着
+#: L2 写好的影响分析(impact_snippet),那是回答"这件事对业务意味着什么"的正经
+#: 材料,不必每篇都去读两万字原文。
+READ_BUDGET_EXHAUSTED = (
+    "精读额度已用尽,不能再读原文了。请基于检索结果里已有的信息作答——"
+    "每条检索结果都带 impact_snippet(库内对各业务线影响的分析),"
+    "回答影响与建议用它就够;只有需要逐字引用条款、数字、文号时才必须读原文,"
+    "而那些你已经读过的仍然可以引用。不要因为没读全就编造。"
+)
+
 #: 单次检索失败时回给模型的话。同样**不抛错**,理由比预算那条更硬:
 #: pydantic-ai 并行执行同一轮的工具调用,任何一个抛异常都会连带取消同批其余调用
 #: (实测:七个并行检索里一个失败,另外五个被取消,整轮回答归零)。
@@ -72,11 +83,34 @@ class RunState:
     cited: dict[str, PolicyCard] = field(default_factory=dict)
     max_tool_calls: int = 18
     tool_calls: int = 0
+    #: 精读(读原文)单独设上限。总预算是一个池子时,读原文会把它吃光——
+    #: 实测一个盘点式问题读掉 11 篇、总调用 20 次撞爆 18 的上限。
+    #: 读原文单次成本也远高于检索(两万字 vs 几千字),不该和检索抢同一份额度。
+    max_reads: int = 6
+    reads: int = 0
 
     def spend(self) -> bool:
         """记一次工具调用。返回 False 表示预算已尽,调用方应回 BUDGET_EXHAUSTED。"""
         self.tool_calls += 1
         return self.tool_calls <= self.max_tool_calls
+
+    def spend_read(self) -> bool:
+        """记一次精读。总预算之外还要过精读这道闸。"""
+        self.reads += 1
+        return self.reads <= self.max_reads
+
+
+def _safe_themes(store: PolicyStore) -> list:
+    """取主题登记表给规划器。取不到就给空表——规划器会据此不给 theme_ids,
+    而不是编一个不存在的主题 id 出来。"""
+    lister = getattr(store, "list_themes", None)
+    if lister is None:
+        return []
+    try:
+        return lister()
+    except Exception as exc:  # noqa: BLE001 - 规划是增强,取不到主题不该影响作答
+        logger.warning("读主题登记表失败,本轮不带主题规划: %s", exc)
+        return []
 
 
 def _truncate(text: str, limit: int = TOOL_RESULT_MAX_CHARS) -> str:
@@ -118,7 +152,7 @@ def build_agent(model: Any) -> Agent[RunState, str]:
         business_line 取 加油/充电/电力/乡村,用于回答"对某业务影响大的政策";
         它按内部影响分析筛选,已排除"未直接涉及"的条目。
         theme_id 按库内主题分类检索(如 charging_infra、energy_storage_theme),
-        比关键词准——主题是库里标好的,关键词只是字面匹配。
+        比关键词准——主题是库里标好的,关键词只是字面匹配。可选主题见检索计划。
         primary_theme_only=true 时只要那些**主要**讲该主题的,排除顺带提及的。
         date_from/date_to 是 YYYY-MM-DD。region_keyword 匹配区域名、行政区划码或层级
         (国家/省/市/区)。min_importance 取 INFO/GENERAL/MAJOR/STRATEGIC。
@@ -164,6 +198,9 @@ def build_agent(model: Any) -> Agent[RunState, str]:
         """
         if not ctx.deps.spend():
             return BUDGET_EXHAUSTED
+        # 续读(offset>0)不占精读额度:那是同一篇的后半段,不是又挑了一篇来读
+        if offset == 0 and not ctx.deps.spend_read():
+            return READ_BUDGET_EXHAUSTED
         try:
             detail = ctx.deps.store.get_policy(pid, max_chars=FULLTEXT_MAX_CHARS, offset=offset)
         except StoreError as exc:
@@ -284,14 +321,41 @@ async def stream_answer(
     messages: list[dict],
     cfg: Config,
     today: datetime.date | None = None,
+    planner: Agent[None, Any] | None = None,
 ) -> AsyncIterator[tuple[str, dict]]:
     """跑一轮问答,yield (事件名, 数据)。事件名与 SSE 契约一致。"""
     history, prompt, truncated = to_model_messages(messages)
-    state = RunState(store=store, max_tool_calls=cfg.max_tool_rounds)
+    state = RunState(
+        store=store,
+        max_tool_calls=cfg.max_tool_rounds,
+        max_reads=cfg.max_reads,
+    )
     seq = 0
     pending: dict[str, int] = {}
 
     yield "meta", {"history_truncated": truncated}
+
+    # 规划阶段:一次不带工具的调用,先决定查什么,再交给下面的工具循环执行。
+    # 没有它模型只能按 prompt 里的泛化指令撒网(实测一口气并发八个检索)。
+    # 失败返回 None,下游退回无计划的旧行为。
+    plan_block = ""
+    if planner is not None:
+        themes = _safe_themes(store)
+        plan = await make_plan(planner, question=prompt, themes=themes, today=today)
+        if plan is not None:
+            plan_block = plan_to_prompt(plan)
+            # 主题 id 是 charging_infra 这种内部标识,不能直接甩给业务同事。
+            # 中文名在这边查好一起发,前端不该硬编码这套分类体系。
+            names = {t.id: t.name for t in themes}
+            yield "plan", {
+                "kind": plan.kind,
+                "themes": plan.theme_ids,
+                "theme_labels": [names.get(t) or t for t in plan.theme_ids],
+                "business_lines": plan.business_lines,
+                "keywords": plan.keywords,
+                "issuers": plan.issuer_sweeps,
+                "note": plan.note[:200],
+            }
 
     # 正常的上限由 RunState 预算温和处理(工具改回提示语,让模型收尾);
     # 这里只留一个远高于预算的兜底,防模型无视提示无限调用。
@@ -301,7 +365,7 @@ async def stream_answer(
         deps=state,
         message_history=history,
         usage_limits=limits,
-        instructions=build_system_prompt(today),
+        instructions=build_system_prompt(today, has_plan=bool(plan_block)) + plan_block,
     ) as run:
         async for node in run:
             if Agent.is_model_request_node(node):
