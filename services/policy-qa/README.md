@@ -53,7 +53,7 @@ pg backend(连 heng-pg 只读角色):
 
 ```bash
 POLICY_QA_DATA_BACKEND=pg \
-POLICY_QA_DATABASE_URL="postgresql://policy_qa_ro:***@127.0.0.1:5432/hengguan_staging" \
+POLICY_QA_DATABASE_URL="postgresql://policy_qa_ro:***@127.0.0.1:5432/hengguan" \
 POLICY_QA_ACCESS_TOKEN=dev-token \
 DEEPSEEK_API_KEY=sk-xxx \
 .venv/bin/uvicorn app.main:app --port 8741
