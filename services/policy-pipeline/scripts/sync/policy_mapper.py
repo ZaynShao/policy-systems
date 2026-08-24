@@ -5,6 +5,36 @@ import json
 import re
 
 
+# Policy.level 的 canonical 集合。L1 只产出这五个值(ingester 按 region.code 判级),
+# 但 vault 契约没把 level 做成枚举,heng-guan 手工录入 / 种子数据用的是"省级/市级"
+# 那套口径。投影是两边的交界,所以在这里收口一次,别让同义异写进库。
+CANONICAL_LEVELS = ("国家", "省", "市", "区", "县")
+
+# 直辖市 / 自治区折进"省"是跟 ingester 对齐:code 末尾 0000(非 000000)即判省,
+# 北京(110000)、内蒙古(150000)在 L1 本来就是 level=省。
+_LEVEL_ALIASES = {
+    "国": "国家", "国家级": "国家", "中央": "国家", "全国": "国家",
+    "省级": "省", "省份": "省", "自治区": "省", "直辖市": "省",
+    "市级": "市", "地市": "市", "地级市": "市",
+    "区级": "区", "市辖区": "区",
+    "县级": "县", "县级市": "县",
+}
+
+
+def normalize_level(v) -> str | None:
+    """行政层级 → canonical 五值;空 → None;**未知取值原样透传**。
+
+    不把未知值抹成空或猜一个 canonical:脏值要留在库里可被查出来,静默改写等于
+    把上游的归属 bug 埋掉(参见 L1 区县档 level 误标)。
+    """
+    s = str(v or "").strip()
+    if not s:
+        return None
+    if s in CANONICAL_LEVELS:
+        return s
+    return _LEVEL_ALIASES.get(s, s)
+
+
 def importance_to_enum(score: int) -> str:
     """pipeline 1-5 分 → Prisma PolicyImportance。"""
     if score >= 5:
@@ -69,7 +99,7 @@ def map_policy_row(bv: dict, core: dict, pipeline_version: int) -> dict:
         "doc_number": core.get("doc_number") or None,
         "source_url": core.get("source_url") or None,
         "region": core.get("region") or None,
-        "level": core.get("level") or None,
+        "level": normalize_level(core.get("level")),   # 同义异写收口,见 normalize_level
         "adcode": core.get("adcode") or None,             # L1 region.code(GB/T 2260 6位),省级匹配键
     })
     return row
