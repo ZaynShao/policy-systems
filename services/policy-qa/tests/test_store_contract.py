@@ -92,7 +92,7 @@ def _cards(res):
     return [(c.pid, c.importance, c.impact_snippet) for c in res.rows]
 
 
-@pytest.mark.parametrize("business_line", [None, "充电", "电力", "加油", "乡村"])
+@pytest.mark.parametrize("business_line", [None, "充电", "电力", "加油"])
 def test_business_line_filter_matches(vault_store, pg_store, business_line):
     v = vault_store.search_policies(business_line=business_line, limit=DEFAULT_LIMIT)
     p = pg_store.search_policies(business_line=business_line, limit=DEFAULT_LIMIT)

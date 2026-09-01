@@ -225,7 +225,7 @@ def build_agent(model: Any) -> Agent[RunState, str]:
         """检索政策库,返回元数据列表(不含正文)。
 
         keyword 同时匹配标题与文号,多个词空格分隔且必须全部命中。
-        business_line 取 加油/充电/电力/乡村,用于回答"对某业务影响大的政策";
+        business_line 取 加油/充电/电力,用于回答"对某业务影响大的政策";
         它按内部影响分析筛选,已排除"未直接涉及"的条目。
         theme_id 按库内主题分类检索(如 charging_infra、energy_storage_theme),
         比关键词准——主题是库里标好的,关键词只是字面匹配。可选主题见检索计划。
