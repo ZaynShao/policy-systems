@@ -62,6 +62,44 @@ export interface QaDone {
   usage?: { prompt_tokens?: number; completion_tokens?: number; tool_calls?: number };
 }
 
+/** 一次问答的可选项。字段留空 = 跟随服务端默认。 */
+export interface QaChatOptions {
+  /**
+   * 是否结合公司业务分析。
+   *
+   * 留空(undefined)时**不发这个字段**,由服务端按"配了战略画像就开"决定;
+   * 显式 false 则即使配了画像也只解读政策本身,不给业务判断。
+   */
+  useBusinessContext?: boolean;
+}
+
+/**
+ * 服务端的业务框定能力。available=false 表示没配战略画像,
+ * 此时那个勾选必须置灰 —— 让用户勾一个其实不生效的框,比不给这个框更糟:
+ * 他会以为答案里已经带了业务判断。
+ */
+export interface QaBusinessContext {
+  available: boolean;
+  default_on: boolean;
+  profile_id: string | null;
+  effective_from: string | null;
+}
+
+/** 读服务端能力。任何失败都返回 null —— 调用方据此把勾选藏起来,不弹错。 */
+export async function fetchQaBusinessContext(
+  signal?: AbortSignal,
+): Promise<QaBusinessContext | null> {
+  try {
+    const resp = await fetch(`${policyQaBase}/v1/health`, { signal });
+    if (!resp.ok) return null;
+    const body = await resp.json();
+    const ctx = body?.business_context;
+    return ctx && typeof ctx.available === 'boolean' ? (ctx as QaBusinessContext) : null;
+  } catch {
+    return null;
+  }
+}
+
 export interface QaHandlers {
   onMeta?: (m: { request_id: string; history_truncated: boolean }) => void;
   onPlan?: (p: QaPlan) => void;
@@ -98,13 +136,20 @@ export async function streamQaChat(
   messages: QaMessage[],
   handlers: QaHandlers,
   signal?: AbortSignal,
+  options?: QaChatOptions,
 ): Promise<void> {
   let resp: Response;
   try {
     resp = await fetch(`${policyQaBase}/v1/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' },
-      body: JSON.stringify({ messages }),
+      // use_business_context 只在调用方明确给了才发。发 undefined 会被
+      // JSON.stringify 丢掉,但显式写出来更清楚:留空 = 用服务端默认。
+      body: JSON.stringify(
+        options?.useBusinessContext === undefined
+          ? { messages }
+          : { messages, use_business_context: options.useBusinessContext },
+      ),
       signal,
     });
   } catch (e: any) {

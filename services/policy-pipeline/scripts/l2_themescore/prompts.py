@@ -34,10 +34,18 @@ def pass1_user(rec) -> str:
     return (f"标题:{rec.title}\n发文机构:{'、'.join(rec.issuer)}\n"
             f"层级:{region.get('level','')}\n正文(节选):\n{rec.body_head}")
 
-def pass2_system() -> str:
-    return """你是政策业务影响分析助手。服务对象:公司决策层,三业务=加油/充电/电力(储能·VPP·V2G·电力交易)。
-就这一篇政策,写 3-key 影响分析 + 行动建议。影响分析必须且只能这三个键。行动建议动词用"趁早"不用"立即"。
+def pass2_system(strategy_block: str = "") -> str:
+    """写影响分析的提示词。
 
+    strategy_block 是业务战略画像渲染出的业务口径段(见
+    scripts/common/strategy_profile.render_for_impact_analysis)。给了就插在
+    证据边界之前——模型据此知道每条业务线**真正在乎哪些变量**,而不是只知道
+    三个业务名然后自己猜。没给就退回原样,行为不变。
+    """
+    scope = f"\n{strategy_block}\n" if strategy_block.strip() else ""
+    return f"""你是政策业务影响分析助手。服务对象:公司决策层,三业务=加油/充电/电力(储能·VPP·V2G·电力交易)。
+就这一篇政策,写 3-key 影响分析 + 行动建议。影响分析必须且只能这三个键。行动建议动词用"趁早"不用"立即"。
+{scope}
 【证据边界】
 - 只依据标题、正文节选、已判主题和重要性写;正文明确写到的事项才能写成直接影响。
 - 不得编造正文没有的业务、试点、资格、补贴、市场准入、量化指标、执行期限或监管要求。
@@ -48,7 +56,7 @@ def pass2_system() -> str:
 - 行动建议必须基于正文证据,不能为了显得积极而制造新项目、新商业模式或新增合规义务。
 
 只输出 JSON,无解释:
-{"影响分析":{"加油":"...","充电":"...","电力_储能_V2G_交易":"..."},"行动建议":["A 趁早:...","B 研究:..."],"didi_impact_one_liner":"..."}
+{{"影响分析":{{"加油":"...","充电":"...","电力_储能_V2G_交易":"..."}},"行动建议":["A 趁早:...","B 研究:..."],"didi_impact_one_liner":"..."}}
 """
 
 def pass2_user(rec, draft) -> str:

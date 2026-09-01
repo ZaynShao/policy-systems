@@ -30,6 +30,9 @@ class ChatMessage(BaseModel):
 
 class ChatRequest(BaseModel):
     messages: list[ChatMessage] = Field(default_factory=list)
+    #: 是否结合公司业务分析。None = 跟随服务端默认(有画像就开)。
+    #: 显式 false 时,即使配了画像也只解读政策本身、不给业务判断。
+    use_business_context: bool | None = None
 
 
 def _frame(event: str, data: Any) -> str:
@@ -48,7 +51,20 @@ async def health(request: Request) -> dict:
         stats = request.app.state.store.stats()
     except StoreError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
-    return {"ok": True, **request.app.state.config.safe_summary, **stats}
+    strategy = getattr(request.app.state, "strategy", None)
+    # 前端据此决定「结合公司业务分析」这个勾选能不能点:没画像就置灰并说明原因,
+    # 而不是让用户勾一个其实不生效的框。
+    return {
+        "ok": True,
+        **request.app.state.config.safe_summary,
+        **stats,
+        "business_context": {
+            "available": strategy is not None,
+            "default_on": strategy is not None,
+            "profile_id": getattr(strategy, "profile_id", None),
+            "effective_from": getattr(strategy, "effective_from", None),
+        },
+    }
 
 
 @router.post("/v1/chat", dependencies=[Depends(require_token)])
@@ -69,6 +85,12 @@ async def chat(request: Request, body: ChatRequest) -> StreamingResponse:
     app = request.app
     request_id = uuid.uuid4().hex[:16]
     messages = [m.model_dump() for m in body.messages]
+    strategy = getattr(app.state, "strategy", None)
+    # 默认跟随服务端:配了画像就开。客户端显式给了才覆盖。
+    use_business_context = (
+        strategy is not None if body.use_business_context is None
+        else body.use_business_context
+    )
 
     async def generate() -> AsyncIterator[str]:
         record: dict[str, Any] = {
@@ -76,6 +98,9 @@ async def chat(request: Request, body: ChatRequest) -> StreamingResponse:
             "backend": app.state.config.backend,
             "messages_in_chars": sum(len(m["content"]) for m in messages),
             "question": messages[-1]["content"][:500],
+            # 落日志:同一个问题开关不同答案就不同,不记这个字段事后没法复现
+            "business_context": use_business_context,
+            "strategy_profile": getattr(strategy, "profile_id", None),
             "tool_calls": [],
         }
         answer_chars = 0
@@ -86,6 +111,8 @@ async def chat(request: Request, body: ChatRequest) -> StreamingResponse:
                 messages=messages,
                 cfg=app.state.config,
                 planner=getattr(app.state, "planner", None),
+                strategy=strategy,
+                use_business_context=use_business_context,
             ):
                 if name == "meta":
                     data = {"request_id": request_id, **data}

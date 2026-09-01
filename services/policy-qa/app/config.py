@@ -62,6 +62,10 @@ class Config:
     request_timeout_s: int
     pg_maxconn: int
     enable_planner: bool
+    #: 业务战略画像文件路径(可选)。指得到就加载并做业务框定,指不到就不做。
+    #: 线上本服务不挂 vault,要用得把 vault 只读挂进来再指过来——
+    #: 刻意不烧进镜像:烧进去就成了第二份副本,战略一变两边走散。
+    strategy_file: str | None = None
 
     @property
     def safe_summary(self) -> dict:
@@ -74,6 +78,7 @@ class Config:
             "max_reads": self.max_reads,
             "pg_maxconn": self.pg_maxconn,
             "planner": "开" if self.enable_planner else "关",
+            "strategy_file": self.strategy_file or "",
             "auth": "平台登录态(上游 nginx)" if self.trust_platform_auth else "服务自带令牌",
         }
 
@@ -135,6 +140,7 @@ def load_config(env: dict | None = None) -> Config:
         trust_platform_auth=trust_platform_auth,
         log_dir=(os.getenv("POLICY_QA_LOG_DIR") or "").strip() or "./qa_logs",
         max_tool_rounds=_int_env("POLICY_QA_MAX_TOOL_ROUNDS", 18),
+        strategy_file=(os.getenv("POLICY_QA_STRATEGY_FILE") or "").strip() or None,
         max_reads=_positive_int_env("POLICY_QA_MAX_READS", 6),
         request_timeout_s=_int_env("POLICY_QA_REQUEST_TIMEOUT_S", 120),
         pg_maxconn=_positive_int_env("POLICY_QA_PG_MAXCONN", DEFAULT_PG_MAXCONN),

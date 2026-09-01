@@ -9,6 +9,16 @@
 | # | 项 | 验法 |
 |---|---|---|
 | 1 | main 已合本分支,服务器 `git reset --hard origin/main` + `docker compose build` | `docker run --rm policy-pipeline:latest python -c "import trafilatura, bs4"` |
+> **业务战略画像**:`run_2b` 默认读 `<vault>/_meta/framework/business_strategy.yaml`
+> 并把业务口径注入 pass2(影响分析),不影响任何打分。cron 命令不用改。
+> 该文件**不存在时照旧跑**,只打一行 `[l2] 未找到业务战略画像…`;
+> 存在但 schema/status 不对、或声明的 impact 键与 program_gate 对不上,则**直接失败**
+> ——批处理一跑上千篇直接落 vault,静默用错口径把全库写一遍比不跑更糟。
+> 想临时关掉:给 `run_2b` 加 `--strategy ''`。换战略见
+> `services/policy-qa/docs/runbook-deploy.md` §7(同一份文件,两个消费方)。
+>
+> 写入的 business_view 会多一个 `extracted_strategy` 字段记下用的哪版画像。
+
 | 2 | `/etc/policy-pipeline/models.env`(0600):OPENAI_API_KEY / OPENAI_BASE_URL = deepseek(L2 gen+judge 都走 openai 兼容,无需 ANTHROPIC_*;MiniMax 已弃)/ 可选 FIRECRAWL/TAVILY | `docker compose -f docker-compose.server.yml config -q` 不报缺文件 |
 | 3 | `/etc/policy-pipeline/notify.env`(0600):OPENCLAW_CHANNEL / OPENCLAW_ACCOUNT / OPENCLAW_IM_TARGET / OPENCLAW_COMMAND;openclaw 已装 VPS | 发测试消息(plan Task 0.3 Step 验证命令),飞书收到;再 `cd /root/policy-pipeline-src && /usr/bin/python3 -m scripts.service.notify "[S2] notify python 路径连通测试"` ——输出 `notify sent=True` 且飞书收到(host python 缺 requests 时 send_text 会静默 False,此步专测 python 路径) |
 | 4 | `/etc/policy-pipeline/commentary.env`(0600):WEWE_AUTH_CODE / WEWE_FEED_URL=`http://wewe-rss:4000/feeds/all.json?limit=400`(容器视角)/ WEWE_BASE_URL=`http://127.0.0.1:4000`(host 哨兵视角)/ WEWE_DB_PATH=`/root/wewe-rss/data/wewe-rss.db` | — |

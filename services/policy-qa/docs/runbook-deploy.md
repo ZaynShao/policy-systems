@@ -134,6 +134,55 @@ curl -s -o /dev/null -w "%{http_code}\n" https://<对外域名>/policy-qa/v1/hea
 d 这步是这套东西第一次接真库(此前只在本地用 vault 文件验过),
 如果回答里出现明显不对的政策或报错,把 `docker logs platform-policy-qa --tail 50` 贴出来。
 
+## 7. 业务战略画像(可选,决定「结合公司业务分析」能不能用)
+
+问答页底部有个「结合公司业务分析」勾选。它开着时,服务会按公司业务战略画像
+判断政策相关性(哪些是高相关、哪些见到就压低、哪些维度是空白需人工裁定);
+关掉则只解读政策本身、不给业务判断。
+
+**没配画像时这个勾选是置灰的**,页面会写明「未配置业务战略画像」。
+这是有意的:让用户勾一个其实不生效的框,比不给这个框更糟——他会以为
+答案里已经带了业务判断,然后照着一份没有业务视角的答案去决策。
+
+### 启用
+
+画像文件在 vault 里:`_meta/framework/business_strategy.yaml`。本服务线上跑 pg
+backend、默认不挂 vault,所以要两步:
+
+```bash
+# 1) 平台 .env 增加一行
+POLICY_QA_STRATEGY_FILE=/vault/_meta/framework/business_strategy.yaml
+
+# 2) docker-compose.yml 的 policy-qa 段里,取消那行 vault 只读挂载的注释
+#    - /root/policy-vault:/vault:ro
+
+docker compose --profile policy-qa up -d --build policy-qa
+```
+
+验证:
+
+```bash
+# 启动日志应有这一行(业务线与信号条数对得上才算加载成功)
+docker logs platform-policy-qa 2>&1 | grep '已加载业务战略画像'
+
+# 接口应报 available: true
+curl -s http://127.0.0.1/policy-qa/v1/health | python3 -m json.tool | grep -A 4 business_context
+```
+
+**画像加载失败不会拦住服务启动**——记一条 warning 然后退回不做业务框定。
+所以配完一定要看上面那两条,别假定它生效了。
+
+### 换战略
+
+战略会变。换法是换文件,不改代码:
+
+1. 新画像写成同 schema 的新文件,`profile_id` 用新的,`supersedes` 指向被替换者
+2. 旧文件 `status` 改成 `superseded` 留在库里(这样能追溯"这批分是按哪版战略打的")
+3. vault 推送后,在服务器上 `git -C /root/policy-vault pull`,再 `docker compose --profile policy-qa restart policy-qa`
+
+服务只加载 `status: active` 的画像。指到一份 `superseded` 的文件会**报错并降级**,
+不会静默拿旧战略当新战略用。
+
 ## 6. 回滚
 
 ```bash

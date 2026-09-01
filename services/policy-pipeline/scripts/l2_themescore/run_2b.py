@@ -4,6 +4,11 @@ from scripts.l1_audit.corpus import load_policies
 from scripts.common.llm import LLMClient, OpenAICompatClient
 from .theme_registry import ThemeRegistry, canonical_theme_id, canonicalize_theme_ids
 from .models import BusinessViewDraft, Scores, QueueRecord
+from scripts.common.strategy_profile import (
+    check_impact_keys,
+    load_strategy_profile,
+    render_for_impact_analysis,
+)
 from . import scoring, program_gate, prompts
 from .generator import gen_pass1, gen_pass2
 from .judge import judge_draft
@@ -13,6 +18,31 @@ from . import report
 
 DEFAULT_VAULT = str(Path.home() / "Documents" / "Zayn Main" / "政策分析")
 DEFAULT_SCORING = "_meta/framework/scoring.yaml"
+#: 业务战略画像(相对 vault)。可替换:换战略 = 换文件,不改代码。
+DEFAULT_STRATEGY = "_meta/framework/business_strategy.yaml"
+
+def resolve_strategy_path(vault: str, strategy: str | None) -> str | None:
+    """决定这一轮读哪份业务战略画像,或者不读。
+
+    要区别对待两件看起来一样的事:
+
+    - **默认路径上没有文件** = 这个 vault 还没配画像(比如画像还没推上来)。
+      照旧跑完,只打一行说明。不能因为一个可选文件缺席就让每晚的 L2 全线失败。
+    - **显式 --strategy 指了个不存在的路径** = 拼错了。必须停——
+      你以为按新口径跑了,实际上没有,而输出看起来完全正常。
+
+    文件存在但内容不对(schema/status)由 load_strategy_profile 负责抛。
+    """
+    if not (strategy or "").strip():
+        return None
+    path = Path(vault) / strategy
+    if path.is_file():
+        return str(path)
+    if strategy == DEFAULT_STRATEGY:
+        print(f"[l2] 未找到业务战略画像({path}),本轮不注入业务口径")
+        return None
+    raise SystemExit(f"--strategy 指定的画像文件不存在: {path}")
+
 
 def _scoring_text(vault) -> str:
     return Path(f"{vault}/{DEFAULT_SCORING}").read_text(encoding="utf-8")
@@ -233,14 +263,15 @@ def _normalize_pass2_payload(o2: dict):
         one_liner = nested_one_liner
     return impact, actions, one_liner
 
-def plan(vault, registry_path, scoring_text, gen_client, judge_client, gen_pass2_client=None, include_pids=None, on_item=None):
+def plan(vault, registry_path, scoring_text, gen_client, judge_client, gen_pass2_client=None,
+         include_pids=None, on_item=None, strategy_block=""):
     gen_pass2_client = gen_pass2_client or gen_client
     reg = ThemeRegistry.load(registry_path)
     recs = load_policies(f"{vault}/0_raw/policies")
     if include_pids is not None:
         recs = [rec for rec in recs if rec.pid in include_pids]
     p1_sys = prompts.pass1_system(reg, scoring_text)
-    p2_sys = prompts.pass2_system()
+    p2_sys = prompts.pass2_system(strategy_block)
     to_write, queue = [], []
     for rec in recs:
         try:
@@ -336,6 +367,8 @@ def main():
     ap.add_argument("--gen-provider", default="anthropic", choices=["anthropic", "openai"])
     ap.add_argument("--judge-provider", default="anthropic", choices=["anthropic", "openai"])
     ap.add_argument("--pid-file", help="JSON array or newline-delimited pid list for bounded dry-runs")
+    ap.add_argument("--strategy", default=DEFAULT_STRATEGY,
+                    help="业务战略画像路径(相对 vault)。设为空串则不注入业务口径,行为同旧版")
     args = ap.parse_args()
 
     reg_path = f"{args.vault}/_meta/themes_registry.yaml"
@@ -369,6 +402,16 @@ def main():
         warn_if_same_model(args.gen_model, args.judge_model)
 
     sc_text = _scoring_text(args.vault)
+    # 画像配了就必须读得出来:批处理一跑上千篇、结果直接落 vault,
+    # 静默用一套跟你以为的不一样的口径把全库写一遍,比不跑要糟得多。
+    # 所以这里**不软着陆**(与在线问答侧刻意相反,那边坏了还能答政策本身)。
+    profile = load_strategy_profile(resolve_strategy_path(args.vault, args.strategy))
+    strategy_block = ""
+    if profile is not None:
+        check_impact_keys(profile, program_gate.IMPACT_KEYS)
+        strategy_block = render_for_impact_analysis(profile)
+        print(f"[l2] 业务战略画像 {profile.get('profile_id')}"
+              f"(生效 {profile.get('effective_from')})已注入 pass2")
     gen_client = make_client(args.gen_provider, args.gen_model, f"{args.state}/gen_calls.jsonl")
     judge_client = make_client(args.judge_provider, args.judge_model, f"{args.state}/judge_calls.jsonl")
     include_pids = None
@@ -382,7 +425,8 @@ def main():
 
     on_item = _dryrun_item_writer(args.state) if args.mode == "dry-run" else None
     to_write, queue = plan(args.vault, reg_path, sc_text, gen_client, judge_client,
-                           include_pids=include_pids, on_item=on_item)
+                           include_pids=include_pids, on_item=on_item,
+                           strategy_block=strategy_block)
     drafts = [d for _, d in to_write]
     warns = program_gate.check_distribution(drafts, len(ThemeRegistry.load(reg_path).ids))
 
@@ -403,7 +447,8 @@ def main():
         today = date.today().isoformat()
         for rec, d in to_write:
             write_business_view(d, args.vault, sanitized_from="0_raw/policies/" + Path(rec.path).name,
-                                extracted_at=today, extracted_model=args.gen_model)
+                                extracted_at=today, extracted_model=args.gen_model,
+                                extracted_strategy=(profile or {}).get("profile_id"))
         write_queue(queue, f"{args.state}/review_queue/queue.jsonl")
         report.render(drafts, queue, warns, None, f"{args.state}/reports/apply.html")
         for w in warns:
