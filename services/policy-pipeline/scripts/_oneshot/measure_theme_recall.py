@@ -33,7 +33,11 @@
     python3 -m scripts._oneshot.measure_theme_recall \
         --vault /vault --n 100 --judge-model <一个比 deepseek-v4-flash 强的模型>
 
-结果写 state/theme_recall/。100 篇约 0.7M 输入 token。
+结果**逐条**写 state/theme_recall/detail.jsonl。中途崩了加 `--resume` 接着跑
+(seed 必须与上一轮一致),已完成的 pid 会跳过,只补没跑完的。
+
+成本提示:100 篇约 0.7M **输入** token。judge 用推理模型(deepseek-reasoner 之类)
+时还会产生大量思考 token,实际花费明显高于这个数;非推理模型则接近这个数。
 """
 from __future__ import annotations
 
@@ -48,6 +52,7 @@ from pathlib import Path
 import yaml
 
 from scripts.common.llm import OpenAICompatClient
+from scripts.l2_themescore.generator import parse_json_block
 from scripts.l1_audit.corpus import load_policies
 from scripts.l2_themescore import prompts
 from scripts.l2_themescore.generator import gen_pass1
@@ -62,6 +67,29 @@ SELF_JUDGE_ABORT = (
     "复判模型 {judge} 与库里 {n} 篇的产出模型相同。同模型自评测不出模型差异,"
     "换一个更强的模型再跑(样本里出现的产出模型:{models})。"
 )
+
+
+def load_done_rows(detail_path: Path) -> list[dict]:
+    """读回已经落盘的复判结果,用于断点续跑。
+
+    为什么需要:一轮复判是真金白银,而 2026-09-02 那次跑到第 91/100 篇崩掉,
+    前 90 篇全部作废。**注意 judge_calls.jsonl 救不了场**——scripts/common/llm.py
+    的 _log_call 只记 prompt_sha 和 output_chars,不存提示词也不存输出。
+    所以只能靠这个脚本自己边跑边写。
+    """
+    if not detail_path.is_file():
+        return []
+    rows = []
+    for line in detail_path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError:
+            continue          # 崩在写一半时最后一行可能截断,丢掉即可
+        if row.get("pid"):
+            rows.append(row)
+    return rows
 
 
 def load_stored(vault: str) -> dict[str, dict]:
@@ -121,13 +149,16 @@ def assert_enough_judged(judged: int, planned: int, state) -> None:
             f"(<{MIN_SUCCESS_RATE:.0%}),结果不可信;查 {state}/judge_calls.jsonl")
 
 
-def main(argv=None) -> int:
+def main(argv=None, _client=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--vault", required=True)
     ap.add_argument("--state", default="state/theme_recall")
     ap.add_argument("--n", type=int, default=100, help="总抽样量(会按层等额分配)")
     ap.add_argument("--seed", type=int, default=20260831, help="固定种子,便于复跑对齐")
     ap.add_argument("--judge-model", required=True)
+    ap.add_argument("--resume", action="store_true",
+                    help="接着上一轮跑:已在 detail.jsonl 里的 pid 跳过,只补没跑完的。"
+                         "样本由 --seed 决定,续跑时 seed 必须与上一轮一致")
     ap.add_argument("--judge-base-url", default=os.environ.get("OPENAI_BASE_URL") or "https://api.deepseek.com")
     args = ap.parse_args(argv)
 
@@ -159,24 +190,43 @@ def main(argv=None) -> int:
 
     state = Path(args.state)
     state.mkdir(parents=True, exist_ok=True)
-    client = OpenAICompatClient(
+    client = _client or OpenAICompatClient(
         model=args.judge_model,
         base_url=args.judge_base_url,
         api_key=os.environ["OPENAI_API_KEY"],
         log_path=str(state / "judge_calls.jsonl"),
     )
 
-    rows = []
+    detail_path = state / "detail.jsonl"
+    rows = load_done_rows(detail_path) if args.resume else []
+    done = {r["pid"] for r in rows}
+    if not args.resume and detail_path.exists():
+        detail_path.unlink()      # 不续跑就从头来,免得新旧两轮的结果混在一个文件里
+    print(f"复判 {len(pids)} 篇,judge={args.judge_model}"
+          + (f",续跑:已完成 {len(done)} 篇" if done else ""), file=sys.stderr)
+
+    resumed, failed = len(done), 0
     for i, pid in enumerate(pids, 1):
+        if pid in done:
+            continue
         rec = recs[pid]
         try:
             out = gen_pass1(client, p1_sys, prompts.pass1_user(rec))
         except Exception as exc:  # noqa: BLE001 — 单篇失败不该毁掉整轮测量
-            print(f"[{i}/{len(pids)}] {pid} 复判失败: {type(exc).__name__}: {exc}", file=sys.stderr)
+            print(f"[{i}/{len(pids)}] {pid} 复判失败: {type(exc).__name__}: {exc}",
+                  file=sys.stderr)
+            failed += 1
+            continue
+        # 模型吐 "null" 时 json.loads **成功**返回 None,不抛异常——上面的 except 挡不住。
+        # 2026-09-02 就是栽在这里:跑到第 91 篇崩掉,前 90 篇的结果没来得及落盘。
+        if not isinstance(out, dict):
+            print(f"[{i}/{len(pids)}] {pid} 复判输出不是对象({type(out).__name__}),跳过",
+                  file=sys.stderr)
+            failed += 1
             continue
         judged = canonicalize_theme_ids(out.get("themes") or [], reg.ids)
         old = stored[pid]
-        rows.append({
+        row = {
             "pid": pid,
             "title": rec.title,
             "model": old["model"],
@@ -190,16 +240,18 @@ def main(argv=None) -> int:
                 "疑似漏检" if not old["themes"] and judged else
                 "疑似误挂"
             ),
-        })
+        }
+        rows.append(row)
+        # **逐条落盘**,不攒到最后。崩了只丢当前这一篇,--resume 能接着跑。
+        with detail_path.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(row, ensure_ascii=False) + "\n")
         if i % 10 == 0:
-            print(f"  已复判 {i}/{len(pids)}", file=sys.stderr)
+            print(f"  已复判 {i}/{len(pids)}(续跑沿用 {resumed} · 失败 {failed})", file=sys.stderr)
 
     assert_enough_judged(len(rows), len(pids), state)
 
-    (state / "detail.jsonl").write_text(
-        "\n".join(json.dumps(r, ensure_ascii=False) for r in rows) + "\n", encoding="utf-8")
-
-    print(f"\n=== 复判 {len(rows)} 篇(judge={args.judge_model},seed={args.seed}) ===")
+    print(f"\n=== 复判 {len(rows)} 篇(judge={args.judge_model},seed={args.seed},"
+          f"其中续跑沿用 {resumed} 篇、失败 {failed} 篇)===")
     overall = collections.Counter(r["verdict"] for r in rows)
     for k in ("一致-有主题", "一致-零主题", "疑似漏检", "疑似误挂"):
         print(f"  {k:12s} {overall[k]:4d}")
