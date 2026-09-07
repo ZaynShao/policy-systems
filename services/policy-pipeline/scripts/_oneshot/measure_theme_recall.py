@@ -27,11 +27,32 @@
 复判用的是 pass1 的**原提示词**(同一份 registry、同一套挂载规则),
 只换模型。这样测出来的是「模型差异」,不是「提示词差异」。
 
+## ⚠ 先确认「换模型」真的换成了
+
+本平台网关 /models 只有 deepseek-v4-flash / deepseek-v4-pro /
+deepseek-v4-flash-vision-exp 三条。请求 ``deepseek-chat`` 或 ``deepseek-reasoner``
+一律 HTTP 200,但响应里自报 ``deepseek-v4-flash``——**名字被静默映射**
+(2026-08-28 实测)。2026-09-03 的探路轮(40 篇、名义 deepseek-chat、39/40 一致)
+就废在这里:实际是 flash 判 flash 自己产的那批,那个 39/40 是复读率,不是漏检率。
+
+所以跑之前先看清单::
+
+    curl -s $OPENAI_BASE_URL/models -H "Authorization: Bearer $OPENAI_API_KEY"
+
+脚本这边也补了守卫:第一次调用拿到响应后比**网关自报的**模型名,
+撞上被复判那批的产出模型就立刻中止(见 assert_judge_is_not_self_by_alias)。
+
 ## 用法(在服务器上跑,API key 在 /etc/policy-pipeline/models.env)
 
     set -a; . /etc/policy-pipeline/models.env; set +a
     python3 -m scripts._oneshot.measure_theme_recall \
-        --vault /vault --n 100 --judge-model <一个比 deepseek-v4-flash 强的模型>
+        --vault /vault --n 100 --strata zero-theme \
+        --judge-model <清单里真实存在、且不是 deepseek-v4-flash 的模型>
+
+``--strata zero-theme`` 把预算全押在零主题的两层上。要回答"53% 零主题对不对"
+就该这么跑:同样 100 次调用每层 50 篇,0/50 的 95% 上界 7.1%(四层等额时每层
+只有 25 篇,上界 13.7%,还是拍不了板)。代价是这一轮量不到误挂——那是
+"要不要放宽阈值"才需要的数,真要放宽时另跑一轮 ``--strata all``。
 
 结果**逐条**写 state/theme_recall/detail.jsonl。中途崩了加 `--resume` 接着跑
 (seed 必须与上一轮一致),已完成的 pid 会跳过,只补没跑完的。
@@ -66,6 +87,26 @@ DEFAULT_SCORING = "_meta/framework/scoring.yaml"
 SELF_JUDGE_ABORT = (
     "复判模型 {judge} 与库里 {n} 篇的产出模型相同。同模型自评测不出模型差异,"
     "换一个更强的模型再跑(样本里出现的产出模型:{models})。"
+)
+
+#: 自检①只比名字挡不住**网关别名**。本平台网关 /models 只有 deepseek-v4-flash /
+#: v4-pro / v4-flash-vision-exp 三条,请求 deepseek-chat 或 deepseek-reasoner
+#: 一律 HTTP 200 但自报 deepseek-v4-flash(2026-08-28 实测)。
+#: 2026-09-03 的探路轮就是这么废掉的:点名 deepseek-chat,实际是 flash 判 flash 自己产的,
+#: 39/40「一致」是复读率不是漏检率。所以真正的守卫必须比**网关自报的**名字。
+ALIASED_JUDGE_ABORT = (
+    "请求的复判模型是 {asked},但网关自报 {reported}——而 {reported} 正是被复判"
+    "那批的产出模型。这是同模型自评,测不出模型差异。\n"
+    "本平台网关会把不存在的模型名静默映射到 deepseek-v4-flash,先打\n"
+    "  curl -s $OPENAI_BASE_URL/models -H \"Authorization: Bearer $OPENAI_API_KEY\"\n"
+    "确认名字真的在清单里,再换一个**清单里有**的模型重跑。"
+)
+
+#: 续跑不能把两个复判模型的结果混进同一个文件。
+MIXED_JUDGE_ABORT = (
+    "--resume 读到 {n} 条是 {other} 判的,本轮 judge 是 {asked},两批不能混算。\n"
+    "要么换 --state 目录从头跑,要么去掉 --resume。\n"
+    "(2026-09-03 探路轮那批就属于必须作废的:名义 deepseek-chat,实际被别名成 flash 自评。)"
 )
 
 
@@ -113,14 +154,24 @@ def load_stored(vault: str) -> dict[str, dict]:
     return out
 
 
-def stratified_sample(stored: dict[str, dict], n: int, seed: int) -> list[str]:
+def stratified_sample(stored: dict[str, dict], n: int, seed: int,
+                      only_zero_theme: bool = False) -> list[str]:
     """按(是否已挂主题 × 产出模型)分层,层内等额抽。
 
     等额而非按比例:少数层(比如挂了主题的 deepseek 那批只占全库 11%)
     按比例抽会只抽到个位数,置信区间宽到没法用。等额抽再在汇总时加权。
+
+    ``only_zero_theme`` 把预算全押在零主题的两个层上。**这是一次取舍,不是纯赚**:
+    四层等额时同样的 n 只有一半落在零主题上,而"零主题里漏了多少"正是
+    "要不要重打全库分"唯一依赖的那个数——n=10 时 0/10 的 95% 上界是 31%,
+    "一篇没漏"和"漏了三成"根本分不开;押到 n=50,上界降到 7.1%,才够拍板。
+    代价是这一轮**测不到误挂**(有主题却不该挂)。误挂那一半是"放宽阈值是赚是亏"
+    要用的,属于下一个决定;真要放宽阈值时得单独再跑一轮 --strata all。
     """
     strata: dict[tuple, list[str]] = collections.defaultdict(list)
     for pid, row in stored.items():
+        if only_zero_theme and row["themes"]:
+            continue
         strata[(bool(row["themes"]), row["model"])].append(pid)
     per = max(1, n // max(1, len(strata)))
     rng = random.Random(seed)
@@ -149,6 +200,31 @@ def assert_enough_judged(judged: int, planned: int, state) -> None:
             f"(<{MIN_SUCCESS_RATE:.0%}),结果不可信;查 {state}/judge_calls.jsonl")
 
 
+def assert_judge_is_not_self_by_alias(asked: str, reported: str | None,
+                                      sample_models: set[str]) -> None:
+    """自检①的第二段:比网关**自报**的模型名,而不是我们请求的名字。
+
+    第一段(比请求名)挡的是老实情况;这一段挡的是网关别名——
+    请求一个不存在的模型名,网关 200 返回,却把它悄悄换成 deepseek-v4-flash。
+    只有响应里的 ``model`` 字段能看出这件事,所以这条检查必须等第一次调用之后才做。
+    代价是一次调用的钱,换的是"整轮 200 次调用其实是自评"这种事不再发生。
+    """
+    if reported and reported in sample_models:
+        raise SystemExit(ALIASED_JUDGE_ABORT.format(asked=asked, reported=reported))
+
+
+def assert_resume_is_same_judge(rows: list[dict], asked: str) -> None:
+    """续跑时,已落盘的行必须是同一个复判模型判的。
+
+    没记 judge 的老文件(探路轮那批)一律视为不同——它们正是要作废的那批。
+    """
+    other = {r.get("judge") or "(未记录 judge 的旧文件)" for r in rows} - {asked}
+    if other:
+        n = sum(1 for r in rows if (r.get("judge") or "(未记录 judge 的旧文件)") in other)
+        raise SystemExit(MIXED_JUDGE_ABORT.format(
+            n=n, other="、".join(sorted(other)), asked=asked))
+
+
 def main(argv=None, _client=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--vault", required=True)
@@ -160,12 +236,21 @@ def main(argv=None, _client=None) -> int:
                     help="接着上一轮跑:已在 detail.jsonl 里的 pid 跳过,只补没跑完的。"
                          "样本由 --seed 决定,续跑时 seed 必须与上一轮一致")
     ap.add_argument("--judge-base-url", default=os.environ.get("OPENAI_BASE_URL") or "https://api.deepseek.com")
+    ap.add_argument("--strata", choices=["all", "zero-theme"], default="all",
+                    help="all=四层等额(漏检与误挂同时量);"
+                         "zero-theme=只抽零主题的两层,把预算全押在漏检上。"
+                         "要回答「53%% 零主题对不对」用后者:同样 100 次调用每层 50 篇,"
+                         "0/50 的 95%% 上界 7.1%%(四层等额时每层 25 篇,上界 13.7%%)。"
+                         "代价是这一轮测不到误挂。")
     args = ap.parse_args(argv)
 
     stored = load_stored(args.vault)
     if not stored:
         raise SystemExit(f"没读到任何 business_view: {args.vault}/_meta/business_view")
-    pids = stratified_sample(stored, args.n, args.seed)
+    pids = stratified_sample(stored, args.n, args.seed,
+                             only_zero_theme=args.strata == "zero-theme")
+    if not pids:
+        raise SystemExit(f"--strata {args.strata} 抽不到任何样本")
 
     # 自检①:复判模型不能和被判样本的产出模型相同。
     sample_models = {stored[p]["model"] for p in pids}
@@ -199,6 +284,7 @@ def main(argv=None, _client=None) -> int:
 
     detail_path = state / "detail.jsonl"
     rows = load_done_rows(detail_path) if args.resume else []
+    assert_resume_is_same_judge(rows, args.judge_model)
     done = {r["pid"] for r in rows}
     if not args.resume and detail_path.exists():
         detail_path.unlink()      # 不续跑就从头来,免得新旧两轮的结果混在一个文件里
@@ -206,6 +292,7 @@ def main(argv=None, _client=None) -> int:
           + (f",续跑:已完成 {len(done)} 篇" if done else ""), file=sys.stderr)
 
     resumed, failed = len(done), 0
+    reported_model: str | None = None   # 网关自报的复判模型,第一次调用后才知道
     for i, pid in enumerate(pids, 1):
         if pid in done:
             continue
@@ -219,6 +306,14 @@ def main(argv=None, _client=None) -> int:
             continue
         # 模型吐 "null" 时 json.loads **成功**返回 None,不抛异常——上面的 except 挡不住。
         # 2026-09-02 就是栽在这里:跑到第 91 篇崩掉,前 90 篇的结果没来得及落盘。
+        if reported_model is None:
+            # 第一次成功拿到响应就查:网关有没有把我们点的模型换成别的。
+            # 放在这里(而不是循环外)是因为只有响应里才有自报的模型名。
+            reported_model = getattr(client, "last_reported_model", None)
+            assert_judge_is_not_self_by_alias(args.judge_model, reported_model, sample_models)
+            if reported_model and reported_model != args.judge_model:
+                print(f"注意:请求 {args.judge_model},网关自报 {reported_model}",
+                      file=sys.stderr)
         if not isinstance(out, dict):
             print(f"[{i}/{len(pids)}] {pid} 复判输出不是对象({type(out).__name__}),跳过",
                   file=sys.stderr)
@@ -230,6 +325,10 @@ def main(argv=None, _client=None) -> int:
             "pid": pid,
             "title": rec.title,
             "model": old["model"],
+            # 记下"点的谁"和"网关给的谁"——别名映射时这两个不一样,
+            # 而只有后者说明这批结果到底是谁判的。--resume 也靠 judge 判断能不能接着跑。
+            "judge": args.judge_model,
+            "judge_reported": reported_model,
             "stored_themes": old["themes"],
             "stored_D1": old["D1"],
             "judged_themes": judged,
@@ -250,8 +349,11 @@ def main(argv=None, _client=None) -> int:
 
     assert_enough_judged(len(rows), len(pids), state)
 
-    print(f"\n=== 复判 {len(rows)} 篇(judge={args.judge_model},seed={args.seed},"
-          f"其中续跑沿用 {resumed} 篇、失败 {failed} 篇)===")
+    judge_desc = args.judge_model
+    if reported_model and reported_model != args.judge_model:
+        judge_desc = f"{args.judge_model}→网关实际给的是 {reported_model}"
+    print(f"\n=== 复判 {len(rows)} 篇(judge={judge_desc},strata={args.strata},"
+          f"seed={args.seed},其中续跑沿用 {resumed} 篇、失败 {failed} 篇)===")
     overall = collections.Counter(r["verdict"] for r in rows)
     for k in ("一致-有主题", "一致-零主题", "疑似漏检", "疑似误挂"):
         print(f"  {k:12s} {overall[k]:4d}")
@@ -266,8 +368,11 @@ def main(argv=None, _client=None) -> int:
         print(f"  {model}")
         print(f"    零主题 {len(zero):3d} 篇 → 复判认为该挂 {miss:3d} 篇"
               f"({100*miss/len(zero) if zero else 0:.0f}% 疑似漏检)")
-        print(f"    有主题 {len(witht):3d} 篇 → 复判认为不该挂 {over:3d} 篇"
-              f"({100*over/len(witht) if witht else 0:.0f}% 疑似误挂)")
+        if witht:
+            print(f"    有主题 {len(witht):3d} 篇 → 复判认为不该挂 {over:3d} 篇"
+                  f"({100*over/len(witht):.0f}% 疑似误挂)")
+        else:
+            print("    有主题   本轮未抽(--strata zero-theme),误挂方向这轮没量")
 
     misses = [r for r in rows if r["verdict"] == "疑似漏检"]
     if misses:
@@ -278,6 +383,12 @@ def main(argv=None, _client=None) -> int:
 
     print(f"\n明细: {state}/detail.jsonl · 调用日志: {state}/judge_calls.jsonl")
     print("提醒:分层等额抽样,上面的百分比是**层内**比例,换算全库需按各层真实占比加权。")
+    # 零命中时"看起来完美"最容易被过度解读,直接把上界打出来堵住这个口子。
+    for model in sorted({r["model"] for r in rows}):
+        zero = [r for r in rows if r["model"] == model and not r["stored_themes"]]
+        if zero and not any(r["judged_themes"] for r in zero):
+            print(f"  {model}:零主题 {len(zero)} 篇一篇没漏,但 0/{len(zero)} 的 95% 上界是 "
+                  f"{100 * (1 - 0.025 ** (1 / len(zero))):.1f}%,别读成「零漏检」。")
     return 0
 
 
