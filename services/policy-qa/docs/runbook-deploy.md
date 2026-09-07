@@ -162,15 +162,22 @@ docker compose --profile policy-qa up -d policy-qa
 验证:
 
 ```bash
-# 启动日志应有这一行(业务线与信号条数对得上才算加载成功)
-docker logs platform-policy-qa 2>&1 | grep '已加载业务战略画像'
-
-# 接口应报 available: true
+# 唯一权威的检查:接口应报 available: true,并带上 profile_id / effective_from
 curl -s http://127.0.0.1/policy-qa/v1/health | python3 -m json.tool | grep -A 4 business_context
+
+# 启动日志里也有一行(2026-09-03 起才有,见下方说明)
+docker logs platform-policy-qa 2>&1 | grep '业务战略画像'
 ```
 
+**以 `/v1/health` 为准。** 2026-09-03 之前这里写的是"看 `docker logs | grep 已加载业务战略画像`",
+那条指令**永远不会有输出**,和画像加载没关系:uvicorn 只给 `uvicorn.*` 配 handler,
+root 上一个也没有,于是 `logging.getLogger("policy-qa")` 的 info 全被 Python 的
+lastResort(WARNING 级)丢掉。谁照着那条查,都会得出"画像没加载"的错误结论。
+现在 `app/main.py::configure_logging` 给这一支配了 handler,启动日志才真的有那行。
+
 **画像加载失败不会拦住服务启动**——记一条 warning 然后退回不做业务框定。
-所以配完一定要看上面那两条,别假定它生效了。
+warning 一直是可见的(lastResort 就是 WARNING 级),所以不存在"悄悄没加载"的情况;
+但"加载成功"这件事只有 `/v1/health` 说了算,别拿日志的有无当结论。
 
 ### 换战略
 
@@ -205,6 +212,7 @@ DROP ROLE policy_qa_ro;   -- 先 REVOKE 各项权限,否则会报依赖
 | 事 | 命令 |
 |---|---|
 | 看日志 | `docker logs platform-policy-qa --tail 50` |
+| 调日志级别 | 平台 .env 加 `POLICY_QA_LOG_LEVEL=DEBUG`(默认 INFO)后重建容器 |
 | 看问答记录 | `docker exec platform-policy-qa sh -c 'tail -3 /app/qa_logs/chat-*.jsonl'` |
 | 重启 | `docker compose --profile policy-qa restart policy-qa` |
 | 换模型 | 改平台 .env 的 `DEEPSEEK_MODEL` 后 `docker compose --profile policy-qa up -d policy-qa` |
