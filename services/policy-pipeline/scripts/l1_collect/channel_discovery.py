@@ -33,8 +33,29 @@ NATIONAL_TARGETS = [
     {"city": "国家税务总局", "channel_type": "税务总局", "root_domain": "chinatax.gov.cn"},
 ]
 
+# 人工核过的政策列表页(2026-09-07 实测)。写死是有意的:自动发现挑 list_url 会
+# 稳定地挑坏两类 URL,而两类都能长期存活不报警——
+#   1) 栏目内的单篇文章(税务总局被选成 …/content.html):probe 判 structure_unknown
+#      → 状态停在候选 → _select_channels 只取「验证」→ 该机关永不被扫;
+#   2) 已冻结的旧栏目(能源局 /zcfb 最新一条停在 2017-10):probe 一直 ok、状态一直
+#      验证,每天照扫,却零新增——看起来最健康的失败。
+# 有 pin 的目标不再走 Tavily+LLM,discover_one 直接探这个 URL(见 _channel_from_pin)。
+# 括号内是 2026-09-07 的实测结论:静态页 probe 直接 ok;标 JS 的静态 HTML 只是空壳,
+# 必须靠 _fetch_list_html / probe_url 的 firecrawl 渲染兜底(生产 models.env 有 key)。
+# 标「渲染已核」= 用浏览器渲染后肉眼确认该栏目确实在滚动更新的政策列表。
+_PINNED_LIST_URLS = {
+    "能源局": "https://www.nea.gov.cn/policy/zxwj.htm",                    # 最新文件(JS,渲染已核)
+    "税务总局": "https://fgk.chinatax.gov.cn/zcfgk/c100012/listflfg.html",   # 税务规范性文件(JS,渲染已核)
+    "央行": "https://www.pbc.gov.cn/zhengwugongkai/4081330/4406346/4693545/index.html",  # 行政规范性文件(静态,probe ok)
+    "市监总局": "https://www.samr.gov.cn/zw/zjwj/",                         # 总局文件(JS,渲染已核)
+    "交通运输部": "https://xxgk.mot.gov.cn/2020/jigou?gk=5",                 # 规章 + 行政规范性文件(JS,渲染已核)
+    "工信部": "https://www.miit.gov.cn/zwgk/zcwj/index.html",               # 政策文件(JS,渲染未核:本机访问不到 miit)
+}
+
 for _t in NATIONAL_TARGETS:
     _t.update({"province": "国家", "level": "国家", "city_code": "000000"})
+    if _t["channel_type"] in _PINNED_LIST_URLS:
+        _t["list_url"] = _PINNED_LIST_URLS[_t["channel_type"]]
 
 _PROV_CODE = {
     "北京市": "11", "天津市": "12", "河北省": "13", "山西省": "14", "内蒙古自治区": "15",
@@ -312,12 +333,29 @@ def nea_regulatory_targets() -> list:
     return out
 
 
+def _channel_from_pin(target: dict, list_url: str) -> Channel:
+    """人工核过的列表页:只探测,不搜不选(省 Tavily/LLM,也不给它们改坏的机会)。
+    probe 不 ok(如本机无 FIRECRAWL_API_KEY 渲染不了 JS 列表)时保留 pin、状态压回
+    候选——不冒充已验证,由带凭据的 operator 那一跑定音。"""
+    pr = probe_url(list_url)
+    return Channel(
+        city=target["city"], province=target["province"], level=target["level"],
+        city_code=target["city_code"], channel_type=target["channel_type"],
+        root_domain=target.get("root_domain") or _host(list_url),
+        list_url=list_url, source="curated",
+        status=ChannelStatus.验证 if pr.verdict == "ok" else ChannelStatus.候选,
+        last_probed_at=pr.probed_at, probe_result=pr.verdict,
+    )
+
+
 def discover_one(target: dict) -> Optional[Channel]:
     """单目标:搜→域名过滤→LLM选→按序探测→反推域名→机构核验→Channel。
 
     已知域名(known):同域过滤;未知域名(None):gov.cn 过滤 + 反推域名 + 机构名核验。
     治 LLM 选了 JS 空壳/坏 URL:probe 不通时自动试其它候选,用第一个验证的。
     """
+    if target.get("list_url"):          # pin 优先:人工核过的列表页不再交给发现
+        return _channel_from_pin(target, target["list_url"])
     target_name = target.get("search_name") or target["city"]
     query = f"{target_name} 政策文件 通知公告 列表"
     candidates = _tavily_search(query)

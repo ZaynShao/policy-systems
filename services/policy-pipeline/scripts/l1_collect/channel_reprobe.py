@@ -40,6 +40,10 @@ def reprobe_candidate(ch: Channel, *, today: str) -> tuple[Channel, str]:
         "channel_type": ch.channel_type,
         "root_domain": ch.root_domain or None,
     }
+    if ch.source == "curated" and ch.list_url:
+        # 人工核过的列表页:只重探,不重新发现。否则 firecrawl 抽风把 curated 行压回
+        # 候选后,这里会用 Tavily+LLM 的结果覆盖 pin,把修好的 URL 又改坏。
+        target["list_url"] = ch.list_url
     fresh = discover_one(target)
     if fresh is None:
         return ch, "still_candidate"

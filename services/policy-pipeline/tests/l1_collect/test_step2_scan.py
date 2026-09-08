@@ -99,3 +99,35 @@ def test_bs4_get_fixes_mojibake_encoding(monkeypatch):
     monkeypatch.setattr(s.requests, "get", lambda *a, **k: _FakeResp())
     out = s._bs4_get("https://www.ndrc.gov.cn/xwdt/tzgg")
     assert "新能源" in out  # 已按 apparent_encoding 解码,非乱码
+
+
+def test_keywords_cover_cross_domain_finance_signals():
+    """跨条线机关(税务/央行/市监/交通)进目录后,标题词表也要跟上,
+    否则渠道扫得到、行全被关键词过滤掉。词对应业务战略画像 F02/F03/F05。"""
+    from scripts.l1_collect.step2_scan import KEYWORDS
+    for w in ("消费税", "发票", "开票", "税收征管",
+              "预付卡", "储值卡", "加油卡", "电子券",
+              "支付机构", "非银行支付", "第三方支付",
+              "计量器具", "危险化学品", "危险货物运输"):
+        assert w in KEYWORDS, f"漏词: {w}"
+
+
+def test_tax_bureau_oil_invoice_announcement_passes_filter():
+    """2026-09-07 实测漏采样本:税务总局『交易即开票』公告必须能被抽出。"""
+    from scripts.l1_collect.step2_scan import _extract_list_items
+    html = (
+        '<ul><li><a href="/zcfgk/c100012/c5250347/content.html">'
+        '国家税务总局关于在成品油零售领域全面推广“交易即开票”有关事项的公告'
+        '</a><span>2026-06-08</span></li></ul>'
+    )
+    rows = _extract_list_items(html, "https://fgk.chinatax.gov.cn/zcfgk/c100012/", _ch())
+    assert len(rows) == 1
+    assert "交易即开票" in rows[0].title
+
+
+def test_scan_and_probe_present_same_user_agent():
+    """probe 说 ok、scan 却拿 403 是静默失联的老病根(实测 miit/samr 按 UA 拦)。
+    两端必须同一个 UA,否则『验证过的渠道』可能一行也扫不到。"""
+    from scripts.l1_collect.step2_scan import UA as scan_ua
+    from scripts.l1_collect.connectivity_probe import UA as probe_ua
+    assert scan_ua == probe_ua

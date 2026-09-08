@@ -17,8 +17,10 @@ import requests
 from bs4 import BeautifulSoup
 
 from .channel_catalog import Channel, ChannelStatus
+# 与 probe 共用同一个 UA:实测 miit/samr 按 UA 拦(ZCE-Scan → 403,ZCE-Probe → 200),
+# 两端不一致会造出「probe 说 ok、scan 一行扫不到」的静默失联渠道。
+from .connectivity_probe import UA
 
-UA = "Mozilla/5.0 (compatible; ZCE-Scan/0.1)"
 TIMEOUT = 20
 MAX_PAGES = 10
 NEW_RATIO_THRESHOLD = 0.10
@@ -36,6 +38,13 @@ KEYWORDS = (
     # 市场监管/平台(市监局·企业背景):
     "平台经济", "反垄断", "反不正当竞争", "市场监管", "网络交易",
     "互联网平台", "经营者集中", "公平竞争审查", "价格监管",
+    # 跨条线机关(税务/央行/市监/交通):对齐业务战略画像信号
+    # F02 消费税稽查与发票票据 / F05 预付卡·加油卡·电子券·第三方支付 /
+    # F03 站点经营与计量合规 / 油品与危化品运输
+    "消费税", "发票", "开票", "税收征管", "涉税",
+    "预付卡", "储值卡", "加油卡", "电子券",
+    "支付机构", "非银行支付", "第三方支付",
+    "成品油经营", "油品质量", "计量器具", "危险化学品", "危险货物运输",
 )
 
 _DATE_RE = re.compile(r"((?:19|20)\d{2})[-/年.](\d{1,2})[-/月.](\d{1,2})")
