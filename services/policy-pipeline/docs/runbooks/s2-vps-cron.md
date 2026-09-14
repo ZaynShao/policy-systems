@@ -81,6 +81,18 @@ SHELL=/bin/bash
 */30 8-22 * * * cd /root/policy-pipeline-src && docker compose -f docker-compose.server.yml run --rm policy-producer python -m scripts.l1_review_consumer.poll_l1_verdicts >> /var/log/policy-pipeline/review_consumer.log 2>&1
 
 45 10 * * * cd /root/policy-pipeline-src && (set -a; . /etc/policy-pipeline/notify.env; set +a; /usr/bin/python3 -m scripts.service.closure_audit --vault /root/policy-vault --state-dir /root/policy-pipeline-state) >> /var/log/policy-pipeline/closure_audit.log 2>&1
+# 11:00 守恒巡检(与 closure_audit 分工:那个查活性"机器转没转",这个查守恒"东西丢没丢")
+# 四段差额:有原文没标签 / business_view vs 库内行数 / 解读反复引用却没原文 / 渠道停更。
+# 任一段不为零 → 飞书告警附清单;完整结果落 json 供事后翻账。
+# 渠道那段看的是"最近一件是什么时候的"而不是"有没有产出"——国家能源局 2026 上半年
+# 每次扫描都稳定回 29 条全过门,全是 2017 年的存档,活性检查一路绿灯。
+0 11 * * * cd /root/safety-platform/services/policy-pipeline && (set -a; . /etc/policy-pipeline/notify.env; . /etc/policy-pipeline/pipeline.env; set +a; /usr/bin/python3 -m scripts.service.conservation_audit --vault /root/policy-vault --notify --json-out /root/policy-pipeline-state/conservation_audit.json) >> /var/log/policy-pipeline/conservation_audit.log 2>&1
+
+> ⚠ 本文件多数行写的是 `cd /root/policy-pipeline-src`,而 2026-09-07 实测线上 crontab
+> 里的路径全是 `/root/safety-platform/services/policy-pipeline`。`policy-pipeline-src`
+> 是 2026-06 搬进 monorepo 前的旧独立仓,现在没有任何东西从那里跑。新增行按实际路径写,
+> 旧行留待另行核对更新。
+
 
 # 09:30 QR relay 哨兵(host venv;token 失效→openclaw 推码→扫后 account.add 自动落库)
 30 9 * * * set -a; . /etc/policy-pipeline/notify.env; . /etc/policy-pipeline/commentary.env; set +a; cd /root/policy-pipeline-src && /root/policy-sentinel-venv/bin/python -m scripts.l1_collect.commentary_ingest.qr_relay.daily_check --db-path "$WEWE_DB_PATH" --qr-dir /root/policy-pipeline-state/wewe_qr --target "$OPENCLAW_IM_TARGET" >> /var/log/policy-pipeline/qr_relay.log 2>&1
