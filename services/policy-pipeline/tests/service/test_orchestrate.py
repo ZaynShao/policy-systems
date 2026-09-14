@@ -135,3 +135,52 @@ def test_drain_failed_pid_to_dead_letter_and_dequeued(tmp_path):
     assert "llm failed" in dead_rows[0]["error"]
     assert "P_FAIL" not in ledger
     assert not ledger_path.exists()
+
+
+def test_process_pid_fails_when_归属跑完但没有产出():
+    """退出码 0 不等于写出了 business_view。
+
+    2026-09-07 实测:run_2b 判官打回 / 程序门拦下 / 模型少字段时都返回 0,
+    于是 51 篇政策被盖章"已完成"、永不重跑、且从不进死信。盖章前必须验收产出。
+    """
+    ledger = {}
+    res = process_pid("P_X", "txt", version=1, ledger=ledger,
+                      run_attribution=lambda pid: None,
+                      verify_output=lambda pid: False)
+    assert res.ok is False
+    assert res.error.startswith("no_output")
+    assert "P_X" not in ledger  # 账本没盖章 → 下次还会重跑
+
+
+def test_process_pid_marks_done_when_产出验收通过():
+    ledger = {}
+    res = process_pid("P_X", "txt", version=1, ledger=ledger,
+                      run_attribution=lambda pid: None,
+                      verify_output=lambda pid: True)
+    assert res.ok is True
+    assert "P_X" in ledger
+
+
+def test_drain_queue_没产出的进死信让周日重排能捡回来(tmp_path):
+    """闭环:没产出 → 死信 → deadletter_sweep 每周重排 → 重跑。
+
+    死信这条链路早就建好了(alert 每天看、sweep 每周排),但在验收产出之前
+    从没有东西进得去,整套机制空转了三个月。
+    """
+    q = tmp_path / "q.jsonl"
+    enqueue(q, QueueItem("P_A", "cron", "normal", "t1"))
+    results = drain_queue(
+        queue_path=q, ledger={}, ledger_path=tmp_path / "l.json",
+        raw_text_for=lambda pid: "raw",
+        version=1,
+        run_attribution=lambda pid: None,
+        run_sync=lambda: None,
+        verify_output=lambda pid: False,
+    )
+    assert results[0].ok is False
+    dead = tmp_path / "l2_failures.jsonl"
+    assert dead.exists()
+    rec = json.loads(dead.read_text(encoding="utf-8").splitlines()[0])
+    assert rec["pid"] == "P_A"
+    assert "no_output" in rec["error"]
+    assert Path(q).read_text(encoding="utf-8").strip() == ""  # 已出队,不阻塞后续

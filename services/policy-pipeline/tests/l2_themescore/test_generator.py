@@ -42,9 +42,45 @@ def test_gen_pass2(tmp_path):
     assert set(out["影响分析"].keys()) == {"加油","充电","电力_储能_V2G_交易"}
 
 def test_gen_repairs_json_after_strict_retry_fails(tmp_path):
-    c = LLMClient(client=_seq_fake(['{"a":', '{"a":', '{"a":1}']), log_path=str(tmp_path/"l.jsonl"))
+    good = '{"scores":{"D1":1}}'
+    c = LLMClient(client=_seq_fake(['{"a":', '{"a":', good]), log_path=str(tmp_path/"l.jsonl"))
     out = gen_pass1(c, system="sys", user="u")
-    assert out == {"a": 1}
+    assert out == {"scores": {"D1": 1}}
+
+
+def test_gen_pass1_retries_when_json_valid_but_scores_missing(tmp_path):
+    """合法 JSON 但缺 scores,以前直接 KeyError 冒到 plan() 外,一次重试都没有。
+
+    2026-09-07 查 51 篇静默丢件:三条可查的退件理由里有两条就是 'scores'。
+    缺字段与非 JSON 是同一件事——这次没生成出来,必须在重试圈内。
+    """
+    good = '{"themes":[],"scores":{"D1":3,"D2":3,"D3":3,"D4":3,"D5":3,"D6":3}}'
+    c = LLMClient(client=_seq_fake(['{"themes":["power_market"]}', good]),
+                  log_path=str(tmp_path/"l.jsonl"))
+    out = gen_pass1(c, system="sys", user="u")
+    assert out["scores"]["D1"] == 3
+
+
+def test_gen_pass1_treats_json_null_as_malformed(tmp_path):
+    """json.loads("null") 会**成功**并返回 None,顶层类型必须显式判,否则空输出被当成结果。"""
+    good = '{"scores":{"D1":2}}'
+    c = LLMClient(client=_seq_fake(['null', good]), log_path=str(tmp_path/"l.jsonl"))
+    assert gen_pass1(c, system="sys", user="u") == {"scores": {"D1": 2}}
+
+
+def test_gen_pass1_raises_after_three_bad_shapes(tmp_path):
+    """三次机会用尽仍不成形 → 抛出,让 orchestrate 记失败进死信,而不是静默出局。"""
+    import pytest
+    from scripts.l2_themescore.generator import MalformedOutput
+    c = LLMClient(client=_seq_fake(['{"themes":[]}']), log_path=str(tmp_path/"l.jsonl"))
+    with pytest.raises(MalformedOutput):
+        gen_pass1(c, system="sys", user="u")
+
+
+def test_gen_pass2_retries_when_impact_missing(tmp_path):
+    good = '{"影响分析":{"加油":"a"},"行动建议":[]}'
+    c = LLMClient(client=_seq_fake(['{"行动建议":[]}', good]), log_path=str(tmp_path/"l.jsonl"))
+    assert gen_pass2(c, system="sys", user="u")["影响分析"] == {"加油": "a"}
 
 def test_pass1_prompt_blocks_standard_weak_mention_overhang():
     class R:
@@ -93,7 +129,8 @@ def test_pass2_prompt_blocks_impact_hallucination():
 
 def _capture():
     seen = []
-    P = '{"themes":["power_market"],"primary_theme":"power_market","scores":{"D1":5,"D2":4,"D3":4,"D4":4,"D5":4,"D6":5}}'
+    P = ('{"themes":["power_market"],"primary_theme":"power_market",'
+         '"scores":{"D1":5,"D2":4,"D3":4,"D4":4,"D5":4,"D6":5},"影响分析":{}}')
     class M:
         def create(self, **kw):
             seen.append(kw.get("max_tokens"))

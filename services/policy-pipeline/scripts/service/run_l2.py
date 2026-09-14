@@ -27,13 +27,27 @@ def build_raw_text_for(vault):
     return raw_text_for
 
 
-def run(state_dir, version, raw_text_for, run_attribution, run_sync) -> list[StageResult]:
+def build_output_check(vault):
+    """产出验收:business_view 里确实多了这个 pid 的文件才算这篇跑成功。
+
+    与 run_2b 的退出码无关——它判退时也返回 0(见 orchestrate.process_pid 的注释)。
+    """
+    bv_dir = Path(vault) / "_meta" / "business_view"
+
+    def written(pid: str) -> bool:
+        return (bv_dir / f"{pid}.yaml").exists()
+
+    return written
+
+
+def run(state_dir, version, raw_text_for, run_attribution, run_sync,
+        verify_output=None) -> list[StageResult]:
     state_dir = Path(state_dir)
     ledger_path = state_dir / "ledger.json"
     queue_path = state_dir / "l2_queue.jsonl"
     ledger = load_ledger(ledger_path)
     return drain_queue(queue_path, ledger, ledger_path, raw_text_for, version,
-                       run_attribution, run_sync)
+                       run_attribution, run_sync, verify_output=verify_output)
 
 
 def main(argv=None) -> int:
@@ -62,12 +76,15 @@ def main(argv=None) -> int:
         sync_mod.run(args.vault, args.state_dir, args.pipeline_version,
                      os.environ["DATABASE_URL"])
 
-    results = run(args.state_dir, args.pipeline_version, raw_text_for, run_attribution, run_sync)
+    results = run(args.state_dir, args.pipeline_version, raw_text_for, run_attribution, run_sync,
+                  verify_output=build_output_check(args.vault))
     summary = {
         "processed": len(results),
         "ok": sum(1 for r in results if r.ok),
         "failed": sum(1 for r in results if r.ok is False),
         "skipped": sum(1 for r in results if r.error == "skipped"),
+        "no_output": sum(1 for r in results
+                         if r.error and r.error.startswith("no_output")),
     }
     print(json.dumps(summary, ensure_ascii=False))
     return 0
