@@ -119,3 +119,55 @@ def render_for_impact_analysis(profile: dict) -> str:
         ]
         lines += [f"- {g}" for g in gaps]
     return "\n".join(lines)
+
+
+def render_for_monthly(profile: dict) -> str:
+    """渲染成 L3 月刊(MA2 逐篇判定)的业务口径段。
+
+    与 render_for_impact_analysis 的差别在**任务不同**:pass2 面对一篇已经选定的政策,
+    只需写影响;MA2 要先判「这篇要不要看」,所以还得给信号清单。
+
+    只取 high 与 suppress 两档:high 提召回、suppress 压误判,medium 两头不沾,
+    进来只稀释注意力。**不给定量目标**——画像里的数字全标了「数字待核」,
+    进了提示词就会被写进稿子,而 F 门回指不到 RAW。
+    """
+    lines = [
+        f"【公司业务口径】(战略画像 {profile.get('profile_id')},"
+        f"生效 {profile.get('effective_from')})",
+        "公司业务线只有下列这几条,business_hits 只能从中取值:",
+    ]
+    for biz in profile["businesses"]:
+        lines.append(f"- {biz['id']} {biz['zh']}({biz.get('weight_2026') or ''}):"
+                     f"{biz.get('headline') or ''}")
+        for var in biz.get("decision_variables") or []:
+            lines.append(f"    · 在乎:{var}")
+
+    rules = profile.get("relevance_rules") or {}
+    for label, key in (("判断相关性的准绳", "core_test"),
+                       ("高相关的典型形态", "high_form"),
+                       ("低相关的典型形态", "low_form"),
+                       ("提前量", "early_signal")):
+        val = _one_line(rules.get(key))
+        if val:
+            lines.append(f"{label}:{val}")
+    absent = _one_line(rules.get("absent_is_not_low"))
+    if absent:
+        lines.append(f"注意:{absent}")
+
+    highs = [s for s in (profile.get("signals") or []) if s.get("weight") == "high"]
+    sups = [s for s in (profile.get("signals") or []) if s.get("weight") == "suppress"]
+    if highs:
+        lines += ["", "【提召回的信号】命中这些类型的文件优先看:"]
+        lines += [f"- {s.get('id')}({s.get('business')}):{_one_line(s.get('what'))}"
+                  for s in highs]
+    if sups:
+        lines += ["", "【压误判的信号】这些类型通常不改变任何在做的动作:"]
+        lines += [f"- {s.get('id')}({s.get('business')}):{_one_line(s.get('what'))}"
+                  for s in sups]
+
+    gaps = [q.get("topic") for q in (profile.get("open_questions") or []) if q.get("topic")]
+    if gaps:
+        lines += ["", "下列维度画像里是空白。政策若落在这些维度上,标「需人工裁定」,"
+                      "**不得判低相关**——证据为空不等于业务无关:"]
+        lines += [f"- {g}" for g in gaps]
+    return "\n".join(lines)
