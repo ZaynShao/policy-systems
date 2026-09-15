@@ -51,7 +51,11 @@ class PolicyPredictIndustryBoardTests(unittest.TestCase):
         self.assertEqual(meta["missing"], [])
         self.assertEqual(len(rows), 19)
         self.assertEqual({row["id"] for row in rows}, set(meta["order"]))
-        self.assertEqual({row["t0"] for row in rows}, {"2026-09-14"})
+        t0s = {row["t0"] for row in rows}
+        self.assertEqual(len(t0s), 1, f"19 份行业 JSON 的 t0 不一致:{sorted(t0s)}")
+        t0 = t0s.pop()
+        self.assertRegex(t0, r"^\d{4}-\d{2}-\d{2}$")
+        self.assertTrue(meta["source"].endswith(f"snapshots/T0-{t0}/industries"), f"打包源 {meta['source']} 与 T0 {t0} 不一致")
         for row in rows:
             self.assertEqual(row["process"]["kind"], "analyst_record")
             for node in row["timeline"]:
