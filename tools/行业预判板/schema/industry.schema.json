@@ -1,0 +1,998 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "行业预判板 · 单行业数据契约 v1.2(2026-09-15 D8 双轴:新增 direction 产业方向;cards[].settlement 到期结算;2026-09-15 晚:group 增 基础设施,id 增五个新行业;D14 weight_class core/decisive、meta.temp_basis)",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "group",
+    "scope",
+    "t0",
+    "direction",
+    "stance",
+    "temp",
+    "temp_calc",
+    "stage",
+    "line",
+    "next",
+    "cards",
+    "timeline",
+    "process",
+    "review",
+    "meta"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z_]+$",
+      "description": "英文 id,如 ridehail / freight / two_wheel / fuel / charging / power / autonomous / delivery / tourism / generation / space / embodied / low_altitude / healthcare / elderly / ai / ecommerce / industry / overseas;2026-09-15 新增五行业:water(水利与水务)/ telecom(通信与网络)/ logistics(物流与供应链)/ storage_vpp(储能与虚拟电厂)/ computing(算力基础设施)"
+    },
+    "name": {
+      "type": "string",
+      "description": "行业中文名,与用户清单一致"
+    },
+    "group": {
+      "type": "string",
+      "enum": [
+        "出行",
+        "平台与消费",
+        "能源",
+        "新兴产业",
+        "民生",
+        "基础设施"
+      ]
+    },
+    "scope": {
+      "type": "string",
+      "description": "本行业在本页的范围定义(评估阶段与用户确认后的原句)"
+    },
+    "t0": {
+      "type": "string",
+      "format": "date",
+      "description": "证据冻结日,同组统一"
+    },
+    "stance": {
+      "type": "string",
+      "enum": [
+        "support",
+        "risk",
+        "watch",
+        "mixed"
+      ],
+      "description": "监管强度轴(由 temp 离散化;D11:趋严为负、放宽为正):risk=监管趋严(temp≤-30) / support=监管放宽(temp≥30) / watch=平稳 / mixed=规范与鼓励并行;规则写在 meta.stance_rule。产业方向另见 direction"
+    },
+    "temp": {
+      "type": "integer",
+      "minimum": -100,
+      "maximum": 100,
+      "description": "D7+D12(2026-09-15):= clamp(round(sum(temp_calc.contribution) ÷ (有方向节点数 + 5) × 8), -100, 100);有方向节点 = contribution≠0 的计入节点;D11 符号:收紧为负、宽松为正;D14(2026-09-15):core 节点满额 ±100 计入均值;有 decisive 节点时 temp 直接取其 decisive_temp(meta.temp_basis 记录)"
+    },
+    "temp_calc": {
+      "type": "array",
+      "description": "监管温度的逐节点贡献(D2):contribution = 推力符号(D11:收紧 −1、放宽 +1)× 20 × tier_weight × level_weight × recency_weight × role_factor;只计 T0 前、非锚点节点;temp = 各项之和 ÷ 计入节点数 × 8,四舍五入后夹在 [-100,100](D7 均值化)",
+      "items": {
+        "type": "object",
+        "required": [
+          "node_id",
+          "tier_weight",
+          "recency_weight",
+          "push",
+          "contribution",
+          "level_weight",
+          "role_factor"
+        ],
+        "properties": {
+          "node_id": {
+            "type": "string"
+          },
+          "tier_weight": {
+            "type": "number"
+          },
+          "recency_weight": {
+            "type": "number"
+          },
+          "push": {
+            "type": "string",
+            "enum": [
+              "up",
+              "dn",
+              "0"
+            ]
+          },
+          "contribution": {
+            "type": "number"
+          },
+          "level_weight": {
+            "type": "number",
+            "description": "国家 1.0 / 省 0.7 / 市 0.4"
+          },
+          "role_factor": {
+            "type": "number",
+            "description": "fact 1.0 / context 0.5"
+          },
+          "push_weight": {
+            "type": "number",
+            "description": "D12:节点 push_weight(1 或 0.5)"
+          },
+          "weight_class": {
+            "type": "string",
+            "enum": [
+              "core",
+              "decisive"
+            ]
+          }
+        }
+      }
+    },
+    "stage": {
+      "type": "string",
+      "enum": [
+        "方向",
+        "部署",
+        "征求意见",
+        "正式",
+        "实施",
+        "执法"
+      ],
+      "description": "由 T0 前最新政策事实决定"
+    },
+    "line": {
+      "type": "string",
+      "maxLength": 90,
+      "description": "一句话判断,不含未回链的数字"
+    },
+    "next": {
+      "type": "object",
+      "required": [
+        "date",
+        "text",
+        "source_node_id"
+      ],
+      "properties": {
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "text": {
+          "type": "string"
+        },
+        "source_node_id": {
+          "type": "string"
+        }
+      }
+    },
+    "cards": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "actor",
+          "action",
+          "object",
+          "carrier",
+          "window",
+          "verify_date",
+          "level",
+          "hypotheses",
+          "failure_conditions",
+          "basis_fact_ids",
+          "counter_evidence"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string",
+            "description": "可证伪断言:谁、时间窗、对象、动作"
+          },
+          "actor": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string"
+          },
+          "object": {
+            "type": "string"
+          },
+          "carrier": {
+            "type": "string",
+            "description": "政策载体:办法/通知/名单/专项行动…"
+          },
+          "window": {
+            "type": "object",
+            "required": [
+              "from",
+              "to"
+            ],
+            "properties": {
+              "from": {
+                "type": "string",
+                "format": "date"
+              },
+              "to": {
+                "type": "string",
+                "format": "date"
+              }
+            }
+          },
+          "verify_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "观察",
+              "可能",
+              "较大可能",
+              "高度可能"
+            ],
+            "description": "主显示档位。高度可能:独立簇≥3、权力层级≥2、算子SUPPORTED≥3、主体与载体/期限明确、基率n≥5;较大可能:簇≥2、SUPPORTED≥2、基率n≥5;可能:满足较大可能条件但基率缺失(封顶),或簇≥1且SUPPORTED≥1且有S1且基率n≥5;其余观察;任一算子COUNTER降一档。基率缺失或簇<2时不得高于「可能」"
+          },
+          "hypotheses": {
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 3,
+            "items": {
+              "type": "object",
+              "required": [
+                "key",
+                "text"
+              ],
+              "properties": {
+                "key": {
+                  "type": "string",
+                  "enum": [
+                    "H1",
+                    "H2",
+                    "H0"
+                  ]
+                },
+                "text": {
+                  "type": "string"
+                },
+                "p": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1,
+                  "description": "分析师主观概率,必填(决策①);三者之和为 1;页面折叠并标「未校准」"
+                }
+              }
+            }
+          },
+          "failure_conditions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
+          "basis_fact_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 2,
+            "description": "只能引用 role=fact 且 after_t0=false 的节点"
+          },
+          "counter_evidence": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
+          "impact": {
+            "type": "object",
+            "description": "通用三维;能源行业可另加 business 字段引用战略画像",
+            "properties": {
+              "strategy": {
+                "type": "string"
+              },
+              "gr": {
+                "type": "string"
+              },
+              "compliance": {
+                "type": "string"
+              },
+              "business": {
+                "type": "string"
+              }
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "AI初稿·待复核",
+              "需补充",
+              "通过",
+              "驳回"
+            ],
+            "default": "AI初稿·待复核"
+          },
+          "settlement": {
+            "type": "object",
+            "description": "到期结算(下一轮填):按 H1/H2/H0 判定并回链证据",
+            "required": [
+              "result",
+              "judged_at",
+              "evidence_url",
+              "note"
+            ],
+            "properties": {
+              "result": {
+                "type": "string",
+                "enum": [
+                  "H1",
+                  "H2",
+                  "H0"
+                ]
+              },
+              "judged_at": {
+                "type": "string",
+                "format": "date"
+              },
+              "evidence_url": {
+                "type": "string"
+              },
+              "note": {
+                "type": "string"
+              },
+              "brier": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
+    },
+    "timeline": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "date",
+          "kind",
+          "role",
+          "tier",
+          "title",
+          "excerpt",
+          "source_name",
+          "url",
+          "fetched_at",
+          "push",
+          "after_t0",
+          "issuer_level"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "行业内唯一,如 F1…Fn(fact)/ C1…Cn(context)"
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "description": "事件日期;文件以公开日为准,成文日另记 issued_on"
+          },
+          "issued_on": {
+            "type": "string",
+            "format": "date"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "policy",
+              "enforce",
+              "speech",
+              "social",
+              "econ",
+              "industry",
+              "media"
+            ]
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "fact",
+              "context"
+            ],
+            "description": "fact 可被断言引用;context(社会要素)只解释时点与推力"
+          },
+          "tier": {
+            "type": "string",
+            "enum": [
+              "S1",
+              "S2",
+              "S3",
+              "S4"
+            ],
+            "description": "S5 不进链;S4 仅用户提供的一手情报,不能单独支撑断言"
+          },
+          "title": {
+            "type": "string"
+          },
+          "docno": {
+            "type": "string",
+            "description": "文号,无则空串"
+          },
+          "issuer": {
+            "type": "string"
+          },
+          "excerpt": {
+            "type": "string",
+            "description": "原文摘录,不改字,省略号跳接可以"
+          },
+          "source_name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "fetched_at": {
+            "type": "string",
+            "format": "date"
+          },
+          "vault_pid": {
+            "type": "string",
+            "description": "若来自政策库,记 pid"
+          },
+          "push": {
+            "type": "string",
+            "enum": [
+              "up",
+              "dn",
+              "0"
+            ],
+            "description": "对监管方向的推力:up 收紧 / dn 支持 / 0 中性"
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "方向",
+              "部署",
+              "征求意见",
+              "正式",
+              "实施",
+              "执法"
+            ],
+            "description": "政策事实才填"
+          },
+          "relation": {
+            "type": "object",
+            "description": "社会要素才填:挂到哪条事实、是触发/放大/抑制",
+            "properties": {
+              "to_fact_id": {
+                "type": "string"
+              },
+              "effect": {
+                "type": "string",
+                "enum": [
+                  "trigger",
+                  "amplify",
+                  "suppress",
+                  "background"
+                ]
+              }
+            }
+          },
+          "use": {
+            "type": "string",
+            "description": "在推理中的作用,一句话"
+          },
+          "after_t0": {
+            "type": "boolean"
+          },
+          "pending": {
+            "type": "boolean",
+            "description": "预测窗口内待判定的观察项"
+          },
+          "issuer_level": {
+            "type": "string",
+            "enum": [
+              "国家",
+              "省",
+              "市"
+            ],
+            "description": "发文机关层级,按原文机关判定(不信任任何库的 level 字段);D1:市级算 S1,温度层级权重 国家1.0/省0.7/市0.4"
+          },
+          "out_of_window": {
+            "type": "boolean",
+            "description": "D3 锚点节点:仍在生效的窗外上位文件。role=fact、tier=S1,可用于定阶段/措辞变化/历史类比;不计入“≥3 条 S1”、不计温度、不计信号;after_t0 必为 false"
+          },
+          "fetch_tool": {
+            "type": "string",
+            "enum": [
+              "WebFetch",
+              "browser",
+              "curl",
+              "other"
+            ],
+            "description": "抓取方式;412/521 站点用浏览器面板"
+          },
+          "http_status": {
+            "type": "integer"
+          },
+          "push_weight": {
+            "type": "number",
+            "enum": [
+              1,
+              0.5
+            ],
+            "description": "D12(2026-09-15):软规则(指引/标准/程序性规则/征求意见稿/执行衔接件)按 0.5 计收紧;缺省 1。只用于 push=up"
+          },
+          "weight_class": {
+            "type": "string",
+            "enum": [
+              "core",
+              "decisive"
+            ],
+            "description": "D14(2026-09-15):core=核心内部信息(内部了解到的确定事实),按满额 ±100 计入均值,不打级别/层级/时效折扣;decisive=决定性事件(重大利空/利好),有绝对权重,行业温度直接取其 decisive_temp"
+          },
+          "decisive_temp": {
+            "type": "integer",
+            "minimum": -100,
+            "maximum": 100,
+            "description": "weight_class=decisive 时必填:该事件给整体判断定下的温度,60≤|值|≤100,符号与 push 一致"
+          }
+        }
+      }
+    },
+    "process": {
+      "type": "object",
+      "required": [
+        "kind",
+        "retrieval",
+        "grading",
+        "operators",
+        "base_rate",
+        "review_checks",
+        "calibration"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "analyst_record",
+            "service_run"
+          ],
+          "description": "analyst_record=分析师过程记录;service_run=预测服务真实运行(需 run_id 等)"
+        },
+        "run": {
+          "type": "object",
+          "description": "仅 service_run 时填",
+          "properties": {
+            "run_id": {
+              "type": "string"
+            },
+            "model": {
+              "type": "string"
+            },
+            "prompt_version": {
+              "type": "string"
+            },
+            "profile_version": {
+              "type": "string"
+            },
+            "strictness": {
+              "type": "string"
+            }
+          }
+        },
+        "retrieval": {
+          "type": "object",
+          "required": [
+            "window_from",
+            "window_to",
+            "queries",
+            "fetched",
+            "admitted",
+            "rejected"
+          ],
+          "properties": {
+            "window_from": {
+              "type": "string"
+            },
+            "window_to": {
+              "type": "string"
+            },
+            "queries": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "sources_checked": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "fetched": {
+              "type": "integer"
+            },
+            "admitted": {
+              "type": "integer"
+            },
+            "rejected": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "title",
+                  "reason"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "log_path": {
+              "type": "string",
+              "description": "sources/<id>/retrieval_log.md"
+            }
+          }
+        },
+        "grading": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "node_id",
+              "tier",
+              "role",
+              "weight"
+            ],
+            "properties": {
+              "node_id": {
+                "type": "string"
+              },
+              "tier": {
+                "type": "string"
+              },
+              "role": {
+                "type": "string"
+              },
+              "weight": {
+                "type": "number"
+              },
+              "note": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "operators": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "status",
+              "summary",
+              "fact_ids"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "enum": [
+                  "HISTORICAL_ANALOGY",
+                  "WORDING_CHANGE",
+                  "TARGET_REVERSE_INFERENCE",
+                  "CROSS_SOURCE_COMBINATION"
+                ]
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "SUPPORTED",
+                  "COUNTER",
+                  "NOT_APPLICABLE",
+                  "EVIDENCE_MISSING"
+                ]
+              },
+              "summary": {
+                "type": "string"
+              },
+              "fact_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "base_rate": {
+          "type": "object",
+          "required": [
+            "pattern",
+            "n",
+            "samples"
+          ],
+          "properties": {
+            "pattern": {
+              "type": "string"
+            },
+            "n": {
+              "type": "integer"
+            },
+            "median_days": {
+              "type": "integer"
+            },
+            "p25": {
+              "type": "integer"
+            },
+            "p75": {
+              "type": "integer"
+            },
+            "anchor_node_id": {
+              "type": "string"
+            },
+            "missing": {
+              "type": "boolean",
+              "description": "n<5 时 true,卡片档位封顶「可能」"
+            },
+            "samples": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "title",
+                  "start",
+                  "end",
+                  "days",
+                  "url"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "start": {
+                    "type": "string"
+                  },
+                  "end": {
+                    "type": "string"
+                  },
+                  "days": {
+                    "type": "integer"
+                  },
+                  "url": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "proxy": {
+              "type": "boolean",
+              "description": "D4:代理基率(邻近机关/同类载体)时 true;不解除档位封顶,页面标「代理基率」"
+            },
+            "proxy_note": {
+              "type": "string",
+              "description": "代理来源与理由"
+            },
+            "level_cap": {
+              "type": "string",
+              "enum": [
+                "可能"
+              ],
+              "description": "missing=true 时固定为「可能」"
+            }
+          }
+        },
+        "reasoning_trace": {
+          "type": "string",
+          "description": "可公开的推理摘要(分析师或模型),不含未回链数字"
+        },
+        "review_checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "check",
+              "result"
+            ],
+            "properties": {
+              "check": {
+                "type": "string"
+              },
+              "result": {
+                "type": "string",
+                "enum": [
+                  "pass",
+                  "fail",
+                  "cleared"
+                ]
+              },
+              "note": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "calibration": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "无历史判定时为 null,页面显示空态",
+          "properties": {
+            "judged_cards": {
+              "type": "integer"
+            },
+            "brier_history": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "bucket": {
+              "type": "string"
+            },
+            "bucket_hit_rate": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "review": {
+      "type": "object",
+      "required": [
+        "status",
+        "by",
+        "at"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "待复核",
+            "需补充",
+            "通过",
+            "驳回"
+          ]
+        },
+        "by": {
+          "type": "string"
+        },
+        "at": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "meta": {
+      "type": "object",
+      "required": [
+        "produced_by_session",
+        "produced_at",
+        "stance_rule",
+        "stops"
+      ],
+      "properties": {
+        "produced_by_session": {
+          "type": "string"
+        },
+        "produced_at": {
+          "type": "string"
+        },
+        "stance_rule": {
+          "type": "string",
+          "description": "温度→态度的离散化规则原文,全组一致"
+        },
+        "stops": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "本行业触发过的停点及用户裁定"
+        },
+        "gaps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "已知缺口"
+        },
+        "s1_admission_rule": {
+          "type": "string",
+          "description": "D1 原文:市级政府/主管部门原文算 S1;窗内 S1 fact ≥3 且至少 1 条国家或省级;多城同类动作合并为 1 个独立簇"
+        },
+        "anchor_rule": {
+          "type": "string",
+          "description": "D3 原文"
+        },
+        "direction_rule": {
+          "type": "string",
+          "description": "D8 原文:产业方向判定规则"
+        },
+        "temp_basis": {
+          "type": "object",
+          "description": "D14:温度取值依据。mode=mean 为均值公式;mode=decisive 时 node_id 为决定性事件节点,temp 取其 decisive_temp,mean_temp 为均值公式参考值",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": [
+                "mean",
+                "decisive"
+              ]
+            },
+            "node_id": {
+              "type": "string"
+            },
+            "mean_temp": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "mode"
+          ]
+        }
+      }
+    },
+    "direction": {
+      "type": "object",
+      "description": "D8 产业方向(与监管温度分开的第二轴):国家对该产业的政策方向,由分析师依据国家级方向性文件(规划/意见/政府工作报告/法律)判定,须回链 ≥1 条 S1 国家级 fact(窗内或锚点)",
+      "required": [
+        "stance",
+        "basis_fact_ids",
+        "note",
+        "judged_by",
+        "judged_at"
+      ],
+      "properties": {
+        "stance": {
+          "type": "string",
+          "enum": [
+            "支持",
+            "中性",
+            "限制"
+          ],
+          "description": "支持=国家明确促进该产业发展;限制=国家明确压缩/禁止/总量控制;中性=以规范为主、无明确促进或限制"
+        },
+        "basis_fact_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          },
+          "description": "只能引用 role=fact、tier=S1、issuer_level=国家 的节点(可以是 out_of_window 锚点)"
+        },
+        "note": {
+          "type": "string",
+          "description": "一句话:依据哪份文件的哪句措辞"
+        },
+        "judged_by": {
+          "type": "string"
+        },
+        "judged_at": {
+          "type": "string",
+          "format": "date"
+        },
+        "confirmed": {
+          "type": "boolean",
+          "description": "用户是否已确认本判定;草拟时 false"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,416 @@
+{
+  "_note": "结构示例。数据为假,只看字段形状;真实版每个节点必须有可打开的 URL。T0=2026-09-14;temp_calc 的数字未按 stance_rule 重算,只示意字段。",
+  "id": "example",
+  "name": "示例行业",
+  "group": "出行",
+  "scope": "本行业指……(与用户确认后的原句)",
+  "t0": "2026-09-14",
+  "stance": "risk",
+  "temp": 36,
+  "temp_calc": [
+    {
+      "node_id": "F1",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.4,
+      "role_factor": 1.0,
+      "push": "up",
+      "contribution": 8.0
+    },
+    {
+      "node_id": "C1",
+      "tier_weight": 0.8,
+      "level_weight": 1.0,
+      "recency_weight": 0.7,
+      "role_factor": 0.5,
+      "push": "up",
+      "contribution": 5.6
+    },
+    {
+      "node_id": "F2",
+      "tier_weight": 0.8,
+      "level_weight": 1.0,
+      "recency_weight": 1.0,
+      "role_factor": 1.0,
+      "push": "up",
+      "contribution": 16.0
+    },
+    {
+      "node_id": "F4",
+      "tier_weight": 1.0,
+      "level_weight": 0.7,
+      "recency_weight": 1.0,
+      "role_factor": 1.0,
+      "push": "up",
+      "contribution": 14.0
+    },
+    {
+      "node_id": "F3",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.4,
+      "role_factor": 1.0,
+      "push": "dn",
+      "contribution": -8.0
+    }
+  ],
+  "stage": "征求意见",
+  "line": "……(一句话,不含未回链数字)",
+  "next": {
+    "date": "2026-12-31",
+    "text": "……正式办法年内出台(部里口径)",
+    "source_node_id": "F2"
+  },
+  "cards": [
+    {
+      "id": "EX-001",
+      "title": "2026-12-31 前 ×× 部正式印发《……办法》",
+      "actor": "××部",
+      "action": "正式印发",
+      "object": "……",
+      "carrier": "管理办法",
+      "window": {
+        "from": "2026-09-20",
+        "to": "2026-12-31"
+      },
+      "verify_date": "2027-01-08",
+      "level": "较大可能",
+      "hypotheses": [
+        {
+          "key": "H1",
+          "text": "正式印发",
+          "p": 0.55
+        },
+        {
+          "key": "H2",
+          "text": "未印发,但发布实施细则征求意见或专项整治通知",
+          "p": 0.3
+        },
+        {
+          "key": "H0",
+          "text": "年内无动作",
+          "p": 0.15
+        }
+      ],
+      "failure_conditions": [
+        "2026-12-31 前无印发且无等效动作",
+        "部里公开表示推迟"
+      ],
+      "basis_fact_ids": [
+        "F1",
+        "F2",
+        "F4"
+      ],
+      "counter_evidence": [
+        "征求意见已超基率上四分位,提示程序性拖延"
+      ],
+      "impact": {
+        "strategy": "……",
+        "gr": "……",
+        "compliance": "……"
+      },
+      "status": "AI初稿·待复核"
+    }
+  ],
+  "timeline": [
+    {
+      "id": "F1",
+      "date": "2026-02-10",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "……征求意见稿",
+      "docno": "",
+      "issuer": "××部",
+      "excerpt": "原文摘录……",
+      "source_name": "××部官网",
+      "url": "https://www.example.gov.cn/...",
+      "fetched_at": "2026-09-18",
+      "push": "up",
+      "stage": "征求意见",
+      "use": "卡 EX-001 锚点事实",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch"
+    },
+    {
+      "id": "C1",
+      "date": "2026-05-20",
+      "kind": "social",
+      "role": "context",
+      "tier": "S2",
+      "title": "……(央媒报道)",
+      "excerpt": "……",
+      "source_name": "新华社",
+      "url": "https://www.news.cn/...",
+      "fetched_at": "2026-09-18",
+      "push": "up",
+      "relation": {
+        "to_fact_id": "F2",
+        "effect": "amplify"
+      },
+      "use": "社会要素:……",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch"
+    },
+    {
+      "id": "F2",
+      "date": "2026-09-05",
+      "kind": "speech",
+      "role": "fact",
+      "tier": "S2",
+      "title": "……发布会:年内出台",
+      "excerpt": "发言人原话……",
+      "source_name": "××部官网实录",
+      "url": "https://...",
+      "fetched_at": "2026-09-18",
+      "push": "up",
+      "stage": "部署",
+      "use": "官方时点承诺",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch"
+    },
+    {
+      "id": "F4",
+      "date": "2026-07-20",
+      "kind": "enforce",
+      "role": "fact",
+      "tier": "S1",
+      "issuer_level": "省",
+      "title": "××省××厅关于……的通知(省级承接动作)",
+      "docno": "",
+      "issuer": "××省××厅",
+      "excerpt": "原文摘录……",
+      "source_name": "××省××厅官网",
+      "url": "https://www.example.gov.cn/...",
+      "fetched_at": "2026-09-18",
+      "fetch_tool": "WebFetch",
+      "push": "up",
+      "stage": "实施",
+      "use": "省级执行样本,独立簇 2",
+      "after_t0": false
+    },
+    {
+      "id": "F3",
+      "date": "2025-11-02",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "……(支持性文件)",
+      "excerpt": "……",
+      "source_name": "中国政府网",
+      "url": "https://www.gov.cn/...",
+      "fetched_at": "2026-09-18",
+      "push": "dn",
+      "stage": "方向",
+      "use": "反证",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch"
+    },
+    {
+      "id": "P1",
+      "date": "2026-12-31",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "预测窗口截止:待判定",
+      "excerpt": "",
+      "source_name": "",
+      "url": "https://",
+      "fetched_at": "",
+      "push": "0",
+      "after_t0": true,
+      "pending": true,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch"
+    },
+    {
+      "id": "A1",
+      "date": "2023-04-26",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "issuer_level": "国家",
+      "title": "……(窗外仍生效的上位文件,锚点)",
+      "docno": "",
+      "issuer": "××部等五部门",
+      "excerpt": "原文摘录……",
+      "source_name": "中国政府网",
+      "url": "https://www.gov.cn/...",
+      "fetched_at": "2026-09-18",
+      "fetch_tool": "WebFetch",
+      "push": "0",
+      "stage": "正式",
+      "use": "D3 锚点:只用于定阶段与措辞变化,不计 3 条/温度/信号",
+      "after_t0": false,
+      "out_of_window": true
+    }
+  ],
+  "process": {
+    "kind": "analyst_record",
+    "retrieval": {
+      "window_from": "2025-09-14",
+      "window_to": "2026-09-14",
+      "queries": [
+        "…… 征求意见",
+        "…… 管理办法",
+        "…… 专项整治"
+      ],
+      "sources_checked": [
+        "gov.cn",
+        "mot.gov.cn",
+        "samr.gov.cn"
+      ],
+      "fetched": 31,
+      "admitted": 6,
+      "rejected": [
+        {
+          "title": "某自媒体:新规 10 月实施",
+          "url": "https://...",
+          "reason": "非白名单来源,无文号无原文链接;S5"
+        }
+      ],
+      "log_path": "sources/example/retrieval_log.md"
+    },
+    "grading": [
+      {
+        "node_id": "F1",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0
+      },
+      {
+        "node_id": "C1",
+        "tier": "S2",
+        "role": "context",
+        "weight": 0.95,
+        "note": "只作解释"
+      },
+      {
+        "node_id": "F4",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0
+      }
+    ],
+    "operators": [
+      {
+        "name": "HISTORICAL_ANALOGY",
+        "status": "SUPPORTED",
+        "summary": "……",
+        "fact_ids": [
+          "F1"
+        ]
+      },
+      {
+        "name": "WORDING_CHANGE",
+        "status": "SUPPORTED",
+        "summary": "……",
+        "fact_ids": [
+          "F1",
+          "F2"
+        ]
+      },
+      {
+        "name": "TARGET_REVERSE_INFERENCE",
+        "status": "SUPPORTED",
+        "summary": "……",
+        "fact_ids": [
+          "F2"
+        ]
+      },
+      {
+        "name": "CROSS_SOURCE_COMBINATION",
+        "status": "SUPPORTED",
+        "summary": "独立簇 2:部委原文;省级动作",
+        "fact_ids": [
+          "F1",
+          "F2",
+          "F4"
+        ]
+      }
+    ],
+    "base_rate": {
+      "pattern": "draft_to_final/××部",
+      "n": 5,
+      "median_days": 118,
+      "p25": 80,
+      "p75": 190,
+      "anchor_node_id": "F1",
+      "missing": false,
+      "samples": [
+        {
+          "title": "……办法(样本1)",
+          "start": "2022-03-01",
+          "end": "2022-07-10",
+          "days": 131,
+          "url": "https://..."
+        },
+        {
+          "title": "……办法(样本2)",
+          "start": "2022-03-01",
+          "end": "2022-07-10",
+          "days": 131,
+          "url": "https://..."
+        },
+        {
+          "title": "……办法(样本3)",
+          "start": "2022-03-01",
+          "end": "2022-07-10",
+          "days": 131,
+          "url": "https://..."
+        },
+        {
+          "title": "……办法(样本4)",
+          "start": "2022-03-01",
+          "end": "2022-07-10",
+          "days": 131,
+          "url": "https://..."
+        },
+        {
+          "title": "……办法(样本5)",
+          "start": "2022-03-01",
+          "end": "2022-07-10",
+          "days": 131,
+          "url": "https://..."
+        }
+      ]
+    },
+    "reasoning_trace": "阶段=征求意见;社会压力 1 放大;算子 4/4 支持;基率中位落点 2026-06-08 已过,提示拖延;H1 0.55……",
+    "review_checks": [
+      {
+        "check": "H1 各字段可回链 basis_fact_ids",
+        "result": "pass"
+      },
+      {
+        "check": "S4 未单独支撑断言",
+        "result": "pass"
+      },
+      {
+        "check": "社会要素未作为断言依据",
+        "result": "pass"
+      }
+    ],
+    "calibration": null
+  },
+  "review": {
+    "status": "待复核",
+    "by": "政策预判组",
+    "at": "2026-09-20 10:00",
+    "note": ""
+  },
+  "meta": {
+    "produced_by_session": "S1-出行组",
+    "produced_at": "2026-09-20",
+    "stance_rule": "只计 T0 前、非锚点节点;fact 贡献=推力符号×20×级别权重(S1 1.0/S2 0.8/S3 0.5/S4 0.5)×层级权重(国家 1.0/省 0.7/市 0.4)×时效权重(距 T0 ≤90 天 1.0/≤180 天 0.7/≤365 天 0.4),context 节点再×0.5;temp=求和四舍五入后夹在[-100,100];temp≥30 收紧风险(risk);temp≤-30 国家支持(support);收紧分与支持分绝对值各≥25 且 |temp|<30 为并存(mixed);其余观察中(watch)",
+    "stops": [],
+    "gaps": [
+      "无历史判定,校准为空"
+    ],
+    "s1_admission_rule": "市级政府/市级主管部门原文算 S1;窗内 role=fact 且 tier=S1 的节点≥3 条,其中至少 1 条国家或省级;多个城市的同类动作合并为 1 个独立簇",
+    "anchor_rule": "仍在生效的窗外上位文件可作锚点节点(out_of_window=true),只用于定阶段、措辞变化、历史类比;不计入 3 条、温度、信号"
+  }
+}

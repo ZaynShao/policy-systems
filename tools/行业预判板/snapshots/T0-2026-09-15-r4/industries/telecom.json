@@ -1,0 +1,1429 @@
+{
+  "id": "telecom",
+  "name": "通信与网络",
+  "group": "基础设施",
+  "scope": "电信与互联网基础网络的监管与建设——电信业务经营许可与市场秩序(增值电信许可、码号资源、电子证照)、5G/5G-A/6G 与千兆/万兆光网建设、卫星通信/卫星互联网与手机直连卫星的业务准入、电信设施共建共享与地方电信设施条例、携号转网/资费/服务质量监管(季度通告、APP/SDK 通报)、反电信网络诈骗中的通信侧义务、互联网基础资源(IPv6、域名);不含互联网平台内容与经营行为监管、算力与数据中心、卫星与火箭制造发射、AI 模型监管、金融账户侧反诈",
+  "t0": "2026-09-15",
+  "direction": {
+    "stance": "支持",
+    "basis_fact_ids": [
+      "F21",
+      "F16",
+      "A2",
+      "F13"
+    ],
+    "note": "《信息通信行业发展“十五五”规划》(F21):“到2030 年，全面建成覆盖完善、性能领先的新一代通信网，加快形成技术先进、安全可控的信息通信产业体系”;互联网基础资源指导意见(F16):“到2030 年，互联网基础资源高质量发展实现体系化突破”;卫星通信准入指导意见(A2):“有序推动卫星通信业务开放，促进卫星通信产业高质量发展”“发展卫星通信用户超千万”;“人工智能+信息通信”实施意见(F13)。国家以行业专项规划与部委指导意见明确促进网络建设与业务开放 → 支持;短信规章、季度通告与 APP 通报属市场秩序执法面,与方向分开计(用户 2026-09-15 裁定台确认)",
+    "judged_by": "S8-新增行业组(2026-09-15 首轮独立判定),待用户确认",
+    "judged_at": "2026-09-15",
+    "confirmed": true
+  },
+  "stance": "mixed",
+  "temp": 4,
+  "temp_calc": [
+    {
+      "node_id": "F1",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.4,
+      "role_factor": 1.0,
+      "push": "up",
+      "push_weight": 0.5,
+      "contribution": -4.0
+    },
+    {
+      "node_id": "F2",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.4,
+      "role_factor": 1.0,
+      "push": "0",
+      "push_weight": 1.0,
+      "contribution": 0.0
+    },
+    {
+      "node_id": "F3",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.4,
+      "role_factor": 1.0,
+      "push": "dn",
+      "push_weight": 1.0,
+      "contribution": 8.0
+    },
+    {
+      "node_id": "F4",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.4,
+      "role_factor": 1.0,
+      "push": "dn",
+      "push_weight": 1.0,
+      "contribution": 8.0
+    },
+    {
+      "node_id": "F5",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.4,
+      "role_factor": 1.0,
+      "push": "0",
+      "push_weight": 1.0,
+      "contribution": 0.0
+    },
+    {
+      "node_id": "F6",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.4,
+      "role_factor": 1.0,
+      "push": "up",
+      "push_weight": 1.0,
+      "contribution": -8.0
+    },
+    {
+      "node_id": "F7",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.7,
+      "role_factor": 1.0,
+      "push": "up",
+      "push_weight": 0.5,
+      "contribution": -7.0
+    },
+    {
+      "node_id": "F8",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.7,
+      "role_factor": 1.0,
+      "push": "dn",
+      "push_weight": 1.0,
+      "contribution": 14.0
+    },
+    {
+      "node_id": "F9",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.7,
+      "role_factor": 1.0,
+      "push": "up",
+      "push_weight": 0.5,
+      "contribution": -7.0
+    },
+    {
+      "node_id": "F10",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.7,
+      "role_factor": 1.0,
+      "push": "up",
+      "push_weight": 1.0,
+      "contribution": -14.0
+    },
+    {
+      "node_id": "F11",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.7,
+      "role_factor": 1.0,
+      "push": "0",
+      "push_weight": 1.0,
+      "contribution": 0.0
+    },
+    {
+      "node_id": "F12",
+      "tier_weight": 1.0,
+      "level_weight": 0.7,
+      "recency_weight": 0.7,
+      "role_factor": 1.0,
+      "push": "0",
+      "push_weight": 1.0,
+      "contribution": 0.0
+    },
+    {
+      "node_id": "F13",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.7,
+      "role_factor": 1.0,
+      "push": "dn",
+      "push_weight": 1.0,
+      "contribution": 14.0
+    },
+    {
+      "node_id": "F14",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.7,
+      "role_factor": 1.0,
+      "push": "dn",
+      "push_weight": 1.0,
+      "contribution": 14.0
+    },
+    {
+      "node_id": "F15",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 1.0,
+      "role_factor": 1.0,
+      "push": "0",
+      "push_weight": 1.0,
+      "contribution": 0.0
+    },
+    {
+      "node_id": "F16",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 1.0,
+      "role_factor": 1.0,
+      "push": "dn",
+      "push_weight": 1.0,
+      "contribution": 20.0
+    },
+    {
+      "node_id": "F17",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 1.0,
+      "role_factor": 1.0,
+      "push": "up",
+      "push_weight": 1.0,
+      "contribution": -20.0
+    },
+    {
+      "node_id": "F18",
+      "tier_weight": 1.0,
+      "level_weight": 0.7,
+      "recency_weight": 1.0,
+      "role_factor": 1.0,
+      "push": "up",
+      "push_weight": 1.0,
+      "contribution": -14.0
+    },
+    {
+      "node_id": "F19",
+      "tier_weight": 1.0,
+      "level_weight": 0.7,
+      "recency_weight": 1.0,
+      "role_factor": 1.0,
+      "push": "up",
+      "push_weight": 1.0,
+      "contribution": -14.0
+    },
+    {
+      "node_id": "F20",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 1.0,
+      "role_factor": 1.0,
+      "push": "0",
+      "push_weight": 1.0,
+      "contribution": 0.0
+    },
+    {
+      "node_id": "F21",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 1.0,
+      "role_factor": 1.0,
+      "push": "dn",
+      "push_weight": 1.0,
+      "contribution": 20.0
+    },
+    {
+      "node_id": "C1",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.4,
+      "role_factor": 0.5,
+      "push": "0",
+      "push_weight": 1.0,
+      "contribution": 0.0
+    }
+  ],
+  "stage": "正式",
+  "line": "“十五五”规划、基础资源与 AI+信通等促进件密集,卫星物联网商用试验放开准入;短信规章施行、季度通告与省局 APP 通报常态执法",
+  "next": {
+    "date": "2026-12-31",
+    "text": "国务院 2026 年度立法工作计划“预备提请审议电信法草案”的年度节点(卡 TELECOM-002);2026 年第三季度电信服务质量通告按节拍应在 10 月下旬发布",
+    "source_node_id": "F11"
+  },
+  "cards": [
+    {
+      "id": "TELECOM-001",
+      "title": "2027-06-30 前工业和信息化部(办公厅)印发万兆光网新一轮试点或规模部署的通知(标题含“万兆光网”,以工信部官网文件发布为准)",
+      "actor": "工业和信息化部(办公厅、信息通信发展司)",
+      "action": "印发",
+      "object": "万兆光网新一轮试点/规模部署通知",
+      "carrier": "通知",
+      "window": {
+        "from": "2026-09-15",
+        "to": "2027-06-30"
+      },
+      "verify_date": "2027-07-10",
+      "level": "可能",
+      "hypotheses": [
+        {
+          "key": "H1",
+          "text": "2027-06-30 前印发标题含“万兆光网”的试点或部署通知",
+          "p": 0.5
+        },
+        {
+          "key": "H2",
+          "text": "未单独发文,但以“双万兆”/“信号升格”新版等专项行动文件覆盖万兆光网部署任务",
+          "p": 0.3
+        },
+        {
+          "key": "H0",
+          "text": "2027-06-30 前无相关文件",
+          "p": 0.2
+        }
+      ],
+      "failure_conditions": [
+        "2027-06-30 前工信部政策文件库与信息通信发展司文件发布栏无“万兆光网”新通知",
+        "工信部公开表示万兆光网转入企业自主部署、不再组织试点"
+      ],
+      "basis_fact_ids": [
+        "F8",
+        "F21",
+        "F13"
+      ],
+      "counter_evidence": [
+        "基率缺失:试点线只有 3 号→119 号→161 号一条完整样本,档位封顶“可能”",
+        "规划措辞为“积极开展万兆光网试点建设，逐步扩大万兆网络覆盖”,未承诺新一轮单独发文",
+        "119 号入围名单日期本轮未核,试点线节拍只核到两端"
+      ],
+      "impact": {
+        "strategy": "万兆光网从试点走向部署决定园区/场站高带宽接入的供给节奏与资费",
+        "gr": "关注信息通信发展司试点申报窗口与各省通管局推荐名单",
+        "compliance": "无直接合规义务"
+      },
+      "status": "AI初稿·待复核"
+    },
+    {
+      "id": "TELECOM-002",
+      "title": "2026-12-31 前国务院向全国人大常委会提请审议电信法草案(以全国人大常委会会议议程或新华社审议报道为准)",
+      "actor": "国务院(工业和信息化部起草)",
+      "action": "提请审议",
+      "object": "电信法草案",
+      "carrier": "法律草案",
+      "window": {
+        "from": "2026-09-15",
+        "to": "2026-12-31"
+      },
+      "verify_date": "2027-01-10",
+      "level": "观察",
+      "hypotheses": [
+        {
+          "key": "H1",
+          "text": "2026-12-31 前提请全国人大常委会初次审议",
+          "p": 0.15
+        },
+        {
+          "key": "H2",
+          "text": "2026 年内未提请,但 2027-06-30 前提请或国务院常务会议讨论通过草案",
+          "p": 0.25
+        },
+        {
+          "key": "H0",
+          "text": "2027-06-30 前无提请、无国务院常务会议审议",
+          "p": 0.6
+        }
+      ],
+      "failure_conditions": [
+        "2026-12-31 前全国人大常委会各次会议议程无电信法草案",
+        "2027 年度立法计划再次列为预备项目或删除"
+      ],
+      "basis_fact_ids": [
+        "F11",
+        "F6",
+        "F21"
+      ],
+      "counter_evidence": [
+        "“预备提请”为立法计划第二档,历年预备项目当年提请比例低(本轮未测得样本,基率缺失)",
+        "电信条例 2016 年后未再修订,窗内电信业务监管仍以部门规章(F6)与规范性文件推进,立法紧迫性未见官方表态",
+        "只有 1 个独立簇(国办立法计划),不满足“可能”"
+      ],
+      "impact": {
+        "strategy": "电信法将重构业务许可与市场准入的法律层级,影响增值电信/物联网/卫星通信准入的长期规则",
+        "gr": "跟踪全国人大常委会年度立法工作计划与工信部政策法规司动态",
+        "compliance": "无近期义务"
+      },
+      "status": "AI初稿·待复核"
+    },
+    {
+      "id": "TELECOM-003",
+      "title": "2027-06-30 前工业和信息化部或省级通信管理局公开首批获准开展卫星物联网业务商用试验的企业(公告、名单或官方新闻稿)",
+      "actor": "工业和信息化部(信息通信管理局)或省级通信管理局",
+      "action": "公开批复企业",
+      "object": "卫星物联网业务商用试验批复企业",
+      "carrier": "公告/名单/官方新闻稿",
+      "window": {
+        "from": "2026-09-15",
+        "to": "2027-06-30"
+      },
+      "verify_date": "2027-07-10",
+      "level": "可能",
+      "hypotheses": [
+        {
+          "key": "H1",
+          "text": "2027-06-30 前官方渠道公开 ≥1 家获批企业",
+          "p": 0.45
+        },
+        {
+          "key": "H2",
+          "text": "批复不公开,但工信部公开卫星互联网/手机直连卫星等其他卫星业务准入动作(许可、试验或办法)",
+          "p": 0.3
+        },
+        {
+          "key": "H0",
+          "text": "无任何官方公开的卫星业务准入动作",
+          "p": 0.25
+        }
+      ],
+      "failure_conditions": [
+        "2027-06-30 前工信部与各省通管局官网无卫星物联网商用试验批复信息",
+        "工信部公开表示商用试验暂缓"
+      ],
+      "basis_fact_ids": [
+        "F3",
+        "F21",
+        "F16"
+      ],
+      "counter_evidence": [
+        "307 号通知采用逐案批复方式(“批准符合条件的企业开展商用试验”“获得商用试验批复的企业”),未承诺公开名单,H1 的可判定性依赖官方是否发布",
+        "三大运营商卫星移动通信许可(2025-09 前后)的工信部原文页未定位,准入线窗内只有 F3 一件已核动作",
+        "基率缺失,档位封顶“可能”"
+      ],
+      "impact": {
+        "strategy": "卫星物联网商用化打开车辆/船舶广域连接供给,影响车联网与应急通信采购选项",
+        "gr": "关注信息通信管理局批复动态与商业航天企业公告",
+        "compliance": "使用卫星物联网服务须选择获批企业"
+      },
+      "status": "AI初稿·待复核"
+    }
+  ],
+  "timeline": [
+    {
+      "id": "A1",
+      "date": "2016-02-06",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "issuer_level": "国家",
+      "title": "中华人民共和国电信条例",
+      "docno": "中华人民共和国国务院令第291号(2016 年修订)",
+      "issuer": "国务院",
+      "excerpt": "第七条 国家对电信业务经营按照电信业务分类，实行许可制度。",
+      "source_name": "国家行政法规库(司法部)",
+      "url": "https://xzfg.moj.gov.cn/front/law/detail?LawID=1623",
+      "fetched_at": "2026-09-15",
+      "fetch_tool": "curl",
+      "http_status": 200,
+      "push": "0",
+      "use": "D3 锚点:电信业务许可制度的上位行政法规(2000 年国务院令第 291 号公布,2014、2016 两次修订,页面含历史沿革;2025/2026 未见新修订);电信法草案仍在国务院 2026 年立法计划预备项目(F11)",
+      "after_t0": false,
+      "issued_on": "2016-02-06",
+      "stage": "实施",
+      "out_of_window": true,
+      "note": "date 取最近一次修订日 2016-02-06(《国务院关于修改部分行政法规的决定》);国家行政法规库 LawID=1623 为 2016 年修订版,LawID=1624 为 2014 年修订版(同页“历史沿革”可核);第七条两版一致"
+    },
+    {
+      "id": "A2",
+      "date": "2025-08-27",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "issuer_level": "国家",
+      "title": "工业和信息化部关于优化业务准入促进卫星通信产业发展的指导意见",
+      "docno": "工信部信管〔2025〕180号",
+      "issuer": "工业和信息化部",
+      "excerpt": "有序推动卫星通信业务开放，促进卫星通信产业高质量发展，激发商业航天创新活力，培育打造新质生产力，支撑制造强国、网络强国和数字中国建设，提出以下意见。……到2030年，卫星通信管理制度及政策法规进一步完善，产业发展环境持续优化，各类经营主体创新活力充分迸发，基础设施、产业供给、技术标准、国际合作等综合发展水平显著提升，手机直连卫星等新模式新业态规模应用，发展卫星通信用户超千万",
+      "source_name": "中国政府网",
+      "url": "https://www.gov.cn/zhengce/zhengceku/202508/content_7038032.htm",
+      "fetched_at": "2026-09-15",
+      "fetch_tool": "curl",
+      "http_status": 200,
+      "push": "0",
+      "use": "D3 锚点(窗外 19 天):卫星通信业务准入线的直接上位件,F3 卫星物联网商用试验“按照《…指导意见》有关要求”承接;产业方向依据之一",
+      "after_t0": false,
+      "issued_on": "2025-08-25",
+      "stage": "方向",
+      "out_of_window": true
+    },
+    {
+      "id": "A3",
+      "date": "2025-01-08",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "issuer_level": "国家",
+      "title": "工业和信息化部办公厅关于开展万兆光网试点工作的通知",
+      "docno": "工信厅通信函〔2025〕3号",
+      "issuer": "工业和信息化部办公厅",
+      "excerpt": "在小区、工厂、园区等重点场景，开展万兆光网试点，实现50G-PON（无源光网络）超宽光接入、FTTH（光纤到户）/FTTR（光纤到房间）与第7代无线局域网协同、高速大容量光传输、光网络与人工智能融合等技术的部署应用。……择优形成本区域万兆光网试点名单，于2025年2月28日前推荐至工业和信息化部（信息通信发展司）。",
+      "source_name": "中国政府网",
+      "url": "https://www.gov.cn/zhengce/zhengceku/202501/content_6996924.htm",
+      "fetched_at": "2026-09-15",
+      "fetch_tool": "curl",
+      "http_status": 200,
+      "push": "0",
+      "use": "D3 锚点:万兆光网试点线起点(3 号→119 号入围名单→161 号完成公布 F8);卡 TELECOM-001 的历史类比与基率线起点",
+      "after_t0": false,
+      "issued_on": "2025-01-02",
+      "stage": "部署",
+      "out_of_window": true
+    },
+    {
+      "id": "F1",
+      "date": "2025-10-11",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "issuer_level": "国家",
+      "title": "工业和信息化部办公厅关于全面推广增值电信业务经营许可电子证照应用的通知",
+      "docno": "工信厅信管〔2025〕50号",
+      "issuer": "工业和信息化部办公厅",
+      "excerpt": "电子证照与纸质证照具有同等法律效力，均可作为企业从事增值电信业务经营活动的合法凭证。增值电信企业应严格遵守《中华人民共和国电子签名法》等法律法规，不得转让、涂改、伪造、倒卖、出租、出借电子证照。",
+      "source_name": "中国政府网",
+      "url": "https://www.gov.cn/zhengce/zhengceku/202510/content_7043890.htm",
+      "fetched_at": "2026-09-15",
+      "fetch_tool": "curl",
+      "http_status": 200,
+      "push": "up",
+      "use": "许可管理的程序性规则(电子证照),软规则 up×0.5",
+      "after_t0": false,
+      "issued_on": "2025-09-27",
+      "stage": "实施",
+      "push_weight": 0.5
+    },
+    {
+      "id": "F2",
+      "date": "2025-10-28",
+      "kind": "enforce",
+      "role": "fact",
+      "tier": "S1",
+      "issuer_level": "国家",
+      "title": "工业和信息化部关于2025年第三季度电信服务质量的通告",
+      "docno": "工信部信管函〔2025〕284号",
+      "issuer": "工业和信息化部",
+      "excerpt": "处罚违规企业228家次。加大“来电来信免打扰”服务推广力度，依据用户意愿累计为12.6亿用户提供防护服务。",
+      "source_name": "工业和信息化部网站",
+      "url": "https://www.miit.gov.cn/jgsj/xgj/wjfb/art/2025/art_c519caa8e49a4905a22e8f5bb11e3ada.html",
+      "fetched_at": "2026-09-15",
+      "fetch_tool": "curl",
+      "http_status": 200,
+      "push": "0",
+      "use": "季度执法通报序列(2025Q3);同一整治线最多计 2 条,方向计在最近两期 F10/F17,本期记 0;作基率线 B(季度节拍)样本",
+      "after_t0": false,
+      "issued_on": "2025-10-27",
+      "stage": "执法"
+    },
+    {
+      "id": "F3",
+      "date": "2025-11-25",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "issuer_level": "国家",
+      "title": "工业和信息化部关于组织开展卫星物联网业务商用试验的通知",
+      "docno": "工信部信管函〔2025〕307号",
+      "issuer": "工业和信息化部",
+      "excerpt": "按照《工业和信息化部关于优化业务准入促进卫星通信产业发展的指导意见》有关要求，现组织开展卫星物联网业务商用试验。有关事项通知如下。……试验期为两年。获得商用试验批复的企业每年定期梳理汇总商用试验情况及问题，报工业和信息化部。",
+      "source_name": "工业和信息化部网站",
+      "url": "https://www.miit.gov.cn/jgsj/xgj/wjfb/art/2025/art_59b715ed2eb74cdb94854f881d2751ea.html",
+      "fetched_at": "2026-09-15",
+      "fetch_tool": "curl",
+      "http_status": 200,
+      "push": "dn",
+      "use": "卫星线窗内的准入放开动作(商用试验、按企业批复),促进类记支持;承接锚点 A2;卡 TELECOM-003 主依据;gov.cn 同稿 2025-11-26(content_7049595.htm)",
+      "after_t0": false,
+      "issued_on": "2025-11-19",
+      "stage": "实施",
+      "note": "date 取工信部页“发布日期”2025-11-25,gov.cn 转载 11-26"
+    },
+    {
+      "id": "F4",
+      "date": "2025-12-30",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "issuer_level": "国家",
+      "title": "工业和信息化部办公厅关于加快推进国家新型互联网交换中心创新发展的指导意见",
+      "docno": "工信厅信管〔2025〕67号",
+      "issuer": "工业和信息化部办公厅",
+      "excerpt": "国家新型互联网交换中心（以下简称交换中心）作为重要的新型信息基础设施，通过构建中立、公平、开放的流量集中交换平台，实现不同网络间数据高效流通",
+      "source_name": "工业和信息化部网站",
+      "url": "https://www.miit.gov.cn/jgsj/xgj/wjfb/art/2025/art_c94522ae0fd0487e959b59f6ea36f407.html",
+      "fetched_at": "2026-09-15",
+      "fetch_tool": "curl",
+      "http_status": 200,
+      "push": "dn",
+      "use": "互联网基础设施促进类(指导意见),记支持",
+      "after_t0": false,
+      "issued_on": "2025-12-15",
+      "stage": "正式"
+    },
+    {
+      "id": "F5",
+      "date": "2026-01-29",
+      "kind": "enforce",
+      "role": "fact",
+      "tier": "S1",
+      "issuer_level": "国家",
+      "title": "工业和信息化部关于2025年第四季度电信服务质量的通告",
+      "docno": "工信部信管函〔2026〕23号",
+      "issuer": "工业和信息化部",
+      "excerpt": "处罚违规企业128家次。加大“来电来信免打扰”服务推广力度，依据用户意愿为12.7亿用户提供营销电话、短信防护服务53亿次。",
+      "source_name": "工业和信息化部网站",
+      "url": "https://www.miit.gov.cn/jgsj/xgj/wjfb/art/2026/art_ec80028a145d49328e583635e1f40b39.html",
+      "fetched_at": "2026-09-15",
+      "fetch_tool": "curl",
+      "http_status": 200,
+      "push": "0",
+      "use": "季度执法通报序列(2025Q4);同线上限外记 0(方向计在 F10/F17)",
+      "after_t0": false,
+      "issued_on": "2026-01-28",
+      "stage": "执法"
+    },
+    {
+      "id": "F6",
+      "date": "2026-02-09",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "issuer_level": "国家",
+      "title": "通信短信息服务管理规定（2026 年修订，工业和信息化部令第 74 号）",
+      "docno": "中华人民共和国工业和信息化部令第74号",
+      "issuer": "工业和信息化部",
+      "excerpt": "（2015年5月19日中华人民共和国工业和信息化部令第31号公布。根据2026年2月9日中华人民共和国工业和信息化部令第74号修订，自2026年5月1日起施行。）……第四条 提供通信短信息服务，应当依法取得电信业务经营许可和电信网码号资源使用许可。",
+      "source_name": "工业和信息化部网站·部门规章",
+      "url": "https://www.miit.gov.cn/gyhxxhb/jgsj/cyzcyfgs/bmgz/xxtxl/art/2026/art_f729621047ec4c30bcdd5cd4101f9568.html",
+      "fetched_at": "2026-09-15",
+      "fetch_tool": "curl",
+      "http_status": 200,
+      "push": "up",
+      "use": "部门规章修订(强制义务+第三十六条起罚则,上位法列明《反电信网络诈骗法》),硬监管 up;2026-05-01 施行,Q2 通告(F17)与浙江通告(F18)均记其“落地实施”",
+      "after_t0": false,
+      "issued_on": "2026-02-09",
+      "stage": "正式",
+      "note": "date 取部令公布日 2026-02-09(规章正文括注);工信部规章库页面发布时间 2026-03-27,两者并列写;第一条“促进…健康发展”为目的条款,正文无促进措施,不按“法律双向”处理"
+    },
+    {
+      "id": "F7",
+      "date": "2026-03-23",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "issuer_level": "国家",
+      "title": "工业和信息化部办公厅关于做好2026年信息通信业安全生产和网络运行安全工作的通知",
+      "docno": "工信厅信管函〔2026〕110号",
+      "issuer": "工业和信息化部办公厅",
+      "excerpt": "为做好2026年信息通信业安全生产和网络运行安全工作，现就有关事项通知如下：",
+      "source_name": "工业和信息化部网站",
+      "url": "https://www.miit.gov.cn/jgsj/xgj/wjfb/art/2026/art_2abb2e88da574f41869dbb61a062eebe.html",
+      "fetched_at": "2026-09-15",
+      "fetch_tool": "curl",
+      "http_status": 200,
+      "push": "up",
+      "use": "年度安全工作部署(执行衔接件,无新罚则),软规则 up×0.5",
+      "after_t0": false,
+      "issued_on": "2026-03-16",
+      "stage": "部署",
+      "push_weight": 0.5
+    },
+    {
+      "id": "F8",
+      "date": "2026-04-21",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "issuer_level": "国家",
+      "title": "工业和信息化部办公厅关于公布万兆光网试点项目完成情况的通知",
+      "docno": "工信厅通信函〔2026〕161号",
+      "issuer": "工业和信息化部办公厅",
+      "excerpt": "按照《工业和信息化部办公厅关于开展万兆光网试点工作的通知》（工信厅通信函〔2025〕3号）、《工业和信息化部办公厅关于公布万兆光网试点入围名单的通知》（工信厅通信函〔2025〕119号）有关要求，经项目自评、专家评审等程序，工业和信息化部确定了完成万兆光网试点任务的136个项目",
+      "source_name": "工业和信息化部网站",
+      "url": "https://www.miit.gov.cn/zwgk/zcwj/wjfb/tz/art/2026/art_d00aa57004f04e90898b931e048036e8.html",
+      "fetched_at": "2026-09-15",
+      "fetch_tool": "curl",
+      "http_status": 200,
+      "push": "dn",
+      "use": "万兆光网试点线的完成节点(3 号→119 号→161 号),促进类记支持;卡 TELECOM-001 主依据",
+      "after_t0": false,
+      "issued_on": "2026-04-14",
+      "stage": "实施"
+    },
+    {
+      "id": "F9",
+      "date": "2026-04-24",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "issuer_level": "国家",
+      "title": "工业和信息化部 民政部关于地名顶级域申请有关事项的通告",
+      "docno": "工信部联信管函〔2026〕103号",
+      "issuer": "工业和信息化部、民政部",
+      "excerpt": "四、工业和信息化部在民政部审核意见基础上，作出是否出具支持或无异议文件的决定。申请地名顶级域的单位获得ICANN授权后在我国境内开展域名注册服务及相关活动，应当遵守相关法律法规和管理规定。",
+      "source_name": "工业和信息化部网站",
+      "url": "https://www.miit.gov.cn/jgsj/xgj/wjfb/art/2026/art_a156374e91e44ba199e267201a4b882d.html",
+      "fetched_at": "2026-09-15",
+      "fetch_tool": "curl",
+      "http_status": 200,
+      "push": "up",
+      "use": "互联网基础资源(域名)的申请审核程序,程序性规则 up×0.5",
+      "after_t0": false,
+      "issued_on": "2026-04-10",
+      "stage": "实施",
+      "push_weight": 0.5
+    },
+    {
+      "id": "F10",
+      "date": "2026-04-28",
+      "kind": "enforce",
+      "role": "fact",
+      "tier": "S1",
+      "issuer_level": "国家",
+      "title": "工业和信息化部关于2026年第一季度电信服务质量的通告",
+      "docno": "工信部信管函〔2026〕120号",
+      "issuer": "工业和信息化部",
+      "excerpt": "组织开展APP技术抽测43批次，责令整改841款，公开通报190款，下架13款。……组织关停违规语音专线1438条、短信端口204个，依法责令整改、督办、处罚违规企业72家次。",
+      "source_name": "工业和信息化部网站",
+      "url": "https://www.miit.gov.cn/jgsj/xgj/wjfb/art/2026/art_983eaf483b80451c8b49d6b34e1ebe08.html",
+      "fetched_at": "2026-09-15",
+      "fetch_tool": "curl",
+      "http_status": 200,
+      "push": "up",
+      "use": "季度执法通报(处罚、下架、关停),硬监管 up;同一整治线计 2 条(本期与 F17)",
+      "after_t0": false,
+      "issued_on": "2026-04-24",
+      "stage": "执法"
+    },
+    {
+      "id": "F11",
+      "date": "2026-05-11",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "issuer_level": "国家",
+      "title": "国务院办公厅关于印发《国务院2026年度立法工作计划》的通知",
+      "docno": "国办发〔2026〕14号",
+      "issuer": "国务院办公厅",
+      "excerpt": "预备提请全国人大常委会审议电信法草案、计量法修订草案、消费税法草案、商业银行法修订草案、保险法修订草案、公路法修订草案、铁路法修订草案、电力法修订草案",
+      "source_name": "中国政府网",
+      "url": "https://www.gov.cn/zhengce/zhengceku/202605/content_7068346.htm",
+      "fetched_at": "2026-09-15",
+      "fetch_tool": "curl",
+      "http_status": 200,
+      "push": "0",
+      "use": "共用件(多行业同引),记 0;电信法草案列为“预备提请”项目,是卡 TELECOM-002 的唯一官方依据",
+      "after_t0": false,
+      "issued_on": "2026-05-08",
+      "stage": "部署"
+    },
+    {
+      "id": "F12",
+      "date": "2026-06-01",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "issuer_level": "省",
+      "title": "新修订的《云南省电信设施建设和保护条例》通过审议（云南省通信管理局工作动态）",
+      "docno": "",
+      "issuer": "云南省人民代表大会常务委员会(云南省通信管理局发布动态)",
+      "excerpt": "5月28日，新修订的《云南省电信设施建设和保护条例》（以下简称《条例》）已由云南省第十四届人大常委会第二十三次会议审议通过，将于2026年8月15日正式施行。……立法目的新增“支撑数字化、网络化、智能化发展”，明确电信业务经营者为传统产业转型、低空经济及新业态提供网络支撑。",
+      "source_name": "云南省通信管理局",
+      "url": "https://ynca.miit.gov.cn/xwdt/gzdt/art/2026/art_24846766fdd44a4a92c89b70349c0c60.html",
+      "fetched_at": "2026-09-15",
+      "fetch_tool": "curl",
+      "http_status": 200,
+      "push": "0",
+      "use": "省级地方性法规(电信设施建设与保护):促进(共建共享、进场施工保障)与义务并含,按“法律双向”记 0;条例全文页(云南人大)未核,以省局工作动态为准",
+      "after_t0": false,
+      "issued_on": "2026-05-28",
+      "stage": "正式",
+      "note": "gaps:云南省人大法规公告页与条例全文未核"
+    },
+    {
+      "id": "F13",
+      "date": "2026-06-10",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "issuer_level": "国家",
+      "title": "工业和信息化部关于印发《“人工智能+信息通信”创新发展实施意见（2026—2028年）》的通知",
+      "docno": "工信部通信〔2026〕121号",
+      "issuer": "工业和信息化部",
+      "excerpt": "现将《“人工智能+信息通信”创新发展实施意见（2026—2028年）》印发给你们，请结合实际认真抓好落实。",
+      "source_name": "工业和信息化部网站",
+      "url": "https://wap.miit.gov.cn/jgsj/txs/wjfb/art/2026/art_c1fe635702fc4339bf85289fe605ac21.html",
+      "fetched_at": "2026-09-15",
+      "fetch_tool": "curl",
+      "http_status": 200,
+      "push": "dn",
+      "use": "促进类(实施意见),记支持;AI 行业已收为其 F18(gov.cn 公开日 2026-06-11),本行业按工信部页 06-10,两行业各自进链不去重;正文在附件未引",
+      "after_t0": false,
+      "issued_on": "2026-06-03",
+      "stage": "正式"
+    },
+    {
+      "id": "F14",
+      "date": "2026-06-15",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "issuer_level": "国家",
+      "title": "工业和信息化部等五部门办公厅（综合司）关于开展工业5G独立专网试点的通知",
+      "docno": "工信厅联信管函﹝2026﹞227号",
+      "issuer": "工业和信息化部办公厅等五部门办公厅（综合司）",
+      "excerpt": "工业5G独立专网（以下简称“独立专网”）是指由工业企业主导建设接入网、核心网等关键设施，可不依赖于公网独立运行的企业专属5G网络。……试点期为两年。",
+      "source_name": "工业和信息化部网站",
+      "url": "https://www.miit.gov.cn/jgsj/xgj/wjfb/art/2026/art_5741357166724481858cf53fca25826d.html",
+      "fetched_at": "2026-09-15",
+      "fetch_tool": "curl",
+      "http_status": 200,
+      "push": "dn",
+      "use": "5G 网络建设侧的试点扩围(按企业批复),促进类记支持",
+      "after_t0": false,
+      "issued_on": "2026-04-11",
+      "stage": "实施",
+      "note": "页面文号使用“﹝﹞”样式括号,照录"
+    },
+    {
+      "id": "F15",
+      "date": "2026-07-03",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "issuer_level": "国家",
+      "title": "国家互联网信息办公室关于《互联网信息服务管理办法（修订草案征求意见稿）》再次公开征求意见的通知",
+      "docno": "",
+      "issuer": "国家互联网信息办公室",
+      "excerpt": "前期，国家互联网信息办公室会同工业和信息化部、公安部起草了《互联网信息服务管理办法（修订草案征求意见稿）》并公开征求意见。此后，根据修改后的《中华人民共和国网络安全法》等法律和社会公众反馈意见，国家互联网信息办公室会同有关部门对《互联网信息服务管理办法（修订草案征求意见稿）》进行了修改完善。为深入推进科学立法、民主立法、依法立法，提高立法质量，现再次公开征求意见。……意见反馈截止日期为2026年8月2日。",
+      "source_name": "中央网信办网站",
+      "url": "https://www.cac.gov.cn/2026-07/03/c_1784822399677167.htm",
+      "fetched_at": "2026-09-15",
+      "fetch_tool": "curl",
+      "http_status": 200,
+      "push": "0",
+      "use": "共用件(AI 行业 F22 已记 0),本行业只引 ICP 许可/接入服务条款,记 0;基率线 A 的删失样本(2021 首征→2026 再征未印发)",
+      "after_t0": false,
+      "stage": "征求意见",
+      "issued_on": "2026-07-03"
+    },
+    {
+      "id": "F16",
+      "date": "2026-07-13",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "issuer_level": "国家",
+      "title": "工业和信息化部 中央网信办 国家发展和改革委 国家数据局关于推动互联网基础资源高质量发展的指导意见",
+      "docno": "工信部联信管〔2026〕159号",
+      "issuer": "工业和信息化部、中央网信办、国家发展和改革委、国家数据局",
+      "excerpt": "现将《关于推动互联网基础资源高质量发展的指导意见》印发给你们，请结合实际，抓好贯彻落实。……到2030 年，互联网基础资源高质量发展实现体系化突破，取得一批标志性技术原创成果，形成系列引领性技术标准。",
+      "source_name": "工业和信息化部网站",
+      "url": "https://www.miit.gov.cn/zwgk/zcwj/wjfb/yj/art/2026/art_fefdddaaa4ac49edb130c85d048a2933.html",
+      "fetched_at": "2026-09-15",
+      "fetch_tool": "curl",
+      "http_status": 200,
+      "push": "dn",
+      "use": "促进类(指导意见,2030 目标),记支持;第六部分“构建完备高效监督管理体系”为配套治理条款,不改变促进类判定;第二段摘录取自 gov.cn 同稿附件 PDF(content_7075333.htm 页 P020260714379413306090.pdf);商业航天只引卫星互联网段,算力不计",
+      "after_t0": false,
+      "issued_on": "2026-07-01",
+      "stage": "正式",
+      "note": "date 取工信部页 07-13,gov.cn 07-14;附件 PDF 文本“到2030 年”含排版空格,按去空白比对"
+    },
+    {
+      "id": "F17",
+      "date": "2026-08-13",
+      "kind": "enforce",
+      "role": "fact",
+      "tier": "S1",
+      "issuer_level": "国家",
+      "title": "工业和信息化部关于2026年第二季度电信服务质量的通告",
+      "docno": "工信部信管函〔2026〕258号",
+      "issuer": "工业和信息化部",
+      "excerpt": "修订出台实施《通信短信息服务管理规定》，进一步完善短信息服务管理制度。持续清理整治营销电话和短信扰民问题，组织依法责令整改、督办、处罚违规企业315家次，关停违规语音专线1034条、短信端口762个",
+      "source_name": "工业和信息化部网站",
+      "url": "https://www.miit.gov.cn/jgsj/xgj/wjfb/art/2026/art_24f87040d61349658f6f23361b172e32.html",
+      "fetched_at": "2026-09-15",
+      "fetch_tool": "curl",
+      "http_status": 200,
+      "push": "up",
+      "use": "季度执法通报(处罚 315 家次、关停专线/端口),硬监管 up;§8 所称“原文页待定位”已定位(信息通信管理局文件发布栏,浏览器面板翻列表取得);湖南省政府转载页 hunan.gov.cn 2026-08-13 同文",
+      "after_t0": false,
+      "issued_on": "2026-08-05",
+      "stage": "执法"
+    },
+    {
+      "id": "F18",
+      "date": "2026-08-17",
+      "kind": "enforce",
+      "role": "fact",
+      "tier": "S1",
+      "issuer_level": "省",
+      "title": "浙江省通信管理局关于2026年上半年电信服务质量的通告",
+      "docno": "",
+      "issuer": "浙江省通信管理局",
+      "excerpt": "推动《通信短信息服务管理规定》落地实施，围绕服务规范、用户权益保护等核心条款组织专题培训，覆盖从业人员160余人。……《通信短信息服务管理规定》（工业和信息化部令第74号）已于2026年5月1日起施行",
+      "source_name": "浙江省通信管理局",
+      "url": "https://zjca.miit.gov.cn/zwgk/tzgg/art/2026/art_a7adcd9030e043918feb4fd690ee90e0.html",
+      "fetched_at": "2026-09-15",
+      "fetch_tool": "curl",
+      "http_status": 200,
+      "push": "up",
+      "use": "省级执法/服务质量通告(半年度),与国家季度通告同类型;省级同类动作最多 2 条,本轮仅浙江 1 条,记 up",
+      "after_t0": false,
+      "stage": "执法"
+    },
+    {
+      "id": "F19",
+      "date": "2026-08-27",
+      "kind": "enforce",
+      "role": "fact",
+      "tier": "S1",
+      "issuer_level": "省",
+      "title": "浙江省通信管理局关于侵害用户权益行为的APP（小程序）通报（2026年第7批）",
+      "docno": "",
+      "issuer": "浙江省通信管理局",
+      "excerpt": "经核查复检，尚有15款APP、小程序未按要求完成整改，现予以通报（详见附件）。请相关运营主体于9月7日前按有关规定进行整改，整改落实不到位的，我局将依法依规组织开展处置工作。",
+      "source_name": "浙江省通信管理局",
+      "url": "https://zjca.miit.gov.cn/zwgk/tzgg/art/2026/art_3206d919acd94c818402a0a5b9f99532.html",
+      "fetched_at": "2026-09-15",
+      "fetch_tool": "curl",
+      "http_status": 200,
+      "push": "up",
+      "use": "省级 APP 侵权通报(限期整改+处置),执法通报 up;国家级 APP 通报未单列(已含在季度通告 F10/F17 内),本节点为 APP 整治线在省级的实例",
+      "after_t0": false,
+      "issued_on": "2026-08-25",
+      "stage": "执法"
+    },
+    {
+      "id": "F20",
+      "date": "2026-09-04",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "issuer_level": "国家",
+      "title": "工业和信息化部关于收回部分电信网码号的通告",
+      "docno": "工信部信管函〔2026〕284号",
+      "issuer": "工业和信息化部",
+      "excerpt": "根据《电信网码号资源管理办法》有关规定，经公示无异议，我部现收回部分电信网码号（详见附件）。",
+      "source_name": "工业和信息化部网站",
+      "url": "https://www.miit.gov.cn/jgsj/xgj/wjfb/art/2026/art_2ef8c2c19220404da60322e30e125b54.html",
+      "fetched_at": "2026-09-15",
+      "fetch_tool": "curl",
+      "http_status": 200,
+      "push": "0",
+      "use": "码号资源回收的常规行政动作(经公示无异议),不构成规则松紧变化,记 0",
+      "after_t0": false,
+      "issued_on": "2026-08-28",
+      "stage": "实施"
+    },
+    {
+      "id": "F21",
+      "date": "2026-09-07",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "issuer_level": "国家",
+      "title": "工业和信息化部关于印发《信息通信行业发展“十五五”规划》的通知",
+      "docno": "工信部规〔2026〕188号",
+      "issuer": "工业和信息化部",
+      "excerpt": "现将《信息通信行业发展“十五五”规划》印发给你们，请结合实际，认真贯彻实施。……到2030 年，全面建成覆盖完善、性能领先的新一代通信网，加快形成技术先进、安全可控的信息通信产业体系，有效构建技管结合、敏捷高效的信息通信行业治理体系……积极开展万兆光网试点建设，逐步扩大万兆网络覆盖。",
+      "source_name": "工业和信息化部网站",
+      "url": "https://www.miit.gov.cn/jgsj/txs/wjfb/art/2026/art_f55fe09a1e26411fa6926e5195850990.html",
+      "fetched_at": "2026-09-15",
+      "fetch_tool": "curl",
+      "http_status": 200,
+      "push": "dn",
+      "use": "行业专项规划(促进类),记支持;产业方向首选依据;规划正文取自 gov.cn 同稿附件 PDF(content_7080376.htm 页 P020260907785145440077.pdf);智能算力等指标算力行业只引不计",
+      "after_t0": false,
+      "issued_on": "2026-08-12",
+      "stage": "正式",
+      "note": "工信部页无附件链接,gov.cn 同稿 2026-09-07 带 PDF;附件文本“到2030 年”含排版空格,按去空白比对"
+    },
+    {
+      "id": "C1",
+      "date": "2026-01-28",
+      "kind": "econ",
+      "role": "context",
+      "tier": "S1",
+      "issuer_level": "国家",
+      "title": "2025年通信业统计公报",
+      "docno": "",
+      "issuer": "工业和信息化部",
+      "excerpt": "电信业务收入累计完成1.75万亿元，比上年增长0.7%。……5G移动电话用户达到12.04亿户，占移动电话用户的65.9%，比上年末提高9.2个百分点。",
+      "source_name": "工业和信息化部(运行监测协调局)",
+      "url": "https://www.miit.gov.cn/jgsj/yxj/xxfb/art/2026/art_bea806f4dd20457cb0158795cc210aa7.html",
+      "fetched_at": "2026-09-15",
+      "fetch_tool": "curl",
+      "http_status": 200,
+      "push": "0",
+      "use": "行业规模背景:2025 年收入增速 0.7%、5G 用户占移动电话用户 65.9%(公报口径)是“十五五”规划 2030 年指标(收入 4.1 万亿、每万人 5G 基站 50 个)的基数;规划专栏的“5G(含 5G-A)用户普及率”2025 年基数为 85.7%,与公报 65.9% 为不同口径,并列不互校;不作断言依据",
+      "after_t0": false,
+      "relation": {
+        "to_fact_id": "F21",
+        "effect": "background"
+      },
+      "note": "页面“发布时间”2026-01-28,meta PubDate 2026-04-22 为更新时间"
+    },
+    {
+      "id": "P1",
+      "date": "2027-06-30",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "issuer_level": "国家",
+      "title": "待判定:工信部印发万兆光网新一轮试点/规模部署通知(卡 TELECOM-001)",
+      "docno": "",
+      "excerpt": "",
+      "source_name": "",
+      "url": "https://",
+      "fetched_at": "",
+      "push": "0",
+      "after_t0": true,
+      "pending": true,
+      "fetch_tool": "curl"
+    },
+    {
+      "id": "P2",
+      "date": "2026-12-31",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "issuer_level": "国家",
+      "title": "待判定:电信法草案提请全国人大常委会审议(卡 TELECOM-002)",
+      "docno": "",
+      "excerpt": "",
+      "source_name": "",
+      "url": "https://",
+      "fetched_at": "",
+      "push": "0",
+      "after_t0": true,
+      "pending": true,
+      "fetch_tool": "curl"
+    },
+    {
+      "id": "P3",
+      "date": "2027-06-30",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "issuer_level": "国家",
+      "title": "待判定:首批卫星物联网商用试验企业公开(卡 TELECOM-003)",
+      "docno": "",
+      "excerpt": "",
+      "source_name": "",
+      "url": "https://",
+      "fetched_at": "",
+      "push": "0",
+      "after_t0": true,
+      "pending": true,
+      "fetch_tool": "curl"
+    }
+  ],
+  "process": {
+    "kind": "analyst_record",
+    "retrieval": {
+      "window_from": "2025-09-15",
+      "window_to": "2026-09-15",
+      "queries": [
+        "工信部 信息通信管理局 文件发布 列表(浏览器面板翻页,第 1 页 24 条)",
+        "gov.cn 政策文件库 API:信息通信/电信/通信管理/卫星通信/互联网基础资源/5G/光网/电信网码号",
+        "通信短信息服务管理规定 令第74号 miit 规章库",
+        "万兆光网试点 3号/119号/161号",
+        "季度电信服务质量通告 2025Q3–2026Q2",
+        "信息通信行业发展“十五五”规划 工信部规〔2026〕188号 附件 PDF",
+        "互联网基础资源 指导意见 159号 附件 PDF",
+        "卫星物联网业务商用试验 307号",
+        "云南省电信设施建设和保护条例 通过 ynca",
+        "浙江省通信管理局 通知公告 2026(电信服务质量通告/APP通报)",
+        "国务院 2026 年度立法工作计划 电信法草案",
+        "电信条例 xzfg.moj.gov.cn",
+        "卫星通信 业务准入 指导意见 180号",
+        "2025 年通信业统计公报"
+      ],
+      "sources_checked": [
+        "miit.gov.cn(信息通信管理局/信息通信发展司文件发布、规章库、政策文件库)",
+        "wap.miit.gov.cn",
+        "gov.cn(政策文件库、部门文件 PDF 附件)",
+        "cac.gov.cn",
+        "xzfg.moj.gov.cn",
+        "ynca.miit.gov.cn",
+        "zjca.miit.gov.cn",
+        "hunan.gov.cn 政企通(Q2 通告转载,已换原文页)"
+      ],
+      "fetched": 34,
+      "admitted": 25,
+      "rejected": [
+        {
+          "title": "工业和信息化部办公厅关于公布国家算力互联互通区域节点建设名单的通知(2026-08-28)",
+          "url": "https://www.miit.gov.cn/jgsj/xgj/wjfb/art/2026/art_30f3cbfada28440c8ec9807f160c689f.html",
+          "reason": "算力基础设施主线(§8 边界),本行业不收"
+        },
+        {
+          "title": "工业和信息化部等八部门印发《关于推动工业互联网高质量发展的实施意见》的通知(2026-06-29)",
+          "url": "https://www.miit.gov.cn/jgsj/xgj/wjfb/art/2026/art_616aad2c6b1547b7a01422b0a419070d.html",
+          "reason": "工业互联网归工业行业,超范围"
+        },
+        {
+          "title": "工业和信息化部等七部门《促进平台经济大中小企业协同发展行动方案（2026—2028年）》(2026-06-18)",
+          "url": "https://www.miit.gov.cn/jgsj/xgj/wjfb/art/2026/art_9e17a2a2908f4f46a251bee44d83275f.html",
+          "reason": "平台经济归平台行业,超范围"
+        },
+        {
+          "title": "工业和信息化部办公厅关于公布2025年度信息通信服务创优典型案例名单的通知(2026-07-08)、数字适老中国行(2026-05-22)、5G工厂典型应用实践(2026-03-30)",
+          "url": "https://www.miit.gov.cn/jgsj/xgj/wjfb/index.html",
+          "reason": "评优/活动类,信号弱,未准入"
+        },
+        {
+          "title": "工业和信息化部等九部门《推动物联网产业创新发展行动方案（2026—2028年）》(2026-03-31)",
+          "url": "https://www.gov.cn/zhengce/zhengceku/202603/content_7064281.htm",
+          "reason": "物联网产业(制造侧)超范围,未打开"
+        },
+        {
+          "title": "湖南省人民政府政企通转载 2026 年第二季度电信服务质量通告(2026-08-13)",
+          "url": "https://www.hunan.gov.cn/zqt/zcsd/202608/t20260813_34044488.html",
+          "reason": "已定位工信部原文页(F17),转载页不再准入"
+        },
+        {
+          "title": "三大运营商卫星移动通信业务经营许可(2025-09 前后,搜狐等转述)",
+          "url": "https://www.miit.gov.cn/",
+          "reason": "工信部原文页未定位,搜索转述不作事实(S5)"
+        },
+        {
+          "title": "浙江省通信管理局 增值电信业务经营许可证拟注销企业名单、码号收回公示、互联网信息服务核准管理通告(2026-08/09 多批)",
+          "url": "https://zjca.miit.gov.cn/zwgk/tzgg/index.html",
+          "reason": "日常许可管理动作,不进链"
+        },
+        {
+          "title": "《网络数据安全管理条例》(国令第790号,2024-09-30)",
+          "url": "https://www.gov.cn/zhengce/zhengceku/202409/content_6977767.htm",
+          "reason": "数据侧行政法规,本轮未作锚点(锚点已用电信条例、卫星准入意见、万兆光网试点通知)"
+        },
+        {
+          "title": "《反电信网络诈骗法》(2022-09-02)",
+          "url": "https://www.npc.gov.cn/",
+          "reason": "npc.gov.cn 法律库本轮未抓,F6 短信规定第一条已列其为上位法作间接证据;gaps 登记"
+        }
+      ],
+      "log_path": "sources/telecom/retrieval_log.md"
+    },
+    "grading": [
+      {
+        "node_id": "A1",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": "锚点"
+      },
+      {
+        "node_id": "A2",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": "锚点"
+      },
+      {
+        "node_id": "A3",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": "锚点"
+      },
+      {
+        "node_id": "F1",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0
+      },
+      {
+        "node_id": "F2",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0
+      },
+      {
+        "node_id": "F3",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0
+      },
+      {
+        "node_id": "F4",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0
+      },
+      {
+        "node_id": "F5",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0
+      },
+      {
+        "node_id": "F6",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0
+      },
+      {
+        "node_id": "F7",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0
+      },
+      {
+        "node_id": "F8",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0
+      },
+      {
+        "node_id": "F9",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0
+      },
+      {
+        "node_id": "F10",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0
+      },
+      {
+        "node_id": "F11",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0
+      },
+      {
+        "node_id": "F12",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0
+      },
+      {
+        "node_id": "F13",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0
+      },
+      {
+        "node_id": "F14",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0
+      },
+      {
+        "node_id": "F15",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0
+      },
+      {
+        "node_id": "F16",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0
+      },
+      {
+        "node_id": "F17",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0
+      },
+      {
+        "node_id": "F18",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0
+      },
+      {
+        "node_id": "F19",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0
+      },
+      {
+        "node_id": "F20",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0
+      },
+      {
+        "node_id": "F21",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0
+      },
+      {
+        "node_id": "C1",
+        "tier": "S1",
+        "role": "context",
+        "weight": 1.0
+      }
+    ],
+    "operators": [
+      {
+        "name": "HISTORICAL_ANALOGY",
+        "status": "SUPPORTED",
+        "summary": "工信部试点线“通知→入围名单→完成公布”有万兆光网一条完整样本(3 号 2025-01-08→161 号 2026-04-21,468 天);季度电信服务质量通告稳定按季发布(F2/F5/F10/F17,10 月底/1 月底/4 月底/8 月中);卫星线从 180 号指导意见(2025-08)到 307 号商用试验(2025-11)只隔 3 个月,准入动作跟进快。",
+        "fact_ids": [
+          "F8",
+          "F2",
+          "F5",
+          "F10",
+          "F17",
+          "F3"
+        ]
+      },
+      {
+        "name": "WORDING_CHANGE",
+        "status": "SUPPORTED",
+        "summary": "万兆光网从“开展试点”(A3)→“完成试点任务的136个项目”(F8)→规划“积极开展万兆光网试点建设，逐步扩大万兆网络覆盖”(F21),动作动词由试点转向扩大覆盖;短信治理从规章修订(F6)到季度通告写入“修订出台实施《通信短信息服务管理规定》”(F17)与省局“推动…落地实施”(F18),规则进入执行期;卫星线从“有序推动卫星通信业务开放”(A2)到“组织开展卫星物联网业务商用试验”(F3)。",
+        "fact_ids": [
+          "F8",
+          "F21",
+          "F6",
+          "F17",
+          "F18",
+          "F3"
+        ]
+      },
+      {
+        "name": "TARGET_REVERSE_INFERENCE",
+        "status": "SUPPORTED",
+        "summary": "规划 2030 年指标(收入 4.1 万亿、5G 普及率 95%、每万人 5G 基站 50 个,C1 基数 0.7%/65.9%)反推“十五五”期间持续的网络建设专项行动(TELECOM-001);307 号“试验期为两年”反推 2026–2027 年内出现批复企业(TELECOM-003);立法计划把电信法列为预备项目,反推年内提请概率低(TELECOM-002 取观察档)。",
+        "fact_ids": [
+          "F21",
+          "F3",
+          "F11"
+        ]
+      },
+      {
+        "name": "CROSS_SOURCE_COMBINATION",
+        "status": "SUPPORTED",
+        "summary": "独立簇 5:国务院/国办(F11 立法计划)、工信部信息通信管理局(F1/F2/F5/F7/F9/F10/F17/F20 及 F3/F4/F16)、工信部信息通信发展司(F8/F13/F21)与部令(F6)、网信办(F15)、省级(云南 F12、浙江 F18/F19,合并为 1 簇)。国家/省两个权力层级;TELECOM-001 由发展司规划+试点线支撑,TELECOM-003 由管理局试验通知+规划支撑,TELECOM-002 只有国办一簇。",
+        "fact_ids": [
+          "F11",
+          "F10",
+          "F17",
+          "F3",
+          "F8",
+          "F21",
+          "F6",
+          "F15",
+          "F12",
+          "F18",
+          "F19"
+        ]
+      }
+    ],
+    "base_rate": {
+      "pattern": "pilot_to_completion/工信部试点线:试点通知→入围名单→完成情况公布(万兆光网 3 号→119 号→161 号);样本两头均须为工信部/gov.cn 原文页",
+      "n": 1,
+      "median_days": 468,
+      "p25": 468,
+      "p75": 468,
+      "anchor_node_id": "F8",
+      "missing": true,
+      "level_cap": "可能",
+      "samples": [
+        {
+          "title": "万兆光网试点:试点通知 工信厅通信函〔2025〕3号 2025-01-08(gov.cn)→完成情况公布 161号 2026-04-21",
+          "start": "2025-01-08",
+          "end": "2026-04-21",
+          "days": 468,
+          "url": "https://www.miit.gov.cn/zwgk/zcwj/wjfb/tz/art/2026/art_d00aa57004f04e90898b931e048036e8.html"
+        }
+      ],
+      "proxy": true,
+      "proxy_note": "n=1,基率缺失,三张卡全部封顶“可能”(TELECOM-002 为观察)。代理说明(S0 算力探针已核、本轮未重抓):工信部“申报/推荐通知→名单公布”线 2023 年度绿色数据中心 341 号 2023-12-07→公告 2024-06-06(182 天)、2025 年度 279 号 2025-07-07→公示 2025-10-27(112 天)、算力互联互通 35 号 2026-02-06→404 号 2026-08-28(203 天),中位约 180 天;万兆光网 119 号入围名单日期未核。季度通告节拍(F2/F5/F10/F17:10-28、01-29、04-28、08-13)只作动作频率基线,不作转化率。主线“工信部规章/规范性文件 征求意见→印发”本轮未凑样本(短信规定 2020 征求→2026 公布约 5.4 年、互联网信息服务管理办法 2021 首征→2026 再征未印发为删失)。"
+    },
+    "reasoning_trace": "阶段=正式(“十五五”规划 2026-09-07 印发;短信规定 05-01 施行进入执行期)。窗内 S1 fact 21 条(国家 18、省 3),锚点 3,context 1。链条:电子证照(2025-10)→季度通告 Q3→卫星物联网商用试验(11-25)→交换中心指导意见(12-30)→Q4 通告(1-29)→短信规定修订公布(2-09)→安全生产通知(3-23)→万兆光网完成公布(4-21)→地名顶级域程序(4-24)→Q1 通告(4-28)→立法计划(5-11)→云南条例(5-28 通过)→AI+信通(6-10)→工业 5G 专网试点(6-15)→网信办再征(7-03)→基础资源指导意见(7-13)→Q2 通告(8-13)→浙江通告与 APP 通报(8-17/8-27)→码号收回(9-04)→“十五五”规划(9-07)。硬监管为规章修订与两期季度通告、两条省级通告,促进类为规划、指导意见、试点扩围,读数由工具计算。四算子 SUPPORTED;基率 n=1 缺失,三卡封顶“可能”,TELECOM-002 取观察。产业方向草拟“支持”。",
+    "review_checks": [
+      {
+        "check": "每张卡 title 的主体/动作/对象/期限均可回链 basis_fact_ids",
+        "result": "pass",
+        "note": "001←F8/F21;002←F11;003←F3"
+      },
+      {
+        "check": "S4 未使用;无 S2 节点",
+        "result": "pass"
+      },
+      {
+        "check": "社会要素(C1)未进入 basis_fact_ids 与 direction",
+        "result": "pass"
+      },
+      {
+        "check": "卡与 line 中的数字均回链原文(136 个项目←F8;315 家次←F17;两年试验期←F3;2030 指标←F21)",
+        "result": "pass"
+      },
+      {
+        "check": "未把预测写成事实(新一轮万兆通知、电信法提请、批复企业公开均为 H)",
+        "result": "pass"
+      },
+      {
+        "check": "S5 材料(运营商卫星许可的搜索转述)已退回并登记",
+        "result": "pass"
+      },
+      {
+        "check": "锚点 A1–A3 未计入 3 条、温度与 basis_fact_ids(direction 引 A2 为规则允许)",
+        "result": "pass"
+      },
+      {
+        "check": "同一整治线(季度通告)只计 2 条(F10/F17),F2/F5 记 0;共用件(F11 立法计划、F15 网信办再征)记 0",
+        "result": "pass"
+      },
+      {
+        "check": "push_weight 0.5 只用于软规则 up(F1/F7/F9);规章 F6、执法 F10/F17/F18/F19 全额",
+        "result": "pass"
+      },
+      {
+        "check": "F6 date 取部令公布日 02-09 而非规章库页 03-27,已在 note 并列;F16/F21 第二段摘录来自 gov.cn 附件 PDF 并注明",
+        "result": "pass"
+      },
+      {
+        "check": "F 门(2026-09-15)4 条 WARN 已处理:A1 换 2016 修订版 URL(LawID=1623)、F16 机关全称、基率天数统一 468、TELECOM-003 反证引文改原句;FAIL 0",
+        "result": "pass"
+      }
+    ],
+    "calibration": null
+  },
+  "review": {
+    "status": "待复核",
+    "by": "S8-新增行业组",
+    "at": "2026-09-15",
+    "note": "首轮;F 门由子代理逐条核 URL 与摘录,见 industries/telecom.F门.md"
+  },
+  "meta": {
+    "produced_by_session": "S8-新增行业组(2026-09-15 首轮)",
+    "produced_at": "2026-09-15",
+    "stance_rule": "只计 T0 前、非锚点节点;fact 贡献=推力符号(收紧 −1、支持 +1)×20×级别权重(S1 1.0/S2 0.8/S3 0.5/S4 0.5)×层级权重(国家 1.0/省 0.7/市 0.4)×时效权重(距 T0 ≤90 天 1.0/≤180 天 0.7/≤365 天 0.4)×推力权重(push_weight,软规则 0.5、其余 1),context 节点再×0.5;temp=各项之和÷(有方向节点数+5)×8,四舍五入后夹在[-100,100](D7 均值化、D12 分母);D11 符号:收紧为负、支持为正;temp≤-30 收紧风险(risk);temp≥30 国家支持(support);收紧分与支持分绝对值各≥25 且 |temp|<30 为支持与收紧并存(mixed);其余观察中(watch);D12:促进类文件全额计支持(dn),硬监管动作全额计收紧(up),指引/标准/程序性规则/执行衔接件等软规则 push=up 且 push_weight=0.5,同线、多城上限外、共用件、法律双向、机关双向表态记 0",
+    "s1_admission_rule": "市级政府/市级主管部门原文算 S1;窗内 role=fact 且 tier=S1 的节点≥3 条,其中至少 1 条国家或省级;多个城市的同类动作合并为 1 个独立簇",
+    "anchor_rule": "仍在生效的窗外上位文件可作锚点节点(out_of_window=true),只用于定阶段、措辞变化、历史类比;不计入 3 条、温度、信号",
+    "direction_rule": "D8(2026-09-15):产业方向与监管温度分轴。产业方向由分析师依据国家级方向性文件(规划/意见/政府工作报告/法律)判定为 支持/中性/限制,须回链 ≥1 条 S1 国家级 fact(窗内或锚点);温度只量规则与执法的密度与方向(监管强度),不代表国家对产业的态度",
+    "stops": [
+      "待裁定|F6|《通信短信息服务管理规定》(2026 修订部令)按“带罚则的部门规章”记了全额收紧;它第一条也写“促进通信短信息服务市场的健康发展”,若按“规章双向”应记不计入|a. 维持全额收紧(与 AI 行业带罚则规章 F9/F10 同口径)/b. 记不计入|建议 a,理由:正文无促进措施,只有义务与罚则,目的条款不算促进内容",
+      "待裁定|F20|工信部收回部分电信网码号通告(2026-09-04)本轮按“常规资源回收动作”记不计入;若视为清退类硬监管应记收紧|a. 维持不计入/b. 记收紧|建议 a,理由:经公示无异议的例行回收,不是规则或执法强度变化",
+      "待裁定|TELECOM-002|电信法草案只在国务院立法计划“预备提请”一档出现,本轮取观察档、年内提请主观概率 0.15;是否保留这张低概率卡|a. 保留(方便到期结算与校准)/b. 删除|建议 a",
+      "基率:试点线只核到万兆光网 1 个完整样本(119 号入围名单日期未核),n=1 缺失,三卡封顶“可能”;“征求意见→印发”主线因工信部意见征集栏 JS 列表未逐条补另一头,本轮未采用",
+      "省市级缺口:只有云南(条例动态)与浙江(两条通告)三条省级 S1,市级 0 条;其他省局子站“工作动态”未逐站翻",
+      "卫星线:三大运营商卫星移动通信许可的工信部原文页未定位,窗内准入动作只有 307 号商用试验一件",
+      "2026-09-15 用户裁定台(assessment/裁定-2026-09-15-r2.json):本行业各项均选“维持现状/建议项”,无节点改动;产业方向已确认",
+      "2026-09-15 用户裁定 TE-1「通信:《通信短信息服务管理规定》修订算全额收紧还是不计入?」:a 维持全额收紧(现状)",
+      "2026-09-15 用户裁定 TE-2「通信:收回电信网码号的通告算不算收紧?」:a 维持不计入(现状)",
+      "2026-09-15 用户裁定 TE-3「通信:电信法草案这张低概率卡留不留?」:a 保留"
+    ],
+    "gaps": [
+      "云南省人大法规公告页与《云南省电信设施建设和保护条例》全文未核(F12 以省局工作动态为准)",
+      "万兆光网入围名单 工信厅通信函〔2025〕119 号 日期与页面未核",
+      "《反电信网络诈骗法》npc.gov.cn 法律库页未抓,未作锚点",
+      "工信部“十五五”规划与基础资源指导意见正文取自 gov.cn 附件 PDF,工信部页无附件链接",
+      "2026 年 1—7 月通信业经济运行月报未定位,社会要素用 2025 年统计公报(C1)"
+    ]
+  }
+}
