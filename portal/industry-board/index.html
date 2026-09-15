@@ -314,7 +314,7 @@ body.embedded{padding-inline:0;padding-block:0 8px}
   <div class="foot-hint" id="footRules"></div>
 </div>
 
-<script src="./data.js?v=202609151326"></script>
+<script src="./data.js?v=202609151732"></script>
 <script>
 /* ======================= 数据与常量 ======================= */
 const ORDER = [['ridehail','网约车'],['freight','货运'],['two_wheel','两轮车'],['fuel','加油'],['charging','充电'],['power','电力'],['autonomous','自动驾驶'],['delivery','外卖'],['tourism','旅游'],['generation','发电'],['space','商业航天'],['embodied','具身智能'],['low_altitude','低空经济'],['healthcare','医疗'],['elderly','养老'],['ai','AI 产业'],['ecommerce','电商'],['industry','工业'],['overseas','出海']];
@@ -347,6 +347,22 @@ const CHECK = {pass:['通过','tag-green'], fail:['未通过','tag-red'], cleare
 const IMPACT = {strategy:'战略', gr:'政府事务', compliance:'合规', business:'业务(能源线,引用战略画像)'};
 const ymd = t => t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');
 const TODAY = ymd(new Date());
+// 公开视图(门户嵌入 ?embed=1 或 ?public=1):加工过程用知识库口径,内部工作记录(停点/缺口/节点备注/采集工具细节)不展示;独立打开时全量可见
+const PUBLIC = /[?&](embed|public)=1/.test(location.search);  // 只认网址参数:门户 iframe 带 ?embed=1;Artifact 预览虽在 iframe 里但要看全量
+function pub(s){ s=String(s==null?'':s); if(!PUBLIC) return s;
+  s=s.replace(/[((][^()()]*?(?:WebFetch|WebSearch|curl|浏览器|python|urllib|抓取|面板|(?:HTTP\s*)?(?:200|403|404|412|521)\b)[^()()]*?[))]/g,'');
+  s=s.replace(/tools\/temp_calc\.py|temp_calc\.py|temp_calc|tools\/validate\.py|validate\.py/g,'温度计算模块').replace(/用 curl 复核|curl -k|curl|WebFetch|WebSearch|python urllib|python 抓取|python|urllib|浏览器面板|(?<![A-Za-z《])浏览器(?![》安])/g,'知识库回链');
+  s=s.replace(/抓取/g,'采集').replace(/session/gi,'批次').replace(/提示词/g,'范围定义');
+  s=s.replace(/按 §\s*[\d.()()]+/g,'按口径细则').replace(/§\s*[\d.()()]+/g,'口径细则').replace(/\bD(\d{1,2})\b/g,'规则$1').replace(/PROMPT-0\d[^,;。)]*/g,'工作指引');
+  return s.replace(/\s{2,}/g,' ').trim(); }
+// 退回原因:公开视图删掉含采集工具/可达性的分句,只留准入口径理由
+function pubReason(s){ s=String(s==null?'':s); if(!PUBLIC) return s;
+  const keep=s.split(/[;;。]/).map(x=>x.trim()).filter(x=>x&&!/WebFetch|WebSearch|curl|浏览器|python|urllib|抓|脚本|证书|不可达|http 协议|取得|重抓|面板/.test(x));
+  return keep.length?pub(keep.join(';')):'来源不可达或不合准入口径(明细见内部记录)'; }
+// 覆盖来源:公开视图只显示站点,内部件单列
+function pubSource(s){ s=String(s==null?'':s); if(!PUBLIC) return s;
+  if(/state\/|internal|内部/.test(s)) return '内部一手材料(S4,不外链)';
+  return s.replace(/[((][^()()]*[))]/g,'').trim(); }
 const LEVEL_RULE = '高度可能:独立簇≥3、权力层级≥2、算子「支持」≥3、主体与载体/期限明确、基率 n≥5;较大可能:簇≥2、「支持」≥2、n≥5;可能:满足较大可能条件但基率缺失(封顶),或簇≥1 且「支持」≥1 且有 S1 且 n≥5;其余观察;任一算子「反对」降一档。';
 const SIGNAL_RULE = '信号计数只计 T0 前 12 个月内、非锚点、非待判定的政策事实节点(role=fact),按推力分收紧/支持;社会要素不计信号,只按 ×0.5 计入温度。';
 
@@ -368,7 +384,7 @@ function nextVerify(i){ const v=i.cards.map(c=>c.verify_date).sort(); return v.f
 function nodeOf(i,id){ return i.timeline.find(n=>n.id===id); }
 function nodeLink(i,id){ const n=nodeOf(i,id); return n?`<button type="button" class="chip" data-node="${esc(id)}" title="${esc(n.date+' '+n.title)}">${esc(id)}</button>`:`<span class="chip miss" title="时间链里没有这个节点">${esc(id)}?</span>`; }
 const linkable = n => /^https?:\/\/[^\/\s]+/i.test(n.url||'') && !/internal\.local/.test(n.url||'');
-function srcLine(n){ return linkable(n) ? `来源:${esc(n.source_name)} · 抓取 <span class="mono">${esc(n.fetched_at)}</span> · <a class="ext" href="${esc(n.url)}" target="_blank" rel="noopener">原文 ↗</a>` : `来源:${esc(n.source_name)} · 抓取 <span class="mono">${esc(n.fetched_at)}</span> · 内部件,不提供外链`; }
+function srcLine(n){ return linkable(n) ? `来源:${esc(n.source_name)} · 收录 <span class="mono">${esc(n.fetched_at)}</span> · <a class="ext" href="${esc(n.url)}" target="_blank" rel="noopener">原文 ↗</a>` : `来源:${esc(n.source_name)} · 收录 <span class="mono">${esc(n.fetched_at)}</span> · 内部件,不提供外链`; }
 function tempSums(i){ const rows=i.temp_calc||[]; let up=0,dn=0,nd=0; rows.forEach(r=>{ if(r.contribution>0) up+=r.contribution; else dn+=r.contribution; if(r.contribution!==0) nd++; }); return {up, dn, n:rows.length, nd, sum:up+dn}; }
 const pwTag = r => (r.push_weight!=null && r.push_weight!==1) ? ` ×${r.push_weight}` : '';
 function fmtSigned(x){ return (x>0?'+':'')+x.toFixed(2); }
@@ -440,7 +456,7 @@ function renderDetail(){
         <span>当前阶段 <b>${esc(i.stage)}</b></span>
         <span>下一节点 <b class="mono">${esc(i.next.date)}</b> ${esc(i.next.text)} ${nextNode?nodeLink(i,i.next.source_node_id):''}</span>
         <span>复核 <b>${esc(i.review.status)}</b></span>
-        <span>${kindLabel} <b>${esc(i.meta.produced_by_session)} · ${esc(i.meta.produced_at)}</b></span>
+        <span>${kindLabel} <b>${esc(pub(i.meta.produced_by_session))} · ${esc(pub(i.meta.produced_at))}</b></span>
       </div>
     </div>
     <div class="d-scope"><details><summary>本行业范围定义</summary><p>${esc(i.scope)}</p></details></div>
@@ -485,7 +501,7 @@ function renderCard(i,c){
   const imp = c.impact||{};
   const impKeys = Object.keys(IMPACT).filter(k=>imp[k]);
   return `<article class="pcard" id="card-${esc(c.id)}">
-    <div class="pc-head"><span class="pc-id">${esc(c.id)}</span><span class="r"><span class="lvl ${lv}">${esc(c.level)}</span>${br.proxy&&!sec?'<span class="tag tag-slate" title="'+esc(br.proxy_note||'')+'">代理基率</span>':''}<span class="tag tag-amber">${esc(c.status||'AI初稿·待复核')}</span></span></div>
+    <div class="pc-head"><span class="pc-id">${esc(c.id)}</span><span class="r"><span class="lvl ${lv}">${esc(c.level)}</span>${br.proxy&&!sec?'<span class="tag tag-slate" title="'+esc(pub(br.proxy_note||''))+'">代理基率</span>':''}<span class="tag tag-amber">${esc(c.status||'AI初稿·待复核')}</span></span></div>
     ${capped?`<div class="cap">基率样本不足(${sec?'本卡基率':'本行业基率'} n=${use.n||0}),档位封顶「可能」${br.proxy&&!sec?';代理基率只作说明,不解除封顶':''}</div>`:''}
     <h4>${esc(c.title)}</h4>
     <div class="pc-grid"><span><b>主体</b>${esc(c.actor)}</span><span><b>动作</b>${esc(c.action)}</span><span><b>对象</b>${esc(c.object)}</span><span><b>载体</b>${esc(c.carrier)}</span></div>
@@ -530,8 +546,8 @@ function renderTimeline(i){
       ${n.pending&&!n.excerpt?'':`<blockquote class="e-ev">${esc(n.excerpt)}</blockquote>`}
       <div class="e-src">${n.pending&&(!linkable(n)||!n.source_name)?`待判定项,验证日后补来源${linkable(n)?` · <a class="ext" href="${esc(n.url)}" target="_blank" rel="noopener">监测栏目 ↗</a>`:''}`:srcLine(n)}</div>
       ${rel}
-      ${n.use?`<div class="e-link">在推理中的作用:${esc(n.use)}</div>`:''}
-      ${n.note?`<div class="e-link">备注:${esc(n.note)}</div>`:''}
+      ${n.use?`<div class="e-link">在推理中的作用:${esc(pub(n.use))}</div>`:''}
+      ${n.note&&!PUBLIC?`<div class="e-link">备注:${esc(pub(n.note))}</div>`:''}
       <div class="e-dir dir-${n.push}">${PUSH[n.push]||esc(n.push)}${n.push_weight!=null&&n.push_weight!==1?'<br><span style="font-weight:500;font-size:10px">软规则 ×'+n.push_weight+'</span>':''}${n.tier==='S4'?'<br><span style="font-weight:500;font-size:10px">仅修正</span>':''}</div>
     </div>`);
   });
@@ -563,10 +579,10 @@ function renderReasoning(i){
   const cal = i.process.calibration;
   const nv = nextVerify(i);
   const steps = [
-    {t:'证据冻结与检索', tag:`拉回 ${r.fetched} · 准入 ${r.admitted} · 退回 ${r.rejected.length}`, cls:'tag-slate',
-      in:[`观察窗 <span class="mono">${esc(r.window_from)} → ${esc(r.window_to)}</span>,T0 = <span class="mono">${esc(i.t0)}</span>`, `检索式 ${r.queries.length} 条、来源 ${(r.sources_checked||[]).length} 个(见加工过程 01)`],
-      out:[`拉回 ${r.fetched} 条,准入 ${r.admitted} 个节点,退回 ${r.rejected.length} 类(带原因)`, r.log_path?`检索与准入日志:<span class="mono">${esc(r.log_path)}</span>`:'未登记日志路径'],
-      note:'只认能回链到官方原文或权威来源的材料;S5 不进链;T0 之后的材料一律标「T0 后」,不参与本轮推理。'},
+    {t:'证据冻结与知识库检索', tag:`命中 ${r.fetched} · 准入 ${r.admitted} · 退回 ${r.rejected.length}`, cls:'tag-slate',
+      in:[`观察窗 <span class="mono">${esc(r.window_from)} → ${esc(r.window_to)}</span>,T0 = <span class="mono">${esc(i.t0)}</span>`, `检索主题 ${r.queries.length} 条、覆盖来源 ${(r.sources_checked||[]).length} 个(见加工过程 01)`],
+      out:[`命中 ${r.fetched} 条,准入 ${r.admitted} 个节点,退回 ${r.rejected.length} 类(带原因)`, PUBLIC?'每个准入节点都附官方原文链接':(r.log_path?`检索与准入日志:<span class="mono">${esc(r.log_path)}</span>`:'未登记日志路径')],
+      note:'政策知识库只收录能回链到官方原文或权威来源的材料;S5 不进链;T0 之后的材料一律标「T0 后」,不参与本轮推理。'},
     {t:'事实抽取与阶段判定', tag:`阶段:${i.stage}`, cls:'tag-orange',
       in:[`政策事实 ${facts.length} 条(${tiers.map(([t,n])=>t+' '+n).join(' · ')||'—'})`, `窗内 S1 ${s1.n} 条:国家 ${s1.国家} / 省 ${s1.省} / 市 ${s1.市}(D1 准入:≥3 且含国家或省级)`, anchors.length?`窗外锚点 ${anchors.length} 条:${anchors.map(a=>nodeLink(i,a.id)).join(' ')}`:'无窗外锚点'],
       out:[`当前阶段:<b>${esc(i.stage)}</b>`, latest?`T0 前最新政策事实:<span class="mono">${esc(latest.date)}</span> ${nodeLink(i,latest.id)} ${esc(latest.title)}`:'无窗内政策事实'],
@@ -577,13 +593,13 @@ function renderReasoning(i){
       note:'社会要素只解释政策事实为什么在这个时点出现,不作为断言依据;每条都要挂到一条事实并标明触发/放大/抑制/背景。'},
     {t:'四个分析算子', tag:`支持 ${opN} / 4`, cls: ops.some(o=>o.status==='COUNTER')?'tag-red':'tag-green',
       in:['关键事实 + 社会要素 + 历史样本'],
-      out:ops.map(o=>`<span class="tag ${OPST[o.status][1]}">${OPS[o.name]||o.name} · ${OPST[o.status][0]}</span> ${esc(o.summary)} ${(o.fact_ids||[]).map(f=>nodeLink(i,f)).join(' ')}`),
+      out:ops.map(o=>`<span class="tag ${OPST[o.status][1]}">${OPS[o.name]||o.name} · ${OPST[o.status][0]}</span> ${esc(pub(o.summary))} ${(o.fact_ids||[]).map(f=>nodeLink(i,f)).join(' ')}`),
       note:'任一算子「反对」使档位降一档;「证据缺失」不加分。'},
     {t:'基率锚定', tag: br.missing?'样本不足':`n=${br.n}`, cls: br.missing?'tag-amber':'tag-green',
-      in:[`模式 <span class="mono">${esc(br.pattern)}</span>`, br.proxy?`代理基率:${esc(br.proxy_note||'')}`:''].filter(Boolean),
+      in:[`模式 <span class="mono">${esc(pub(br.pattern))}</span>`, br.proxy?`代理基率:${esc(pub(br.proxy_note||''))}`:''].filter(Boolean),
       out:[ br.missing?`样本 n=${br.n} < 5:基率未注入,档位封顶「可能」`:`样本 n=${br.n},中位 ${br.median_days} 天,四分位 ${br.p25}–${br.p75} 天`,
             anchorNode?`锚点事实 ${nodeLink(i,anchorNode.id)} <span class="mono">${esc(anchorNode.date)}</span>${landing?`,中位落点 <span class="mono">${landing}</span>`:''}`:'未指定锚点事实',
-            ...(i.process.base_rate_secondary||[]).map(s=>`卡 <span class="mono">${esc(s.card_id)}</span> 另用基率:${esc(s.pattern)} n=${s.n}${s.missing?'(样本不足,封顶「可能」)':''}${s.median_days!=null?`,中位 ${s.median_days} 天`:''}${s.p25!=null&&s.p75!=null?`,四分位 ${s.p25}–${s.p75} 天`:''}${s.max_days!=null?`,最长 ${s.max_days} 天`:''}`)],
+            ...(i.process.base_rate_secondary||[]).map(s=>`卡 <span class="mono">${esc(s.card_id)}</span> 另用基率:${esc(pub(s.pattern))} n=${s.n}${s.missing?'(样本不足,封顶「可能」)':''}${s.median_days!=null?`,中位 ${s.median_days} 天`:''}${s.p25!=null&&s.p75!=null?`,四分位 ${s.p25}–${s.p75} 天`:''}${s.max_days!=null?`,最长 ${s.max_days} 天`:''}`)],
       note:'基率是「没有任何本轮信号时应该相信什么」;本轮信号只在此基础上加减。样本少于 5 时不注入,档位封顶「可能」;代理基率只作说明,不解除封顶。'},
     {t:'假设组与概率', tag:`${i.cards.length} 张卡`, cls:'tag-slate',
       in:['阶段 + 算子 + 基率 + 社会推力'],
@@ -591,17 +607,17 @@ function renderReasoning(i){
       note:'主显示档位;概率是分析师主观概率,页面折叠并标「未校准」。'},
     {t:'批判审阅与失败关闭', tag:`通过 ${cN.pass} · 未通过 ${cN.fail} · 已清空 ${cN.cleared}`, cls: cN.fail?'tag-red':'tag-green',
       in:['每张卡的主体、动作、对象、载体、时间窗能否回链 basis_fact_ids'],
-      out:checks.length?checks.map(c=>`<span class="tag ${CHECK[c.result][1]}">${CHECK[c.result][0]}</span> ${esc(c.check)}${c.note?` <span style="color:var(--ink-3)">— ${esc(c.note)}</span>`:''}`):['未登记审阅项'],
+      out:checks.length?checks.map(c=>`<span class="tag ${CHECK[c.result][1]}">${CHECK[c.result][0]}</span> ${esc(pub(c.check))}${c.note?` <span style="color:var(--ink-3)">— ${esc(pub(c.note))}</span>`:''}`):['未登记审阅项'],
       note:'审阅只做一件事:每个字段能不能回链到事实编号。回不了链的字段清空,而不是改写。'},
     {t:'校准与人工复核', tag:esc(i.review.status), cls: i.review.status==='通过'?'tag-green':'tag-amber',
       in:[cal?`已判定卡 ${cal.judged_cards},Brier ${(cal.brier_history||[]).map(b=>b.toFixed(2)).join(' / ')||'—'}${cal.bucket?`,H1 概率桶 ${esc(cal.bucket)}`:''}`:`无历史判定;最近判定日 <span class="mono">${esc(nv)}</span>(距今 ${daysBetween(TODAY,nv)} 天)`],
-      out:[`复核状态:${esc(i.review.status)}(${esc(i.review.by)},${esc(i.review.at)})`, i.review.note?esc(i.review.note):'无附注'],
+      out:[`复核状态:${esc(i.review.status)}(${esc(i.review.by)},${esc(i.review.at)})`, i.review.note?esc(pub(i.review.note)):'无附注'],
       note:'预测卡状态为「AI 初稿·待复核」;通过前不进入业务视图。判定日到期后按 H1/H2/H0 结算,Brier 回流校准。'},
   ];
   return `<div class="steps">${steps.map((s,idx)=>`<div class="step"><div class="no">${idx+1}</div><div class="body">
       <h4>${esc(s.t)} <span class="tag ${s.cls}">${s.tag}</span></h4>
       <div class="io"><div class="box"><b>输入</b><ul>${s.in.map(x=>`<li>${x}</li>`).join('')}</ul></div><div class="box"><b>输出</b><ul>${s.out.map(x=>`<li>${x}</li>`).join('')}</ul></div></div>
-      ${s.note?`<div class="note">${esc(s.note)}</div>`:''}
+      ${s.note?`<div class="note">${esc(pub(s.note))}</div>`:''}
     </div></div>`).join('')}</div>`;
 }
 
@@ -614,12 +630,12 @@ function renderProcess(i){
       <div><dt>记录类型</dt><dd>服务运行</dd></div><div><dt>运行编号</dt><dd>${esc(p.run.run_id)}</dd></div><div><dt>证据冻结 T0</dt><dd>${esc(i.t0)}</dd></div>
       <div><dt>模型</dt><dd>${esc(p.run.model||'—')}</dd></div><div><dt>提示词版本</dt><dd>${esc(p.run.prompt_version||'—')}</dd></div><div><dt>画像版本 / 严格度</dt><dd>${esc(p.run.profile_version||'—')} · ${esc(p.run.strictness||'—')}</dd></div>
       <div><dt>复核状态</dt><dd>${esc(i.review.status)}</dd></div>` : `
-      <div><dt>记录类型</dt><dd>分析过程记录</dd></div><div><dt>产出 session</dt><dd>${esc(i.meta.produced_by_session)}</dd></div><div><dt>产出日期</dt><dd>${esc(i.meta.produced_at)}</dd></div>
+      <div><dt>记录类型</dt><dd>分析过程记录</dd></div><div><dt>证据来源</dt><dd>政策知识库 · 官方原文收录,逐条可溯</dd></div><div><dt>产出批次</dt><dd>${esc(pub(i.meta.produced_by_session))}</dd></div><div><dt>产出日期</dt><dd>${esc(pub(i.meta.produced_at))}</dd></div>
       <div><dt>证据冻结 T0</dt><dd>${esc(i.t0)}</dd></div><div><dt>观察窗</dt><dd>${esc(r.window_from)} → ${esc(r.window_to)}</dd></div><div><dt>时间链节点</dt><dd>${i.timeline.length}(准入 ${r.admitted})</dd></div>
       <div><dt>复核状态</dt><dd>${esc(i.review.status)}</dd></div>`;
-  const rejected = (r.rejected||[]).map(x=>`<div class="rej"><b>退回</b> ${esc(x.title)}${x.url&&/^https?:/.test(x.url)?` <a class="ext" href="${esc(x.url)}" target="_blank" rel="noopener">链接 ↗</a>`:''}<br><span style="color:var(--ink-3)">${esc(x.reason)}</span></div>`).join('') || '<div style="color:var(--ink-4)">未登记退回项。</div>';
+  const rejected = (r.rejected||[]).map(x=>`<div class="rej"><b>退回</b> ${esc(pub(x.title))}${x.url&&/^https?:/.test(x.url)?` <a class="ext" href="${esc(x.url)}" target="_blank" rel="noopener">链接 ↗</a>`:''}<br><span style="color:var(--ink-3)">${esc(pubReason(x.reason))}</span></div>`).join('') || '<div style="color:var(--ink-4)">未登记退回项。</div>';
   const samples = (br.samples||[]).map(s=>`<tr><td>${esc(s.title)}</td><td class="mono num">${esc(s.start)}</td><td class="mono num">${esc(s.end)}</td><td class="num" style="text-align:right">${s.days}</td><td>${/^https?:/.test(s.url||'')?`<a class="ext" href="${esc(s.url)}" target="_blank" rel="noopener">原文 ↗</a>`:'—'}</td></tr>`).join('');
-  const secondary = (p.base_rate_secondary||[]).map(s=>`<h5 style="margin-top:10px">卡 ${esc(s.card_id)} 另用基率:${esc(s.pattern)} · n=${s.n}${s.missing?' · 样本不足,封顶「可能」':''}${s.median_days!=null?` · 中位 ${s.median_days} 天`:''}${s.p25!=null&&s.p75!=null?` / ${s.p25}–${s.p75} 天`:''}${s.max_days!=null?` · 最长 ${s.max_days} 天`:''}${s.note?` · ${esc(s.note)}`:''}</h5>${(s.samples||[]).length?`<div class="scroll"><table><thead><tr><th>样本</th><th>起</th><th>止</th><th style="text-align:right">天</th><th>来源</th></tr></thead><tbody>${s.samples.map(x=>`<tr><td>${esc(x.title)}</td><td class="mono num">${esc(x.start)}</td><td class="mono num">${esc(x.end)}</td><td class="num" style="text-align:right">${x.days}</td><td>${/^https?:/.test(x.url||'')?`<a class="ext" href="${esc(x.url)}" target="_blank" rel="noopener">原文 ↗</a>`:'—'}</td></tr>`).join('')}</tbody></table></div>`:''}`).join('');
+  const secondary = (p.base_rate_secondary||[]).map(s=>`<h5 style="margin-top:10px">卡 ${esc(s.card_id)} 另用基率:${esc(pub(s.pattern))} · n=${s.n}${s.missing?' · 样本不足,封顶「可能」':''}${s.median_days!=null?` · 中位 ${s.median_days} 天`:''}${s.p25!=null&&s.p75!=null?` / ${s.p25}–${s.p75} 天`:''}${s.max_days!=null?` · 最长 ${s.max_days} 天`:''}${s.note?` · ${esc(pub(s.note))}`:''}</h5>${(s.samples||[]).length?`<div class="scroll"><table><thead><tr><th>样本</th><th>起</th><th>止</th><th style="text-align:right">天</th><th>来源</th></tr></thead><tbody>${s.samples.map(x=>`<tr><td>${esc(x.title)}</td><td class="mono num">${esc(x.start)}</td><td class="mono num">${esc(x.end)}</td><td class="num" style="text-align:right">${x.days}</td><td>${/^https?:/.test(x.url||'')?`<a class="ext" href="${esc(x.url)}" target="_blank" rel="noopener">原文 ↗</a>`:'—'}</td></tr>`).join('')}</tbody></table></div>`:''}`).join('');
   const checks=(p.review_checks||[]);
   let calibHtml;
   if(!cal){
@@ -633,33 +649,34 @@ function renderProcess(i){
   return `
     <dl class="record">${record}</dl>
     <div class="sections">
-      <section class="section"><div class="sec-head"><span class="n">01</span><h4>检索与准入</h4><span class="sum">拉回 ${r.fetched} 条,准入 ${r.admitted} 个节点,退回 ${r.rejected.length} 类</span></div>
+      <section class="section"><div class="sec-head"><span class="n">01</span><h4>知识库检索与准入</h4><span class="sum">命中 ${r.fetched} 条,准入 ${r.admitted} 个节点,退回 ${r.rejected.length} 类</span></div>
         <div class="sec-body">
-          <div class="mini"><h5>检索式</h5><ul>${r.queries.map(q=>`<li><span class="mono">${esc(q)}</span></li>`).join('')||'<li>未登记</li>'}</ul>
-            <h5 style="margin-top:10px">核过的来源</h5><ul>${(r.sources_checked||[]).map(q=>`<li>${esc(q)}</li>`).join('')||'<li>未登记</li>'}</ul>
-            ${r.log_path?`<div class="foot-hint" style="margin-top:8px">逐条记录:<span class="mono">${esc(r.log_path)}</span></div>`:''}</div>
+          <div class="mini"><h5>检索主题</h5><ul>${r.queries.map(q=>pub(q)).filter(Boolean).map(q=>`<li><span class="mono">${esc(q)}</span></li>`).join('')||'<li>未登记</li>'}</ul>
+            <h5 style="margin-top:10px">覆盖的来源</h5><ul>${[...new Set((r.sources_checked||[]).map(q=>pubSource(q)).filter(Boolean))].map(q=>`<li>${esc(q)}</li>`).join('')||'<li>未登记</li>'}</ul>
+            ${r.log_path&&!PUBLIC?`<div class="foot-hint" style="margin-top:8px">逐条记录:<span class="mono">${esc(r.log_path)}</span></div>`:''}</div>
           <div class="mini"><h5>被退回的材料(为什么不用)</h5>${rejected}</div>
         </div></section>
       <section class="section"><div class="sec-head"><span class="n">02</span><h4>证据分级</h4><span class="sum">${tierN}</span></div>
-        <div class="sec-body one"><div class="mini"><div class="scroll"><table><thead><tr><th>节点</th><th>材料</th><th>类型</th><th>级别</th><th>层级</th><th>角色</th><th style="text-align:right">可推导权重</th><th>备注</th></tr></thead><tbody>${grading.map(g=>{ const n=nodeOf(i,g.node_id)||{}; const k=KINDS[n.kind]||{label:n.kind||'—'}; return `<tr><td>${nodeLink(i,g.node_id)}</td><td>${esc(n.title||'(时间链无此节点)')}</td><td>${esc(k.label)}</td><td><span class="${tierCls(g.tier)}">${esc(g.tier)}</span></td><td>${levelBadge(n.issuer_level)}</td><td>${g.role==='context'?'社会要素(解释)':'事实(可断言)'}${n.out_of_window?' · 锚点':''}</td><td class="num" style="text-align:right">${g.weight}</td><td style="color:var(--ink-3)">${esc(g.note||'')}</td></tr>`; }).join('')||'<tr><td colspan="8">未登记分级表</td></tr>'}</tbody></table></div>
+        <div class="sec-body one"><div class="mini"><div class="scroll"><table><thead><tr><th>节点</th><th>材料</th><th>类型</th><th>级别</th><th>层级</th><th>角色</th><th style="text-align:right">可推导权重</th><th>备注</th></tr></thead><tbody>${grading.map(g=>{ const n=nodeOf(i,g.node_id)||{}; const k=KINDS[n.kind]||{label:n.kind||'—'}; return `<tr><td>${nodeLink(i,g.node_id)}</td><td>${esc(n.title||'(时间链无此节点)')}</td><td>${esc(k.label)}</td><td><span class="${tierCls(g.tier)}">${esc(g.tier)}</span></td><td>${levelBadge(n.issuer_level)}</td><td>${g.role==='context'?'社会要素(解释)':'事实(可断言)'}${n.out_of_window?' · 锚点':''}</td><td class="num" style="text-align:right">${g.weight}</td><td style="color:var(--ink-3)">${esc(pub(g.note||''))}</td></tr>`; }).join('')||'<tr><td colspan="8">未登记分级表</td></tr>'}</tbody></table></div>
           <div class="foot-hint" style="margin-top:8px">S1 官方原文 · S2 官方表态/权威转载 · S3 行业媒体 · S4 内部一手情报(只作修正,不可单独断言)· S5 不可核验,不进链。权重来自各组登记的 grading,与温度公式中的级别权重可不同。</div></div></div></section>
       <section class="section"><div class="sec-head"><span class="n">03</span><h4>算子与基率</h4><span class="sum">4 个算子 · 基率样本 n=${br.n}${br.missing?'(样本不足)':''}${br.proxy?' · 代理基率':''}</span></div>
         <div class="sec-body">
-          <div class="mini"><h5>算子结果</h5>${p.operators.map(o=>`<div class="opline"><span class="on">${OPS[o.name]||esc(o.name)}</span><span><span class="tag ${OPST[o.status][1]}">${OPST[o.status][0]}</span> ${esc(o.summary)}<br><span style="color:var(--ink-4)">依据 ${(o.fact_ids||[]).map(f=>nodeLink(i,f)).join(' ')||'—'}</span></span></div>`).join('')}</div>
-          <div class="mini"><h5>基率</h5><table><tr><td>模式</td><td class="mono">${esc(br.pattern)}</td></tr><tr><td>样本</td><td class="num">n=${br.n}${br.missing?' · <span class="tag tag-amber">样本不足,未注入,档位封顶「可能」</span>':''}</td></tr>${br.median_days!=null?`<tr><td>中位 / 四分位</td><td class="num">${br.median_days} 天 / ${br.p25}–${br.p75} 天</td></tr>`:''}${br.anchor_node_id?`<tr><td>锚点事实</td><td>${nodeLink(i,br.anchor_node_id)} <span class="mono">${esc((nodeOf(i,br.anchor_node_id)||{}).date||'')}</span></td></tr>`:''}${br.proxy?`<tr><td>代理基率</td><td>${esc(br.proxy_note||'')}</td></tr>`:''}</table>
+          <div class="mini"><h5>算子结果</h5>${p.operators.map(o=>`<div class="opline"><span class="on">${OPS[o.name]||esc(o.name)}</span><span><span class="tag ${OPST[o.status][1]}">${OPST[o.status][0]}</span> ${esc(pub(o.summary))}<br><span style="color:var(--ink-4)">依据 ${(o.fact_ids||[]).map(f=>nodeLink(i,f)).join(' ')||'—'}</span></span></div>`).join('')}</div>
+          <div class="mini"><h5>基率</h5><table><tr><td>模式</td><td class="mono">${esc(pub(br.pattern))}</td></tr><tr><td>样本</td><td class="num">n=${br.n}${br.missing?' · <span class="tag tag-amber">样本不足,未注入,档位封顶「可能」</span>':''}</td></tr>${br.median_days!=null?`<tr><td>中位 / 四分位</td><td class="num">${br.median_days} 天 / ${br.p25}–${br.p75} 天</td></tr>`:''}${br.anchor_node_id?`<tr><td>锚点事实</td><td>${nodeLink(i,br.anchor_node_id)} <span class="mono">${esc((nodeOf(i,br.anchor_node_id)||{}).date||'')}</span></td></tr>`:''}${br.proxy?`<tr><td>代理基率</td><td>${esc(pub(br.proxy_note||''))}</td></tr>`:''}</table>
             ${samples?`<h5 style="margin-top:10px">样本清单</h5><div class="scroll"><table><thead><tr><th>样本</th><th>起</th><th>止</th><th style="text-align:right">天</th><th>来源</th></tr></thead><tbody>${samples}</tbody></table></div>`:'<div class="foot-hint" style="margin-top:6px">无样本清单。</div>'}
             ${secondary}</div>
         </div></section>
       <section class="section"><div class="sec-head"><span class="n">04</span><h4>推理与审阅</h4><span class="sum">审阅 ${checks.length} 项 · 通过 ${checks.filter(c=>c.result==='pass').length}</span></div>
-        <div class="sec-body one"><div class="mini"><h5>推理摘要(分析师记录,不含未回链数字)</h5><div class="trace">${esc(p.reasoning_trace||'未登记推理摘要')}</div>
-          <h5 style="margin-top:10px">审阅结论</h5><ul>${checks.map(c=>`<li><span class="tag ${CHECK[c.result][1]}">${CHECK[c.result][0]}</span> ${esc(c.check)}${c.note?` <span style="color:var(--ink-3)">— ${esc(c.note)}</span>`:''}</li>`).join('')||'<li>未登记审阅项</li>'}</ul></div></div></section>
+        <div class="sec-body one"><div class="mini"><h5>推理摘要(分析师记录,不含未回链数字)</h5><div class="trace">${esc(pub(p.reasoning_trace||'未登记推理摘要'))}</div>
+          <h5 style="margin-top:10px">审阅结论</h5><ul>${checks.map(c=>`<li><span class="tag ${CHECK[c.result][1]}">${CHECK[c.result][0]}</span> ${esc(pub(c.check))}${c.note?` <span style="color:var(--ink-3)">— ${esc(pub(c.note))}</span>`:''}</li>`).join('')||'<li>未登记审阅项</li>'}</ul></div></div></section>
       <section class="section"><div class="sec-head"><span class="n">05</span><h4>校准与复核</h4><span class="sum">${cal?`已判定 ${cal.judged_cards} 张`:'无历史判定'}</span></div>
         <div class="sec-body">
           <div class="mini"><h5>校准</h5>${calibHtml}</div>
-          <div class="mini"><h5>人工复核</h5><div class="review ${i.review.status==='通过'?'ok':''}"><span class="who">${esc(i.review.status)}</span><span>${esc(i.review.by)} · <span class="mono">${esc(i.review.at)}</span>${i.review.note?`<br>${esc(i.review.note)}`:''}</span></div>
+          <div class="mini"><h5>人工复核</h5><div class="review ${i.review.status==='通过'?'ok':''}"><span class="who">${esc(i.review.status)}</span><span>${esc(i.review.by)} · <span class="mono">${esc(i.review.at)}</span>${i.review.note?`<br>${esc(pub(i.review.note))}`:''}</span></div>
             <div class="foot-hint" style="margin-top:8px">复核只有三种处置:通过、需补充、驳回。通过前预测卡不进入业务视图;判定日到期后按 H1/H2/H0 结算并回流基率。</div></div>
         </div></section>
-      <section class="section"><div class="sec-head"><span class="n">附</span><h4>停点与已知缺口</h4><span class="sum">停点 ${stops.length} · 缺口 ${gaps.length}</span></div>
+      ${PUBLIC?`<div class="foot-hint" style="margin-top:8px">内部工作记录(停点 ${stops.length} 条、已知缺口 ${gaps.length} 条)未在此视图展示。</div>`:''}
+      <section class="section"${PUBLIC?' hidden':''}><div class="sec-head"><span class="n">附</span><h4>停点与已知缺口</h4><span class="sum">停点 ${stops.length} · 缺口 ${gaps.length}</span></div>
         <div class="sec-body">
           <div class="mini"><h5>触发过的停点与裁定</h5><ul>${stops.map(s=>`<li>${esc(s)}</li>`).join('')||'<li>无</li>'}</ul></div>
           <div class="mini"><h5>已知缺口(不补、不编)</h5><ul>${gaps.map(s=>`<li>${esc(s)}</li>`).join('')||'<li>无</li>'}</ul></div>
