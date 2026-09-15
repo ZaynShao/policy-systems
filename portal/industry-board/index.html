@@ -314,10 +314,10 @@ body.embedded{padding-inline:0;padding-block:0 8px}
   <div class="foot-hint" id="footRules"></div>
 </div>
 
-<script src="./data.js?v=202609151732"></script>
+<script src="./data.js?v=202609151901"></script>
 <script>
 /* ======================= 数据与常量 ======================= */
-const ORDER = [['ridehail','网约车'],['freight','货运'],['two_wheel','两轮车'],['fuel','加油'],['charging','充电'],['power','电力'],['autonomous','自动驾驶'],['delivery','外卖'],['tourism','旅游'],['generation','发电'],['space','商业航天'],['embodied','具身智能'],['low_altitude','低空经济'],['healthcare','医疗'],['elderly','养老'],['ai','AI 产业'],['ecommerce','电商'],['industry','工业'],['overseas','出海']];
+const ORDER = [['ridehail','网约车'],['freight','货运'],['two_wheel','两轮车'],['fuel','加油'],['charging','充电'],['power','电力'],['autonomous','自动驾驶'],['delivery','外卖'],['tourism','旅游'],['generation','发电'],['space','商业航天'],['embodied','具身智能'],['low_altitude','低空经济'],['healthcare','医疗'],['elderly','养老'],['ai','AI 产业'],['ecommerce','电商'],['industry','工业'],['overseas','出海'],['water','水利与水务'],['telecom','通信与网络'],['logistics','物流与供应链'],['storage_vpp','储能与虚拟电厂'],['computing','算力基础设施']];
 const DATA = Array.isArray(window.INDUSTRY_DATA) ? window.INDUSTRY_DATA : [];
 const META = window.BOARD_META || {};
 const byId = Object.fromEntries(DATA.map(i=>[i.id,i]));
@@ -473,6 +473,7 @@ function renderDetail(){
     <div class="panel ${dtab==='process'?'active':''}" id="p-process">${renderProcess(i)}</div>`;
   $('#footRules').innerHTML = `监管温度范围 −100(收紧风险)到 +100(国家支持),负值向左、正值向右。${esc(SIGNAL_RULE)}
     <div class="rules">
+      <div><b>名词解释:观察窗 / 窗内 / 窗外 / T0 后</b>观察窗 = 证据冻结日 T0 往前 365 天(本行业 ${esc(winFrom(i))} → ${esc(i.t0)})。<b style="display:inline;font-size:inherit;color:inherit;letter-spacing:0">窗内</b>:公开日落在观察窗里的政策文件与监管动作,是本轮温度、信号、"至少 3 条 S1"和预测卡依据的全部来源。<b style="display:inline;font-size:inherit;color:inherit;letter-spacing:0">窗外</b>:公开日早于观察窗起点、但仍在生效的上位文件,可以作"锚点"进链(证据链里的点状灰框,标"窗外锚点"),只用来定阶段、看措辞变化和做历史类比,不计温度、不计信号、不算 3 条。<b style="display:inline;font-size:inherit;color:inherit;letter-spacing:0">T0 后</b>:公开日晚于 T0 的材料,标"T0 后",本轮不参与推理,下一轮滚动观察窗后再计。</div>
       <div><b>温度与标签规则(meta.stance_rule)</b>${esc(i.meta.stance_rule||'—')}</div>
       <div><b>S1 准入规则(meta.s1_admission_rule)</b>${esc(i.meta.s1_admission_rule||'—')}</div>
       <div><b>锚点规则(meta.anchor_rule)</b>${esc(i.meta.anchor_rule||'—')}</div>
