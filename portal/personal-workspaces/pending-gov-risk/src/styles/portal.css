@@ -1,0 +1,39 @@
+/* 门户自己的全局样式,在 tokens.css 之后加载。
+ *
+ * tokens.css(从公共事务逐字复制)把整段移动端覆盖写在了基础规则前面,
+ * .stat-grid / .monthly-layout / .modal 等后定义的基础规则会把它盖掉,窄屏下卡片挤成一排、页面横向溢出。
+ * 这里把同一段原样再放一次(复制文件本身不改),让窄屏覆盖真正生效。 */
+@media (max-width: 768px) {
+  html, body { font-size: 13px; }
+  .topbar { padding: 0 14px; gap: 8px; height: 52px; }
+  .global-search { display: none; }
+  .brand-tag { display: none; }
+  .app, .app-mobile { display: block; }
+  .main, .main-mobile {
+    padding: 14px 14px calc(76px + env(safe-area-inset-bottom, 0px));
+    min-height: calc(100vh - 52px);
+  }
+  .page-head { flex-direction: column; align-items: stretch; gap: 12px; }
+  .page-actions { flex-wrap: wrap; }
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .rule-grid { grid-template-columns: 1fr; padding: 12px; }
+  .drawer { width: 100% !important; max-width: 100% !important; }
+  /* 移动端弹窗：占满宽度、表单单列，避免双列挤在一起填不了 */
+  .modal { width: 96vw !important; max-width: 96vw !important; max-height: 90vh; }
+  .modal-body { padding: 16px; }
+  .modal-head, .modal-foot { padding-left: 16px; padding-right: 16px; }
+  .modal-foot { flex-direction: column; align-items: stretch; gap: 10px; }
+  .modal-foot > div { width: 100%; }
+  .modal-foot .btn { flex: 1; }
+  .form-row { grid-template-columns: 1fr; gap: 12px; margin-bottom: 12px; }
+  .form-row > .form-field-full { grid-column: span 1; }
+  .filter-bar { flex-wrap: wrap; padding: 10px 12px; }
+  .search-box { width: 100%; max-width: 100%; }
+  .filter-select { width: calc(50% - 4px); }
+  .tbl th, .tbl td { padding: 8px 8px; font-size: 11.5px; }
+  .monthly-layout { grid-template-columns: 1fr; }
+  .monthly-doc { padding: 16px 14px; }
+  .monthly-cover-cn { font-size: 22px; }
+  .toast-stack { right: 8px; left: 8px; }
+  .toast { min-width: auto; }
+}
