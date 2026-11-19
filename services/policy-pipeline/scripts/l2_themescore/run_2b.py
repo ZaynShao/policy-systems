@@ -449,7 +449,8 @@ def main():
             write_business_view(d, args.vault, sanitized_from="0_raw/policies/" + Path(rec.path).name,
                                 extracted_at=today, extracted_model=args.gen_model,
                                 extracted_strategy=(profile or {}).get("profile_id"))
-        write_queue(queue, f"{args.state}/review_queue/queue.jsonl")
+        # apply 在生产上逐篇被调起,必须追加;覆盖会让退件现场只剩最后一篇。
+        write_queue(queue, f"{args.state}/review_queue/queue.jsonl", append=True)
         report.render(drafts, queue, warns, None, f"{args.state}/reports/apply.html")
         for w in warns:
             print("WARN:", w)

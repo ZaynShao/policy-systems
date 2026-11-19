@@ -29,7 +29,8 @@ class StageResult:
 def process_pid(pid: str, raw_text: str, version: int,
                 ledger: dict[str, LedgerEntry],
                 run_attribution: Callable[[str], None],
-                run_crystallize: Callable[[str], None] | None = None) -> StageResult:
+                run_crystallize: Callable[[str], None] | None = None,
+                verify_output: Callable[[str], bool] | None = None) -> StageResult:
     if not needs_rebuild(pid, raw_text, version, ledger):
         return StageResult(pid, True, "skipped")
     try:
@@ -38,6 +39,14 @@ def process_pid(pid: str, raw_text: str, version: int,
             run_crystallize(pid)
     except Exception as e:
         return StageResult(pid, False, str(e))
+    # 归属脚本以 0 退出**不等于**产出写成功。run_2b 在判官打回、程序门拦下、
+    # 模型少字段时都只记一条退件然后正常退出——只看退出码,就会把"什么都没产出"
+    # 记成完成。账本一盖章 needs_rebuild 恒为假,这篇政策再也不会被重跑,
+    # 且失败从不进死信,于是死信告警与周日重排全程空转。
+    # 2026-09-07 实测:51 篇政策以这种方式静默出局,最久的躺了三个月。
+    # 所以盖章前必须验收产出本身,而不是相信退出码。
+    if verify_output is not None and not verify_output(pid):
+        return StageResult(pid, False, "no_output: 归属退出码为 0,但 business_view 未写出")
     mark_done(ledger, pid, raw_text, version)
     return StageResult(pid, True, None)
 
@@ -55,7 +64,8 @@ def drain_queue(queue_path: Path, ledger: dict, ledger_path: Path,
                 raw_text_for: Callable[[str], str], version: int,
                 run_attribution: Callable[[str], None],
                 run_sync: Callable[[], None],
-                run_crystallize: Callable[[str], None] | None = None) -> list[StageResult]:
+                run_crystallize: Callable[[str], None] | None = None,
+                verify_output: Callable[[str], bool] | None = None) -> list[StageResult]:
     results: list[StageResult] = []
     processed_any = False
     while True:
@@ -71,7 +81,8 @@ def drain_queue(queue_path: Path, ledger: dict, ledger_path: Path,
             processed_any = True
             continue
         res = process_pid(item.pid, raw_text, version, ledger,
-                          run_attribution, run_crystallize)
+                          run_attribution, run_crystallize,
+                          verify_output=verify_output)
         results.append(res)
         if res.ok:
             l2_queue.mark_complete(queue_path, item.pid)

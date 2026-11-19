@@ -9424,12 +9424,12 @@
   city_code: '000000'
   channel_type: 能源局
   root_domain: nea.gov.cn
-  list_url: http://www.nea.gov.cn/zcfb
-  source: discovery
+  list_url: https://www.nea.gov.cn/policy/zxwj.htm
+  source: manual
   status: 验证
-  last_probed_at: '2026-06-07T15:31:32+08:00'
-  probe_result: manual_verified_zcfb_34kw
-  notes: discovery误选JS空壳zxwj.htm;手工改政策发布/zcfb(34能源KW/页)
+  last_probed_at: '2026-09-07T18:30:00+08:00'
+  probe_result: js_shell_needs_firecrawl
+  notes: 最新文件栏目。2026-09-07 换回:此前手工改成的 /zcfb 用真抓取器实测只回 2017-10-11 的归档条目(29 条全是九年前),等于国家能源局整条口子九个月没进过新件。当初改它的理由是"discovery误选JS空壳zxwj.htm"——但 JS 空壳正是 _fetch_list_html 的 firecrawl 兜底要处理的情况(纯文本 333 字 < LIST_MIN_TEXT 500),换成静态归档页反而把能抓的换成了抓得到但过期的
 - city: 商务部
   province: 国家
   level: 国家
@@ -11038,3 +11038,63 @@
   last_probed_at: '2026-06-08T01:53:41+08:00'
   probe_result: ok
   notes: ''
+- city: 国家发展和改革委员会
+  province: 国家
+  level: 国家
+  city_code: '000000'
+  channel_type: 发改委
+  root_domain: ndrc.gov.cn
+  list_url: https://www.ndrc.gov.cn/hdjl/yjzq/
+  source: manual
+  status: 验证
+  last_probed_at: '2026-09-07T18:00:00+08:00'
+  probe_result: ok
+  notes: 意见征求栏目。2026-09-07 补:此前只收发改委「通知公告」,征求意见稿整条不进库;《售电公司管理办法(公开征求意见稿)》2026-09-04 就挂在这里,同页还有电网公平开放监管办法、能源保供中长期合同管理办法、电力安全生产监督管理办法。与「通知公告」同 city/type/domain,靠 channel_label 的 list_url 哈希区分
+- city: 国家发展和改革委员会
+  province: 国家
+  level: 国家
+  city_code: '000000'
+  channel_type: 发改委
+  root_domain: ndrc.gov.cn
+  list_url: https://www.ndrc.gov.cn/xxgk/zcfb/tz/
+  source: manual
+  status: 验证
+  last_probed_at: '2026-09-07T18:30:00+08:00'
+  probe_result: ok
+  notes: 政策发布-通知栏目。实测 42 条、最新 2026-08-27、标题带文号;在册的「通知公告」(xwdt/tzgg)走的是新闻动态口,真抓取器实测只回 6 条。2026 年入库的发改委政策 provenance 也几乎都指向 xxgk/zcfb/tz/
+- city: 国家能源局
+  province: 国家
+  level: 国家
+  city_code: '000000'
+  channel_type: 能源局
+  root_domain: nea.gov.cn
+  list_url: https://www.nea.gov.cn/policy/tz.htm
+  source: manual
+  status: 验证
+  last_probed_at: '2026-09-07T18:30:00+08:00'
+  probe_result: js_shell_needs_firecrawl
+  notes: 通知栏目。与「最新文件」同 city/type/domain,靠 channel_label 的 list_url 哈希区分
+- city: 国家能源局
+  province: 国家
+  level: 国家
+  city_code: '000000'
+  channel_type: 能源局
+  root_domain: nea.gov.cn
+  list_url: https://www.nea.gov.cn/policy/gg.htm
+  source: manual
+  status: 验证
+  last_probed_at: '2026-09-07T18:30:00+08:00'
+  probe_result: js_shell_needs_firecrawl
+  notes: 公告栏目
+- city: 中国政府网
+  province: 国家
+  level: 国家
+  city_code: '000000'
+  channel_type: 国务院
+  root_domain: gov.cn
+  list_url: https://www.gov.cn/zhengce/zhengceku/
+  source: manual
+  status: 候选
+  last_probed_at: '2026-09-07T18:30:00+08:00'
+  probe_result: needs_server_probe
+  notes: 政策文件库。在册的 sousuo.www.gov.cn/zcwjk/policyDocumentLibrary 是 JS 搜索应用,真抓取器实测只回 1 条;2026 年入库政策的 provenance 大量指向 zhengce/zhengceku/。本机 curl 被拦(441 字),需服务器用 firecrawl 实测后再晋升为「验证」

@@ -12,11 +12,12 @@ import re
 from dataclasses import dataclass, asdict
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
+from html import escape
 from urllib.parse import urljoin
 import requests
 from bs4 import BeautifulSoup
 
-from .channel_catalog import Channel, ChannelStatus
+from .channel_catalog import Channel, ChannelStatus, channel_label
 # 与 probe 共用同一个 UA:实测 miit/samr 按 UA 拦(ZCE-Scan → 403,ZCE-Probe → 200),
 # 两端不一致会造出「probe 说 ok、scan 一行扫不到」的静默失联渠道。
 from .connectivity_probe import UA
@@ -45,6 +46,22 @@ KEYWORDS = (
     "预付卡", "储值卡", "加油卡", "电子券",
     "支付机构", "非银行支付", "第三方支付",
     "成品油经营", "油品质量", "计量器具", "危险化学品", "危险货物运输",
+    # 2026-09-07 补:用「解读文章反查库存」量出来的盲词。65 篇被反复引用却没采到的
+    # 能源政策里,10 篇标题一个关键词都不命中——《售电公司管理办法》《关于更高水平
+    # 更高质量做好节能降碳工作的意见》《输配电定价成本监审办法》都栽在这儿。
+    "售电", "购电", "输配电", "用电", "电能", "发电",
+    "降碳", "碳市场", "碳排放", "零碳", "低碳",
+)
+
+#: 国家级列表页改用「文体门」:标题像不像一份公文。
+#:
+#: 关键词门是给市级用的——那边条目多、噪音大,得靠能源词收窄。国家部委正相反:
+#: 发文量小、单件价值高,而部委的文件名经常不带任何能源词(《售电公司管理办法》
+#: 一个都不含),按能源词收等于把最该收的挡在门外。按「是不是公文」收更贴合。
+#: 仍然要有门,否则导航栏、页脚、友情链接会被当成条目抓取。
+DOC_FORMS = (
+    "办法", "规定", "意见", "通知", "公告", "方案", "规划", "细则",
+    "条例", "指南", "规则", "决定", "批复", "征求", "公示", "标准",
 )
 
 _DATE_RE = re.compile(r"((?:19|20)\d{2})[-/年.](\d{1,2})[-/月.](\d{1,2})")
@@ -64,6 +81,11 @@ class ScanRow:
 
 
 LIST_MIN_TEXT = 500   # BS4 文本短于此视为空壳/JS页 → firecrawl 兜底
+FIRECRAWL_WAIT_MS = 4000  # 兜底时等 JS 渲染完的毫秒数
+#: 数据源 JSON 单次回 1000 条(能源局实测),按发布时间倒序。日增量只需要头部若干条,
+#: 全量放行会让接上渠道的**第一晚**去抓上千篇历史件、每篇还要过一次 LLM 文体门,
+#: 足以撑爆当晚的时间与成本预算。补历史应当是一次有意的回填,不是 cron 的副作用。
+DATASOURCE_MAX_ITEMS = 120
 
 
 def _bs4_get(url: str) -> str:
@@ -89,8 +111,11 @@ def _firecrawl_get_html(url: str) -> str:
     try:
         resp = requests.post(
             "https://api.firecrawl.dev/v1/scrape",
-            json={"url": url, "formats": ["html"]},
-            headers={"Authorization": f"Bearer {key}"}, timeout=45,
+            # waitFor:兜底的对象就是"HTML 里没有条目、条目由 JS 填"的页面,不等渲染
+            # 等于把空壳原样拿回来。2026-09-07 实测国家能源局 policy/zxwj.htm:
+            # 不等 → 1958 字 7 链接 0 条目(Vue 挂载前的骨架),整条能源局口子因此空转。
+            json={"url": url, "formats": ["html"], "waitFor": FIRECRAWL_WAIT_MS},
+            headers={"Authorization": f"Bearer {key}"}, timeout=60,
         )
         if resp.status_code != 200:
             return ""
@@ -100,13 +125,84 @@ def _firecrawl_get_html(url: str) -> str:
         return ""
 
 
+#: 新华云 CMS 列表页的数据源标记。容器上挂 data="datasource:<id>" datatype="ds",
+#: 条目由 JS 从同目录的 <preview><id>.json 拉回来填进去。
+_DS_ID_RE = re.compile(r"datasource:([0-9A-Za-z]{16,40})")
+
+
+def _xinhua_datasource_html(page_url: str, html: str) -> str:
+    """新华云 CMS 空壳页 → 直接取它的 JSON 数据源,拼回最小 HTML。
+
+    国家能源局的 policy/zxwj.htm、tz.htm、gg.htm 都是这种页:HTML 里只有一个空
+    <ul id="showData0">,条目全靠 JS 填。firecrawl 也渲不出来——2026-09-07 实测
+    带 waitFor 4 秒拿回来的仍是挂载前的骨架(1958 字、7 个链接、0 条目),
+    于是国家能源局整条口子空转。
+
+    但那个 JSON 是同目录下的**静态文件**,直接取更稳也更全:单次 1000 条、带
+    publishTime。取回后拼成最小 HTML 交回主流程,下游的标题门、日期解析、
+    去重、翻页判定全部不用改。
+
+    URL 规则出自页面加载器 nyjcb_dw_es5_2023.js:
+        sourceUrl = "./" + preview + datasource + ".json"
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    seeds = []
+    for el in soup.find_all(attrs={"datatype": "ds"}):
+        # <a> 上的 datasource 是导航项(如"首页"),不是列表数据
+        if el.name == "a":
+            continue
+        m = _DS_ID_RE.search(el.get("data") or "")
+        if m:
+            seeds.append((m.group(1), el.get("preview") or "ds_"))
+    parts = []
+    seen = set()
+    for ds_id, preview in seeds[:3]:
+        try:
+            r = requests.get(urljoin(page_url, f"./{preview}{ds_id}.json"),
+                             headers={"User-Agent": UA}, timeout=TIMEOUT)
+            if r.status_code >= 400:
+                continue
+            items = ((r.json() or {}).get("datasource") or [])[:DATASOURCE_MAX_ITEMS]
+        except Exception:
+            continue
+        for it in items:
+            href = (it.get("publishUrl") or "").strip()
+            if not href:
+                continue
+            link = urljoin(page_url, href)
+            if link in seen:
+                continue
+            seen.add(link)
+            # showTitle 里可能嵌着整个 <a> 标签(CMS 的 Link 型条目),剥干净再用
+            title = BeautifulSoup(it.get("showTitle") or it.get("title") or "",
+                                  "html.parser").get_text(strip=True)
+            if not title:
+                continue
+            date = (it.get("publishTime") or "")[:10]
+            parts.append(
+                f"<li><a href=\"{escape(link, quote=True)}\">{escape(title)}</a>"
+                f"<span>{escape(date)}</span></li>"
+            )
+    if not parts:
+        return ""
+    return "<html><body><ul>" + "".join(parts) + "</ul></body></html>"
+
+
 def _fetch_list_html(url: str) -> str:
-    """分层:BS4免费先试;空壳/反爬 → firecrawl渲染兜底。"""
+    """分层:BS4 免费先试;空壳 → 数据源 JSON;再不行 → firecrawl 渲染兜底。
+
+    数据源排在 firecrawl 前面:它免费、更全(1000 条 vs 一页),而且 firecrawl
+    对这类页本来就渲不出来。
+    """
     html = _bs4_get(url)
     soup = BeautifulSoup(html, "html.parser") if html else None
     text_len = len(soup.get_text(strip=True)) if soup else 0
     if text_len >= LIST_MIN_TEXT:
         return html
+    if html:
+        ds = _xinhua_datasource_html(url, html)
+        if ds:
+            return ds
     fc = _firecrawl_get_html(url)
     return fc or html
 
@@ -125,6 +221,13 @@ def _page_urls(list_url: str, max_pages: int = MAX_PAGES) -> list:
     return urls
 
 
+def _title_gate(title: str, ch: Channel) -> bool:
+    """这条链接的标题值不值得抓。国家级看文体,其余看能源关键词(理由见 DOC_FORMS)。"""
+    if ch.level == "国家":
+        return any(f in title for f in DOC_FORMS) or any(kw in title for kw in KEYWORDS)
+    return any(kw in title for kw in KEYWORDS)
+
+
 def _extract_list_items(html: str, base_url: str, ch: Channel) -> list[ScanRow]:
     soup = BeautifulSoup(html, "html.parser")
     rows: list[ScanRow] = []
@@ -134,7 +237,7 @@ def _extract_list_items(html: str, base_url: str, ch: Channel) -> list[ScanRow]:
         title = a.get_text(strip=True)
         if not title or len(title) < 5 or len(title) > 200:
             continue
-        if not any(kw in title for kw in KEYWORDS):
+        if not _title_gate(title, ch):
             continue
         href = a["href"]
         if href.startswith("javascript:") or href.startswith("#") or href.startswith("mailto:"):
@@ -181,7 +284,7 @@ def scan_channel(ch: Channel, out_dir: Path) -> int:
             break
 
     out_dir.mkdir(parents=True, exist_ok=True)
-    fn = out_dir / f"{ch.city}__{ch.channel_type}__{ch.root_domain}.jsonl"
+    fn = out_dir / f"{channel_label(ch)}.jsonl"
     fn.write_text(
         "\n".join(json.dumps(asdict(x), ensure_ascii=False) for x in all_rows),
         encoding="utf-8",

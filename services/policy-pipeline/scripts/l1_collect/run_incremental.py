@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from .channel_catalog import load_catalog, ChannelStatus
+from .channel_catalog import load_catalog, ChannelStatus, channel_label
 from .step2_scan import scan_channel
 from .step3_filter import filter_scan_rows
 from .step4_fetch import fetch_candidates
@@ -145,10 +145,10 @@ def _run_channel(ch, cfg: IncrementalConfig, dedup, llm_fn, n_scan: int) -> dict
     sd = cfg.state_dir
     for d in ["scan", "cand", "quar", "fetch", "ext", "passed", "comm_ext", "comm_stage", "ingest"]:
         (sd / d).mkdir(parents=True, exist_ok=True)
-    label = f"{ch.city}__{ch.channel_type}__{ch.root_domain}"
+    label = channel_label(ch)
     if n_scan == 0:
         return {"channel": label, "scanned": 0, "ingested": 0}
-    merged = sd / "scan" / f"_merged_{ch.root_domain}.jsonl"
+    merged = sd / "scan" / f"_merged_{label}.jsonl"
     src = sd / "scan" / f"{label}.jsonl"
     merged.write_text(src.read_text(encoding="utf-8") if src.exists() else "",
                       encoding="utf-8")
