@@ -1,0 +1,29 @@
+{
+  "me": { "id": "demo", "name": "演示账号", "role": "MANAGER", "region": "北京" },
+  "assignees": [
+    { "id": "demo-ga-1", "name": "一线拜访人A", "role": "FIELD_GA", "region": "四川" },
+    { "id": "demo-ga-2", "name": "一线拜访人B", "role": "FIELD_GA", "region": "北京" },
+    { "id": "demo-hq-1", "name": "总部拜访人C", "role": "HQ_GA", "region": "北京" }
+  ],
+  "orgs": [
+    {
+      "id": "demo-org-1",
+      "name": "四川省能源局",
+      "region": "四川",
+      "contacts": [
+        { "id": "demo-c-1", "name": "联系人甲", "title": "新能源处" },
+        { "id": "demo-c-2", "name": "联系人乙", "title": "电力处" }
+      ]
+    },
+    {
+      "id": "demo-org-2",
+      "name": "北京市发展和改革委员会",
+      "region": "北京",
+      "contacts": [
+        { "id": "demo-c-3", "name": "联系人丙", "title": "能源处" }
+      ]
+    },
+    { "id": "demo-org-3", "name": "山东省能源局", "region": "山东", "contacts": [] },
+    { "id": "demo-org-4", "name": "广东省发展和改革委员会", "region": "广东", "contacts": [] }
+  ]
+}

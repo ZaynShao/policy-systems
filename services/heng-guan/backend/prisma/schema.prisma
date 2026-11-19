@@ -1,0 +1,199 @@
+// 这个文件原来是同事建的(公共事务平台后端的整份表定义),本仓只收我写的部分,其余是独立版的最小外壳。
+//
+// 我写的(各段原样搬来,按原 PR 的先后):
+//   原项目 PR 14  政策表接 pipeline 的字段 + 语义关系、人工补录申请、L1 反馈三张表
+//   原项目 PR 16  站内消息表 Notification
+//   原项目 PR 17  L1 源质量审核队列 L1ReviewQueue
+//   原项目 PR 18  评论信号表 CommentarySignal
+//   原项目 PR 124 政策表、知识库条目表加区划代码 adcode
+// 对应的数据库迁移在 prisma/migrations/ 下(也是我写的)。
+//
+// 标「外壳」的是独立版补的:同事建的 Policy、KnowledgeEntry 两张表和 UserRole、PolicyImportance 两个枚举,
+// 只留主键和我那几段要引用的东西,好让这份文件自成一体;它们的其余字段在原平台上,这里不带。
+
+// ── 外壳 ──
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── 外壳:平台账号角色(同事建的枚举,站内消息按它定向) ──
+enum UserRole {
+  OPERATOR
+  HQ_GA
+  FIELD_GA
+  MANAGER
+}
+
+// ── 外壳:政策重要性(同事建的枚举,我加的 importanceOverride 引用它) ──
+enum PolicyImportance {
+  STRATEGIC
+  MAJOR
+  GENERAL
+  INFO
+}
+
+// ── 外壳:政策表(同事建的)。只留主键;下面标「我写的」的是我加的字段 ──
+model Policy {
+  id              String   @id @default(cuid()) // 外壳
+
+  // 我写的(原项目 PR 124)
+  adcode          String?           // L1 region.code(GB/T 2260 6位);省级匹配键,前2位=省/前4位=市
+
+  // 我写的(原项目 PR 14)
+  // ===== Pipeline 集成(spec §5.1)=====
+  pipelinePid     String?   @unique   // P_2024_NDRC_718;null = 手动录入
+  pipelineVersion Int?
+  pipelineScores  Json?               // {D1..D6, importance, value_tags}
+  pipelineThemes  Json?               // [{id,isPrimary,isComprehensive}]
+  pipelineImpact  String?             // ②-B 影响分析(JSON 字符串存 text)
+  syncedAt        DateTime?
+  importanceOverride PolicyImportance? // 非 null 时前端显示覆盖值,sync 不写它
+  themeOverrides     Json?             // Phase 2 UI
+
+  semanticRelations   PolicySemanticRelation[] @relation("SemFrom")
+  semanticRelatedFrom PolicySemanticRelation[] @relation("SemTo")
+  manualRequests      ManualEntryRequest[]
+
+  // 我写的(原项目 PR 124)
+  @@index([adcode])
+}
+
+// ── 外壳:知识库条目表(同事建的,是政策库的只读投影)。只留主键;adcode 是我加的 ──
+model KnowledgeEntry {
+  pid          String   @id // 外壳
+
+  // 我写的(原项目 PR 124)
+  adcode       String? // L1 region.code(GB/T 2260 6位);省级匹配键,前2位=省/前4位=市
+  @@index([adcode])
+}
+
+// ── 我写的(原项目 PR 14):语义关系、人工补录申请、L1 反馈 ──
+
+model PolicySemanticRelation {
+  id              String   @id @default(cuid())
+  fromPolicyId    String
+  toPolicyId      String
+  relationType    String   // 9 类:derives_from/extends/iterates/aligns_with/
+                           // cites_basis/references/clarifies/supersedes/conflicts_with
+  confidence      Float?
+  evidence        String?
+  pipelineVersion Int?
+  fromPolicy      Policy   @relation("SemFrom", fields: [fromPolicyId], references: [id], onDelete: Cascade)
+  toPolicy        Policy   @relation("SemTo",   fields: [toPolicyId],   references: [id], onDelete: Cascade)
+  createdAt       DateTime @default(now())
+
+  @@unique([fromPolicyId, toPolicyId, relationType])
+  @@index([fromPolicyId])
+  @@index([toPolicyId])
+}
+
+model ManualEntryRequest {
+  id             String   @id @default(cuid())
+  submittedUrl   String
+  submittedTitle String?
+  submittedBy    String
+  status         String   @default("checking")
+  // checking / already_exists / l1_running_queued / processing / completed / feedback_created
+  resultPolicy   Policy?  @relation(fields: [resultPolicyId], references: [id])
+  resultPolicyId String?
+  feedbackId     String?
+  note           String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([status])
+}
+
+model L1FeedbackQueue {
+  id              String    @id @default(cuid())
+  reportedUrl     String
+  reportedTitle   String?
+  reportedBy      String
+  expectedChannel String?
+  l1ScanDate      DateTime?
+  status          String    @default("pending")  // pending / reviewed / resolved
+  reviewNote      String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([status])
+}
+
+// ── 我写的(原项目 PR 16:站内消息) ──
+enum NotificationLevel {
+  INFO
+  WARN
+  ERROR
+}
+
+model Notification {
+  id           String            @id @default(cuid())
+  level        NotificationLevel @default(INFO)
+  title        String
+  body         String?
+  source       String
+  createdAt    DateTime          @default(now())
+  readAt       DateTime?
+  targetRole   UserRole?         // null = 默认对 MANAGER 可见;v1 不实现路由
+  targetUserId String?           // 后期"推开发owner"用
+  @@index([readAt])
+  @@index([createdAt])
+}
+
+// ── 我写的(原项目 PR 17:L1 源质量审核队列) ──
+enum L1ReviewKind {
+  gate
+  checkpoint
+  sweep
+  fetch_fail
+}
+
+model L1ReviewQueue {
+  id              String       @id @default(cuid())
+  dedupeKey       String       @unique
+  pipelineKind    L1ReviewKind
+  pipelineRef     String
+  reason          String?
+  suggestedAction String?
+  confidence      Float?
+  evidence        String?
+  channel         String?
+  runLabel        String?
+  aiNarration     String?
+  aiNarratedAt    DateTime?
+  verdict         String?
+  corrections     Json?
+  reviewer        String?
+  note            String?
+  verdictAt       DateTime?
+  syncedBack      Boolean      @default(false)
+  createdAt       DateTime     @default(now())
+  @@index([verdict])
+  @@index([pipelineKind])
+}
+
+// ── 我写的(原项目 PR 18:评论信号) ──
+model CommentarySignal {
+  id                String   @id @default(cuid())
+  commentaryId      String   @unique
+  title             String
+  evidence          String?
+  signalRole        String?
+  confidence        Float?
+  sourceAccount     String?
+  businessTag       String?
+  themeIds          Json?
+  relatedPolicyPids Json?
+  sourcePath        String?
+  pipelineVersion   Int?
+  syncedAt          DateTime?
+  createdAt         DateTime @default(now())
+
+  @@index([businessTag])
+  @@index([signalRole])
+}

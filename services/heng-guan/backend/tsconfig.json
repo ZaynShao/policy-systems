@@ -1,0 +1,33 @@
+// 独立版补的:编译选项照原平台后端,范围只收我写的模块和它们要用的最小外壳(src/common、src/prisma、src/ai);
+// 别的目录(例如 src/monthly/ 下不进编译的零件)不收。测试用 ts-node 直接跑,运行时一并做类型检查。
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2022",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "skipLibCheck": true,
+    "strictNullChecks": true,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+    "esModuleInterop": true
+  },
+  "include": [
+    "src/notification/**/*.ts",
+    "src/l1-review/**/*.ts",
+    "src/voice/**/*.ts",
+    "src/dashboard/**/*.ts",
+    "src/common/**/*.ts",
+    "src/prisma/**/*.ts",
+    "src/ai/**/*.ts"
+  ],
+  "exclude": ["node_modules", "dist"]
+}
