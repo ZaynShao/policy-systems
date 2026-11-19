@@ -67,18 +67,75 @@ def test_run_noop_when_clean(vault_with_remote):
     assert run(vault_with_remote, ["0_raw/commentaries/"], "msg") == 0
 
 
-def test_run_aborts_on_violation_without_commit(vault_with_remote, monkeypatch):
+def test_run_pure_violation_alerts_without_commit(vault_with_remote, monkeypatch):
+    # 只有越界改动:告警 + 不提交,但退出 0——越界不再算本作业失败(2026-08 复盘)
     alerts = []
     monkeypatch.setattr("scripts.service.produce_and_push.notify_send",
                         lambda m: alerts.append(m) or True)
     vault = vault_with_remote
     (vault / "rogue.md").write_text("x", encoding="utf-8")
     rc = run(vault, ["0_raw/commentaries/"], "msg")
-    assert rc == 4
-    assert alerts
+    assert rc == 0
+    assert alerts and "已隔离" in alerts[0]
     head_before = subprocess.run(["git", "log", "--oneline"], cwd=vault,
                                  capture_output=True, text=True, check=True).stdout
     assert head_before.count("\n") == 1  # 仍只有 seed 一个 commit
+    assert (vault / "rogue.md").exists()  # 越界文件原地保留,等归属作业/人工处理
+
+
+def test_run_commits_whitelisted_despite_violation(vault_with_remote, monkeypatch):
+    # 核心修复:越界文件隔离告警,但白名单内产出照常提交推送,绝不整单拒绝
+    alerts = []
+    monkeypatch.setattr("scripts.service.produce_and_push.notify_send",
+                        lambda m: alerts.append(m) or True)
+    vault = vault_with_remote
+    (vault / "0_raw" / "commentaries").mkdir(parents=True)
+    (vault / "0_raw" / "commentaries" / "x.md").write_text("c", encoding="utf-8")
+    (vault / "1_extracted" / "relations").mkdir(parents=True)
+    (vault / "1_extracted" / "relations" / "stray.md").write_text("s", encoding="utf-8")
+    rc = run(vault, ["0_raw/commentaries/"], "l1(commentary): daily ingest")
+    assert rc == 0
+    assert alerts and "共1" in alerts[0]
+    committed = subprocess.run(["git", "show", "--name-only", "--pretty=format:", "HEAD"],
+                               cwd=vault, capture_output=True, text=True, check=True).stdout
+    assert "0_raw/commentaries/x.md" in committed
+    assert "stray.md" not in committed          # 越界文件绝不进 commit
+    local = subprocess.run(["git", "rev-parse", "HEAD"], cwd=vault,
+                           capture_output=True, text=True, check=True).stdout
+    remote = subprocess.run(["git", "rev-parse", "origin/main"], cwd=vault,
+                            capture_output=True, text=True, check=True).stdout
+    assert local == remote                       # 已推送
+    dirty = subprocess.run(["git", "status", "--porcelain", "-u"], cwd=vault,
+                           capture_output=True, text=True, check=True).stdout
+    assert "stray.md" in dirty                   # 越界文件仍在工作区(-u:防未跟踪目录折叠)
+
+
+def test_run_two_jobs_interlock_self_heals(vault_with_remote, monkeypatch):
+    # 2026-08/04 死锁场景回归:L2 崩溃留下 _meta/business_view 孤儿,
+    # 02:00 relations 作业曾被它整单拒绝 → 全线互锁 17 天。
+    # 新语义:relations 照常提交自己的产出;次日 L2 成功 run 收编孤儿;系统自愈。
+    monkeypatch.setattr("scripts.service.produce_and_push.notify_send", lambda m: True)
+    vault = vault_with_remote
+    (vault / "_meta" / "business_view").mkdir(parents=True)
+    (vault / "_meta" / "business_view" / "P_2026_X.yaml").write_text("orphan", encoding="utf-8")
+    (vault / "1_extracted" / "relations").mkdir(parents=True)
+    (vault / "1_extracted" / "relations" / "idx.md").write_text("r", encoding="utf-8")
+    # relations 作业:不再被 L2 的孤儿挡住
+    assert run(vault, ["1_extracted/relations/"], "l2(relations): nightly increment") == 0
+    committed = subprocess.run(["git", "show", "--name-only", "--pretty=format:", "HEAD"],
+                               cwd=vault, capture_output=True, text=True, check=True).stdout
+    assert "idx.md" in committed and "P_2026_X.yaml" not in committed
+    # 次日 L2 成功 run:孤儿被归属白名单收编
+    assert run(vault, ["1_extracted/", "_meta/business_view/", "2_crystallized/"],
+               "l2: daily derive") == 0
+    dirty = subprocess.run(["git", "status", "--porcelain"], cwd=vault,
+                           capture_output=True, text=True, check=True).stdout
+    assert dirty.strip() == ""                   # 全部收编,树干净,无死锁
+    local = subprocess.run(["git", "rev-parse", "HEAD"], cwd=vault,
+                           capture_output=True, text=True, check=True).stdout
+    remote = subprocess.run(["git", "rev-parse", "origin/main"], cwd=vault,
+                            capture_output=True, text=True, check=True).stdout
+    assert local == remote
 
 
 def test_run_keeps_local_commit_when_push_fails(vault_with_remote, monkeypatch):

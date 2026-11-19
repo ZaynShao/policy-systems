@@ -222,7 +222,7 @@ Producer(Mac/国内常开机)产 vault → git commit + push
 东京服务器 ── host cron 每天 21:00 ──▶ scripts/service/sync_tick.py
         │   git fetch --depth=1;HEAD 变了才 git reset --hard
         │   → docker compose run --rm policy-pipeline  python -m scripts.sync.run_sync
-        │   → 投影 heng-pg(staging:hengguan_staging / 生产:hengguan)
+        │   → 投影 heng-pg(hengguan;旧 hengguan_staging 已冻结弃用)
         └── Mac 只读阅览 ── git pull ──▶ Obsidian 看最新
 ```
 
@@ -260,9 +260,13 @@ git clone --depth=1 git@github-vault:ZaynShao/energy-policy-analysis.git /root/p
 **回滚**:`rm -rf /root/policy-vault && mv /root/policy-vault.rsync-bak-* /root/policy-vault`
 deploy key:服务器 `~/.ssh/vault_deploy`(只读)+ `~/.ssh/config` 的 `Host github-vault`;公钥加在 vault 仓 Deploy keys(read-only)。
 
-### 8.5 staging → 生产 cutover(gated · 不在 Stage 1)
+### 8.5 staging → 生产 cutover(已完成)
 
-`pipeline.env` 当前 `DATABASE_URL` 指 `hengguan_staging`。切生产 = **PR #14 合并 + pg_dump 备份 + migrate deploy + TRUNCATE + 改 DATABASE_URL→hengguan + 首 sync**,单独 gated,双确认。cron 不变,自动续上生产。
+`pipeline.env` 的 `DATABASE_URL` 现指 `hengguan`(2026-08-21 生产实测确认)。旧
+`hengguan_staging` 是 2026-06-08 冻结的孤儿副本——不在 Prisma 迁移链上(无
+`_prisma_migrations` 表),已无任何写入方;**下游一律不要再指向它**。policy-qa 曾
+因 runbook 旧版写死该库而读到过期数据(见 services/policy-qa/docs/runbook-deploy.md
+「切生产库」一节的教训记录)。
 
 ### 8.6 已知 caveat
 

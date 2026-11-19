@@ -26,9 +26,9 @@
 先想一个强口令(下面用 `<口令>` 代替,**别用示例值**):
 
 ```bash
-docker exec -i platform-heng-pg psql -U "$HENG_PG_USER" -d hengguan_staging <<'SQL'
+docker exec -i platform-heng-pg psql -U "$HENG_PG_USER" -d hengguan <<'SQL'
 CREATE ROLE policy_qa_ro WITH LOGIN PASSWORD '<口令>';
-GRANT CONNECT ON DATABASE hengguan_staging TO policy_qa_ro;
+GRANT CONNECT ON DATABASE hengguan TO policy_qa_ro;
 GRANT USAGE ON SCHEMA public TO policy_qa_ro;
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO policy_qa_ro;
 -- pipeline 以后新建的表也自动只读可见,免得每次加表都要回来补授权
@@ -40,11 +40,11 @@ SQL
 
 ```bash
 # 读得到:应输出政策条数
-docker exec -i platform-heng-pg psql -U policy_qa_ro -d hengguan_staging \
+docker exec -i platform-heng-pg psql -U policy_qa_ro -d hengguan \
   -c 'SELECT count(*) FROM "Policy" WHERE "pipelinePid" IS NOT NULL;'
 
 # 写不了:应报 permission denied
-docker exec -i platform-heng-pg psql -U policy_qa_ro -d hengguan_staging \
+docker exec -i platform-heng-pg psql -U policy_qa_ro -d hengguan \
   -c 'UPDATE "Policy" SET title = title;'
 ```
 
@@ -59,7 +59,7 @@ cat >> .env <<'EOF'
 # policy-qa 只读数据库角色(见 services/policy-qa/docs/runbook-deploy.md §1)
 POLICY_QA_PG_USER=policy_qa_ro
 POLICY_QA_PG_PASSWORD=<第1步那个口令>
-POLICY_QA_PG_DB=hengguan_staging
+POLICY_QA_PG_DB=hengguan
 EOF
 ```
 
@@ -162,13 +162,20 @@ DROP ROLE policy_qa_ro;   -- 先 REVOKE 各项权限,否则会报依赖
 
 数据是 pipeline 每天 21:00 投影进 heng-pg 的,本服务只读,**不需要为了更新数据做任何事**。
 
-## 切生产库
+## 切生产库(已于 2026-08-21 完成)
 
-现在指的是 `hengguan_staging`。等 heng 生产库 cutover 完成后:
+本服务现指 `hengguan`(heng 应用与 pipeline 投影用的同一个库)。当时的切换步骤,
+留作再次换库时的模板:
 
-1. 在生产库上重跑 §1 的建角色 SQL(角色是 per-database 授权的)
-2. 改 .env 的 `POLICY_QA_PG_DB=hengguan`
-3. `docker compose --profile policy-qa up -d policy-qa`,重跑 §3 与 §5 的验证
+1. 在目标库上重跑 §1 的建角色/授权 SQL(授权是 per-database 的,只改 .env 会连不上)
+2. 改 .env 的 `POLICY_QA_PG_DB=<目标库>`
+3. `docker compose --profile policy-qa up -d policy-qa`(`restart` 不重读 .env),重跑 §3 与 §5 的验证
+
+> 历史教训:本服务曾按本 runbook 旧版指到 `hengguan_staging`——那是 6/8 冻结的
+> 孤儿副本(不在 Prisma 迁移链上,无 `_prisma_migrations` 表),导致上线即读到
+> 过期数据、带 region_keyword 的检索报 UndefinedColumn。判别某库是否被 pipeline
+> 投影:看 `"pipelineScores" IS NOT NULL` 的行数(heng 自己的 crawler 会写
+> pipelinePid,但从不写 pipelineScores)。
 
 ## 已知限制(先看一眼,免得被当成故障上报)
 

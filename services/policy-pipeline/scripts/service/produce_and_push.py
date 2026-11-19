@@ -1,7 +1,13 @@
 """生产后 git 收尾:add(白名单)→ commit → pull --rebase → push。
 
-所有生产 cron 共用。exit:0=成功/无变更;4=白名单外改动(告警不提交);
+所有生产 cron 共用。exit:0=成功/无变更(白名单外改动只隔离告警,不阻断);
 5=push 失败(本地 commit 保留,下轮 cron 重试;期间 sync_tick 守卫会 abort 不 reset)。
+
+2026-08 复盘(退役 exit 4):旧行为"见越界整单拒绝"下,四个生产作业共用一个
+工作区、白名单互不相交——任一作业容器步骤失败留下的孤儿文件,会被其余作业
+判为越界,连各自名单内的合法产出也一并拒提,四方互锁自锁(8/4 一次 DNS 抖动
+→ 17 天 push 停摆)。现改为:越界文件绝不进 commit(纪律不变),但不再阻断
+名单内产出;孤儿由其归属作业的下一轮成功 run 自然收编,系统自愈。
 """
 from __future__ import annotations
 
@@ -40,6 +46,23 @@ def classify_changes(porcelain: str, whitelist: list) -> tuple:
     return to_add, violations
 
 
+def _pull_rebase_push(vault_dir, ts: str, fail_prefix: str) -> int:
+    """pull --rebase + push;失败则 abort rebase、告警、exit 5(commit 保留待重试)。
+    rebase.autoStash:工作区可能留着越界的隔离文件(见模块 docstring),
+    裸 rebase 会因脏树拒跑;autostash 让隔离文件安然穿过 rebase。"""
+    try:
+        _git(["-c", "rebase.autoStash=true", "pull", "--rebase", "origin", "main"], vault_dir)
+        _git(["push", "origin", "main"], vault_dir)
+    except subprocess.CalledProcessError as e:
+        subprocess.run(["git", "rebase", "--abort"], cwd=str(vault_dir),
+                       capture_output=True)
+        msg = f"[produce_and_push] {fail_prefix}: {e.stderr[:200] if e.stderr else e}"
+        print(f"[{ts}] {msg}", file=sys.stderr)
+        notify_send(msg)
+        return 5
+    return 0
+
+
 def run(vault_dir, whitelist: list, message: str) -> int:
     vault_dir = Path(vault_dir)
     porcelain = subprocess.run(
@@ -48,39 +71,26 @@ def run(vault_dir, whitelist: list, message: str) -> int:
     to_add, violations = classify_changes(porcelain, whitelist)
     ts = datetime.now(timezone.utc).isoformat(timespec="seconds")
     if violations:
-        msg = f"[produce_and_push] 白名单外改动,拒绝提交: {violations[:5]} (共{len(violations)})"
+        # 隔离不阻断:越界文件绝不进本次 commit,留在工作区等归属作业收编;
+        # 若始终无人收编(不在任何作业白名单内),会每轮告警直到人工处理。
+        msg = f"[produce_and_push] 白名单外改动,已隔离不提交: {violations[:5]} (共{len(violations)})"
         print(f"[{ts}] {msg}", file=sys.stderr)
         notify_send(msg)
-        return 4
     if not to_add:
         ahead = _git(["rev-list", "--count", "origin/main..HEAD"], vault_dir)
         if ahead != "0":
-            try:
-                _git(["pull", "--rebase", "origin", "main"], vault_dir)
-                _git(["push", "origin", "main"], vault_dir)
-            except subprocess.CalledProcessError as e:
-                subprocess.run(["git", "rebase", "--abort"], cwd=str(vault_dir),
-                               capture_output=True)
-                msg = f"[produce_and_push] 滞留 commit 重推失败: {e.stderr[:200] if e.stderr else e}"
-                print(f"[{ts}] {msg}", file=sys.stderr)
-                notify_send(msg)
-                return 5
+            rc = _pull_rebase_push(vault_dir, ts, "滞留 commit 重推失败")
+            if rc:
+                return rc
             print(f"[{ts}] pushed stranded commits ({ahead})")
             return 0
         print(f"[{ts}] no change, skip")
         return 0
     _git(["add", "--", *to_add], vault_dir)
     _git(["commit", "-m", message], vault_dir)
-    try:
-        _git(["pull", "--rebase", "origin", "main"], vault_dir)
-        _git(["push", "origin", "main"], vault_dir)
-    except subprocess.CalledProcessError as e:
-        subprocess.run(["git", "rebase", "--abort"], cwd=str(vault_dir),
-                       capture_output=True)
-        msg = f"[produce_and_push] push 失败(本地 commit 保留待重试): {e.stderr[:200] if e.stderr else e}"
-        print(f"[{ts}] {msg}", file=sys.stderr)
-        notify_send(msg)
-        return 5
+    rc = _pull_rebase_push(vault_dir, ts, "push 失败(本地 commit 保留待重试)")
+    if rc:
+        return rc
     print(f"[{ts}] pushed {len(to_add)} paths: {message}")
     return 0
 
