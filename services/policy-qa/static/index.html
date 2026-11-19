@@ -73,6 +73,10 @@
   }
   textarea:focus { outline: none; border-color: var(--accent); }
   .hint { max-width: 780px; margin: 6px auto 0; color: var(--muted); font-size: 12px; }
+  .opts { max-width: 780px; margin: 0 auto 8px; display: flex; gap: 10px; align-items: center; }
+  .opt { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); cursor: pointer; }
+  .opt.disabled { cursor: not-allowed; opacity: .55; }
+  .opt-note { font-size: 12px; color: var(--muted); opacity: .75; }
   .empty { color: var(--muted); text-align: center; padding: 40px 0; font-size: 14px; }
 </style>
 </head>
@@ -89,6 +93,13 @@
 </div></div></div>
 
 <footer>
+  <div class="opts">
+    <label id="biz-label" class="opt" title="读取中…">
+      <input type="checkbox" id="biz" disabled />
+      <span>结合公司业务分析</span>
+    </label>
+    <span class="opt-note" id="biz-note"></span>
+  </div>
   <div class="composer">
     <textarea id="input" placeholder="输入问题，Enter 发送，Shift+Enter 换行"></textarea>
     <button id="send">发送</button>
@@ -205,7 +216,7 @@ async function send() {
     let resp = await fetch('v1/chat', {
       method: 'POST',
       headers: authHeaders(),
-      body: JSON.stringify({ messages: history }),
+      body: JSON.stringify(chatBody()),
     });
     if (resp.status === 401) {
       // 平台登录态下不该走到这里;走到了说明是独立部署,问一次令牌再重试一次。
@@ -214,7 +225,7 @@ async function send() {
         resp = await fetch('v1/chat', {
           method: 'POST',
           headers: authHeaders(),
-          body: JSON.stringify({ messages: history }),
+          body: JSON.stringify(chatBody()),
         });
       }
       if (resp.status === 401) {
@@ -285,6 +296,47 @@ async function send() {
   }
 }
 
+// ── 业务框定开关 ────────────────────────────────────────────────
+// 服务端没配战略画像时置灰。让用户勾一个其实不生效的框,比不给这个框更糟:
+// 他会以为答案里已经带了业务判断。
+const $biz = document.getElementById('biz');
+const $bizLabel = document.getElementById('biz-label');
+const $bizNote = document.getElementById('biz-note');
+let bizAvailable = false;
+
+function chatBody() {
+  // 不可用时不发这个字段,让服务端走它自己的默认。
+  return bizAvailable
+    ? { messages: history, use_business_context: $biz.checked }
+    : { messages: history };
+}
+
+async function loadBusinessContext() {
+  try {
+    const resp = await fetch('v1/health', { headers: authHeaders() });
+    if (!resp.ok) throw new Error(String(resp.status));
+    const ctx = (await resp.json()).business_context;
+    bizAvailable = ctx && ctx.available === true;
+    if (bizAvailable) {
+      $biz.disabled = false;
+      $biz.checked = ctx.default_on === true;
+      $bizLabel.classList.remove('disabled');
+      $bizLabel.title = '按公司业务战略画像判断相关性(' + ctx.profile_id + ',生效 ' + ctx.effective_from + ')';
+      $bizNote.textContent = '';
+      return;
+    }
+    $bizLabel.title = '服务端未配置业务战略画像，本项不可用';
+    $bizNote.textContent = '未配置业务战略画像';
+  } catch (e) {
+    // 读不到就保持关闭并说明原因:开关显示的状态必须和实际发生的事一致。
+    $bizLabel.title = '未能读取服务端配置，本项不可用';
+    $bizNote.textContent = '状态未知';
+  }
+  $biz.disabled = true;
+  $biz.checked = false;
+  $bizLabel.classList.add('disabled');
+}
+
 $send.onclick = send;
 $input.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
@@ -299,6 +351,7 @@ document.getElementById('retoken').onclick = () => {
   askToken();
 };
 $input.focus();
+loadBusinessContext();
 </script>
 </body>
 </html>

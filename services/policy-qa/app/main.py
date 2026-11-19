@@ -18,6 +18,7 @@ from .planner import build_planner
 from .api import router
 from .chatlog import ChatLog
 from .config import Config, load_config
+from .strategy import load_profile
 
 logger = logging.getLogger("policy-qa")
 
@@ -54,6 +55,10 @@ async def lifespan(app: FastAPI):
     if preflight is not None:
         preflight()
     app.state.chatlog = getattr(app.state, "chatlog", None) or ChatLog(cfg.log_dir)
+    # 业务战略画像:可选。加载失败只记 warning 并退回不做业务框定,不阻断启动——
+    # 让一个可选的参照文件把问答服务拦在门外,代价远大于少一段业务口径。
+    if getattr(app.state, "strategy", None) is None:
+        app.state.strategy = load_profile(cfg.strategy_file)
     if getattr(app.state, "agent", None) is None:
         model = build_model(cfg)
         app.state.agent = build_agent(model)
@@ -65,7 +70,7 @@ async def lifespan(app: FastAPI):
 
 
 def create_app(
-    cfg: Config | None = None, *, store=None, agent=None, chatlog=None
+    cfg: Config | None = None, *, store=None, agent=None, chatlog=None, strategy=None
 ) -> FastAPI:
     """参数只供测试注入;生产走 lifespan 里的正常构建路径。"""
     app = FastAPI(
@@ -78,6 +83,7 @@ def create_app(
     app.state.store = store
     app.state.agent = agent
     app.state.chatlog = chatlog
+    app.state.strategy = strategy
     app.include_router(router)
 
     @app.get("/", include_in_schema=False)

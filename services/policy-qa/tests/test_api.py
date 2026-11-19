@@ -11,11 +11,20 @@ from app.agent import build_agent
 from app.chatlog import ChatLog
 from app.main import create_app
 from test_agent_tools import _cfg, _model, _scripted
+from test_strategy import VALID as _STRATEGY_YAML
 
 TOKEN = "test-token-abc"
 
 
-def _client(vault_store, tmp_path, model=None):
+def _stub_profile():
+    import yaml
+
+    from app.strategy import parse_profile
+
+    return parse_profile(yaml.safe_load(_STRATEGY_YAML))
+
+
+def _client(vault_store, tmp_path, model=None, strategy=None):
     cfg = _cfg(access_token=TOKEN, log_dir=str(tmp_path / "logs"))
     agent = build_agent(
         model
@@ -24,7 +33,13 @@ def _client(vault_store, tmp_path, model=None):
             "结论:该通知要求2026年底前建成充电桩10万个。",
         )
     )
-    app = create_app(cfg, store=vault_store, agent=agent, chatlog=ChatLog(str(tmp_path / "logs")))
+    app = create_app(
+        cfg,
+        store=vault_store,
+        agent=agent,
+        chatlog=ChatLog(str(tmp_path / "logs")),
+        strategy=strategy,
+    )
     return TestClient(app)
 
 
@@ -150,6 +165,59 @@ def test_chat_writes_log(vault_store, tmp_path):
     assert rec["tool_calls"][0]["name"] == "get_policy_fulltext"
     assert rec["answer_chars"] > 0
     assert TOKEN not in logs[0].read_text(encoding="utf-8")
+
+
+def test_health_reports_business_context_unavailable(vault_store, tmp_path):
+    """没配画像时,健康检查要明说"不可用"。
+
+    前端据此把「结合公司业务分析」置灰。让用户勾一个其实不生效的框,
+    比不给这个框更糟——他会以为答案里已经带了业务判断。
+    """
+    c = _client(vault_store, tmp_path)
+    body = c.get("/v1/health", headers={"Authorization": f"Bearer {TOKEN}"}).json()
+    assert body["business_context"] == {
+        "available": False,
+        "default_on": False,
+        "profile_id": None,
+        "effective_from": None,
+    }
+
+
+def test_health_reports_loaded_profile(vault_store, tmp_path):
+    c = _client(vault_store, tmp_path, strategy=_stub_profile())
+    body = c.get("/v1/health", headers={"Authorization": f"Bearer {TOKEN}"}).json()
+    assert body["business_context"]["available"] is True
+    assert body["business_context"]["default_on"] is True
+    assert body["business_context"]["profile_id"] == "2026-test"
+
+
+@pytest.mark.parametrize(
+    "payload, strategy, expect_on",
+    [
+        ({}, None, False),                              # 没画像 → 默认关
+        ({}, "profile", True),                          # 有画像 → 默认开
+        ({"use_business_context": False}, "profile", False),   # 显式关覆盖默认
+        ({"use_business_context": True}, None, True),          # 显式开(没画像则走兜底口径)
+    ],
+)
+def test_chat_logs_the_business_context_decision(
+    vault_store, tmp_path, payload, strategy, expect_on
+):
+    """开关状态必须落日志。
+
+    同一个问题,开关不同答案就不同;不记这个字段,事后拿着会话记录复现不出来。
+    """
+    c = _client(vault_store, tmp_path, strategy=_stub_profile() if strategy else None)
+    c.post(
+        "/v1/chat",
+        json={"messages": [{"role": "user", "content": "充电有什么新政策"}], **payload},
+        headers={"Authorization": f"Bearer {TOKEN}"},
+    )
+    rec = json.loads(
+        next(iter((tmp_path / "logs").glob("chat-*.jsonl"))).read_text(encoding="utf-8").strip()
+    )
+    assert rec["business_context"] is expect_on
+    assert rec["strategy_profile"] == ("2026-test" if strategy else None)
 
 
 def test_stream_error_becomes_error_event(vault_store, tmp_path):

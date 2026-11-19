@@ -52,9 +52,12 @@ const { createApp, h, nextTick } = await import('vue');
 /** policy-qa 客户端替身。把 handlers 交给测试,并让"流结束"由测试决定何时发生。 */
 const stubSource = `
 export const TOOL_LABELS = { search_policies: '检索政策库', get_policy_fulltext: '读取政策原文' };
-export function streamQaChat(messages, handlers, signal) {
+// 组件挂载时会读服务端能力。默认返回 null(=读不到) —— 开关保持关闭且置灰,
+// 流式那几条用例不受它影响。要测开关本身就先设 globalThis.__qaBizCtx。
+export async function fetchQaBusinessContext() { return globalThis.__qaBizCtx ?? null; }
+export function streamQaChat(messages, handlers, signal, options) {
   return new Promise((resolve) => {
-    globalThis.__qaStub = { messages, handlers, signal, finish: resolve };
+    globalThis.__qaStub = { messages, handlers, signal, options, finish: resolve };
   });
 }
 `;
@@ -210,4 +213,79 @@ test('delta_reset 丢掉规划自语后,后续 delta 仍然逐块显示', async 
   stub.finish();
   await flushUi();
   app.unmount();
+});
+
+
+// ── 「结合公司业务分析」开关 ──────────────────────────────────────
+//
+// 这个开关的要害不是"能不能勾",是**勾选显示的状态必须和实际发生的事一致**。
+// 服务端没配战略画像时它必须置灰:让用户勾一个其实不生效的框,比不给这个框更糟
+// —— 他会以为答案里已经带了业务判断,然后照着一份没有业务视角的答案去决策。
+
+const BIZ_ON = {
+  available: true,
+  default_on: true,
+  profile_id: '2026-test',
+  effective_from: '2026-08-31',
+};
+
+test('服务端没配画像时,开关置灰且请求不带该字段', async () => {
+  delete globalThis.__qaBizCtx;
+  const { app, host } = mount();
+  try {
+    await flushUi();
+    const box = host.querySelector('.composer-opts input[type="checkbox"]');
+    assert.ok(box, '找不到开关');
+    assert.equal(box.disabled, true, '不可用时必须置灰');
+    assert.equal(box.checked, false, '不可用时不能显示为已勾选');
+    assert.match(host.querySelector('.composer-opts').textContent, /未配置业务战略画像/);
+
+    const stub = await ask(host, '最近有什么政策');
+    assert.equal(stub.options, undefined, '不可用时不该发 use_business_context');
+    stub.finish();
+  } finally {
+    app.unmount();
+    host.remove();
+    delete globalThis.__qaBizCtx;
+  }
+});
+
+test('服务端配了画像时,开关按服务端默认开启并把状态发上去', async () => {
+  globalThis.__qaBizCtx = BIZ_ON;
+  const { app, host } = mount();
+  try {
+    await flushUi();
+    const box = host.querySelector('.composer-opts input[type="checkbox"]');
+    assert.equal(box.disabled, false, '可用时不该置灰');
+    assert.equal(box.checked, true, 'default_on 时应默认勾上');
+
+    const stub = await ask(host, '最近有什么政策');
+    assert.deepEqual(stub.options, { useBusinessContext: true });
+    stub.finish();
+  } finally {
+    app.unmount();
+    host.remove();
+    delete globalThis.__qaBizCtx;
+  }
+});
+
+test('用户取消勾选后,请求带的是 false 而不是省略', async () => {
+  globalThis.__qaBizCtx = BIZ_ON;
+  const { app, host } = mount();
+  try {
+    await flushUi();
+    const box = host.querySelector('.composer-opts input[type="checkbox"]');
+    box.checked = false;
+    box.dispatchEvent(new Event('change', { bubbles: true }));
+    await flushUi();
+
+    const stub = await ask(host, '最近有什么政策');
+    // 省略等于"跟随服务端默认",而服务端默认是开 —— 那用户这一下就白点了。
+    assert.deepEqual(stub.options, { useBusinessContext: false });
+    stub.finish();
+  } finally {
+    app.unmount();
+    host.remove();
+    delete globalThis.__qaBizCtx;
+  }
 });

@@ -236,6 +236,9 @@ didi_impact_one_liner: 业务一句话精髓(≤25 字)
 extracted_at: '2026-04-29'
 extracted_by: scripts/l2_derive/derive_business_view.py
 extracted_model: claude-opus-4-7
+extracted_strategy: 2026-energy-strategy   # 可选:写这篇影响分析时用的业务战略画像
+                                           # (_meta/framework/business_strategy.yaml 的 profile_id)。
+                                           # 战略可替换,不记这个字段就分不清哪篇是按哪版口径写的。
 sanitized_from: 0_raw/policies/{filename}.md     # 指回 raw
 
 # === Archive 标记(可选,综合分 <3 时) ===

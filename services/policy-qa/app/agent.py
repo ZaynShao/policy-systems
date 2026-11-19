@@ -30,7 +30,7 @@ from pydantic_ai.usage import UsageLimits
 
 from .config import Config
 from .planner import make_plan, plan_to_prompt
-from .prompts import build_system_prompt
+from .prompts import NO_BUSINESS_CONTEXT, build_system_prompt
 from .verifier import EVIDENCE_MAX_CHARS, verify_answer
 from .store import DEFAULT_LIMIT, MAX_LIMIT, PolicyCard, PolicyStore, StoreError
 
@@ -392,6 +392,19 @@ def _args_full(args: Any) -> str:
 # --- 流式驱动 ---------------------------------------------------------------
 
 
+def _business_context(strategy: Any, enabled: bool) -> str | None:
+    """决定 system prompt 里【业务边界】那一段用什么。
+
+    关掉时给的是 NO_BUSINESS_CONTEXT 而不是空串:整段抽掉的话,模型会退回
+    自己脑子里的行业常识去猜公司在做什么,那比给一份口径更糟。
+    """
+    if not enabled:
+        return NO_BUSINESS_CONTEXT
+    if strategy is None:
+        return None          # 没画像 → 兜底用手写口径,保持既有行为
+    return strategy.render()
+
+
 async def stream_answer(
     agent: Agent[RunState, str],
     *,
@@ -400,8 +413,17 @@ async def stream_answer(
     cfg: Config,
     today: datetime.date | None = None,
     planner: Agent[None, Any] | None = None,
+    strategy: Any = None,
+    use_business_context: bool = True,
 ) -> AsyncIterator[tuple[str, dict]]:
-    """跑一轮问答,yield (事件名, 数据)。事件名与 SSE 契约一致。"""
+    """跑一轮问答,yield (事件名, 数据)。事件名与 SSE 契约一致。
+
+    strategy 是已加载的业务战略画像(可为 None);use_business_context 是本轮
+    用户侧的开关。两者共同决定 system prompt 里【业务边界】那一段:
+      画像在 + 开关开 → 用画像渲染(唯一有出处的口径)
+      开关关         → NO_BUSINESS_CONTEXT,明确只解读政策本身
+      画像不在 + 开关开 → None,兜底用 prompts 里的手写口径(既有行为)
+    """
     history, prompt, truncated = to_model_messages(messages)
     state = RunState(
         store=store,
@@ -446,7 +468,12 @@ async def stream_answer(
         deps=state,
         message_history=history,
         usage_limits=limits,
-        instructions=build_system_prompt(today, has_plan=bool(plan_block)) + plan_block,
+        instructions=build_system_prompt(
+            today,
+            has_plan=bool(plan_block),
+            business_context=_business_context(strategy, use_business_context),
+        )
+        + plan_block,
     ) as run:
         async for node in run:
             if Agent.is_model_request_node(node):
