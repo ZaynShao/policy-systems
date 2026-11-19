@@ -1,0 +1,11 @@
+policy-pipeline:test:
+  stage: test
+  image: python:3.12-slim
+  rules:
+    - changes: [ "services/policy-pipeline/**/*" ]
+  before_script:
+    - cd services/policy-pipeline
+    - grep -vE '^-e ' constraints.txt > /tmp/c.pip
+    - pip install -c /tmp/c.pip pyyaml "anthropic>=0.40" "psycopg2-binary>=2.9" trafilatura beautifulsoup4 requests pillow qrcode segno pdfplumber socksio pytest
+  script:
+    - PYTHONPATH=. pytest -q

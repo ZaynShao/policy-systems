@@ -1,0 +1,256 @@
+"""L1增量采集入口。service线调用,无调度逻辑。append-only。
+流程:取锁→Step2分层扫→Step3规则过滤→Step4抓→Step4.5抽→policy_gate门→Step5入库→释放锁。
+"""
+from __future__ import annotations
+import argparse
+import json
+from concurrent.futures import ThreadPoolExecutor
+from contextlib import contextmanager
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+
+from .channel_catalog import load_catalog, ChannelStatus
+from .step2_scan import scan_channel
+from .step3_filter import filter_scan_rows
+from .step4_fetch import fetch_candidates
+from .step4_5_extract import extract_all
+from .step5_ingest import ingest_extracted
+from .dedup import DedupIndex
+from .policy_gate import gate_one
+from .common_llm_client import make_judge_client
+from . import review_pool
+from scripts.service.l2_queue import enqueue_batch
+
+ROOT = Path(__file__).resolve().parents[2]
+CST = timezone(timedelta(hours=8))
+STATE = ROOT / "state"
+VAULT_POLICIES = Path.home() / "Documents" / "Zayn Main" / "政策分析" / "0_raw" / "policies"
+LEVEL_MAP = {"national": "国家", "province": "省", "city": "市"}
+
+
+@dataclass
+class IncrementalConfig:
+    level: list = field(default_factory=lambda: ["national", "province", "city"])
+    since: str = "2026-01-01"
+    dry_run: bool = False
+    state_dir: Path = STATE / "T1_incremental"
+    vault_dir: Path = VAULT_POLICIES
+    channel_types: list = field(default_factory=list)
+    l2_queue_path: Path = STATE / "l2_queue.jsonl"
+    scan_workers: int = 12
+
+
+def enqueue_ingested(queue_path, pids: list, *, requested_at: str) -> None:
+    """L1 新入库 pid → L2 队列(trigger=l1_incremental)。空列表 no-op。"""
+    if not pids:
+        return
+    enqueue_batch(Path(queue_path), pids, "l1_incremental", "normal", requested_at)
+
+
+@contextmanager
+def _l1_lock():
+    """复用 service 的 l1_status 锁(若在树上);不在 → no-op(边界:不重复造锁)。"""
+    try:
+        from scripts.service.l1_status import acquire  # type: ignore
+    except Exception:
+        acquire = None
+    if acquire is None:
+        yield
+        return
+    with acquire():
+        yield
+
+
+def _select_channels(channels, levels: list, channel_types=None):
+    cn = {LEVEL_MAP.get(l, l) for l in levels}
+    out = [c for c in channels if c.level in cn and c.status == ChannelStatus.验证]
+    if channel_types:
+        out = [c for c in out if any(ct in c.channel_type for ct in channel_types)]
+    return out
+
+
+def _gate_extracted_dir(ext_dir: Path, passed_dir: Path, comm_dir: Path,
+                        quar_jsonl: Path, llm_fn, *,
+                        pool_path: Path = review_pool.POOL,
+                        review_dir: Path = STATE / "T1_incremental" / "review",
+                        run_label: str = "") -> tuple:
+    passed_dir.mkdir(parents=True, exist_ok=True)
+    comm_dir.mkdir(parents=True, exist_ok=True)
+    review_dir.mkdir(parents=True, exist_ok=True)
+    n_pass = n_comm = n_rej = n_review = 0
+    rejects: list = []
+    for jf in sorted(ext_dir.glob("*.json")):
+        rec = json.loads(jf.read_text(encoding="utf-8"))
+        gr = gate_one(ref=jf.stem, url=rec.get("url", ""), title=rec.get("title", ""),
+                      body_head=(rec.get("body") or "")[:800], llm_fn=llm_fn)
+        if gr.action == "pass":
+            (passed_dir / jf.name).write_text(jf.read_text(encoding="utf-8"),
+                                              encoding="utf-8")
+            n_pass += 1
+        elif gr.action == "commentary":
+            (comm_dir / jf.name).write_text(jf.read_text(encoding="utf-8"),
+                                            encoding="utf-8")
+            n_comm += 1
+        elif gr.action == "review_queue":
+            (review_dir / jf.name).write_text(jf.read_text(encoding="utf-8"),
+                                              encoding="utf-8")
+            try:
+                review_pool.append({
+                    "kind": "gate", "ref": jf.stem, "reason": gr.evidence or "low_conf",
+                    "suggested_action": "review", "confidence": gr.confidence,
+                    "evidence": rec.get("title", "")[:60], "channel": run_label,
+                    "run_label": run_label}, pool_path=pool_path)
+            except Exception as e:
+                print(f"  [pool-write 失败] gate/{jf.stem}: {str(e)[:80]}")
+            n_review += 1
+        else:
+            rejects.append({"file": jf.name, "url": rec.get("url", ""),
+                            "title": rec.get("title", ""), **gr.to_dict()})
+            n_rej += 1
+    if rejects:
+        quar_jsonl.parent.mkdir(parents=True, exist_ok=True)
+        with open(quar_jsonl, "a", encoding="utf-8") as f:
+            for r in rejects:
+                f.write(json.dumps(r, ensure_ascii=False) + "\n")
+    return n_pass, n_comm, n_rej, n_review
+
+
+def _ingest_commentary(comm_ext_dir: Path, staging_dir: Path,
+                       vault_root: Path | None = None) -> int:
+    """commentary extracted → ingest 成 staging raw(out_dir=staging)→ route_files 转 commentaries/。
+    vault_root: 透传给 build_title_index/route_files(容器路径用);None → 旧默认(Mac 本地)。"""
+    from .route_interpretations import route_files, build_title_index
+    staging_dir.mkdir(parents=True, exist_ok=True)
+    ingest_extracted(comm_ext_dir, staging_dir / "_ingest_log.jsonl", out_dir=staging_dir)
+    paths = [p for p in staging_dir.glob("*.md")]
+    if not paths:
+        return 0
+    idx = build_title_index(skip_paths=set(), vault_root=vault_root)
+    n = route_files(paths, index=idx, dry=False, vault_root=vault_root)
+    (staging_dir / "_ingest_log.jsonl").unlink(missing_ok=True)
+    return n
+
+
+def _safe_scan(ch, scan_dir: Path) -> int:
+    """单渠道扫描包装:异常→记日志返回 0,不让一个渠道拖垮并发池或中断全局。"""
+    try:
+        return scan_channel(ch, scan_dir)
+    except Exception as e:
+        print(f"  [scan 失败] {ch.city}/{ch.root_domain}: {str(e)[:80]}")
+        return 0
+
+
+def _run_channel(ch, cfg: IncrementalConfig, dedup, llm_fn, n_scan: int) -> dict:
+    sd = cfg.state_dir
+    for d in ["scan", "cand", "quar", "fetch", "ext", "passed", "comm_ext", "comm_stage", "ingest"]:
+        (sd / d).mkdir(parents=True, exist_ok=True)
+    label = f"{ch.city}__{ch.channel_type}__{ch.root_domain}"
+    if n_scan == 0:
+        return {"channel": label, "scanned": 0, "ingested": 0}
+    merged = sd / "scan" / f"_merged_{ch.root_domain}.jsonl"
+    src = sd / "scan" / f"{label}.jsonl"
+    merged.write_text(src.read_text(encoding="utf-8") if src.exists() else "",
+                      encoding="utf-8")
+    cand = sd / "cand" / f"{label}.jsonl"
+    kept, _ = filter_scan_rows(merged, cand, sd / "quar" / f"{label}__s3.jsonl", dedup)
+    if cfg.dry_run:
+        return {"channel": label, "scanned": n_scan, "kept": kept, "ingested": 0}
+    fetch_candidates(cand, sd / "fetch", sd / "quar" / f"{label}__ferr.txt")
+    ferr = sd / "quar" / f"{label}__ferr.txt"
+    if ferr.exists():
+        for u in ferr.read_text(encoding="utf-8").split("\n"):
+            if not u.strip():
+                continue
+            try:
+                review_pool.append({
+                    "kind": "fetch_fail", "ref": u.strip(),
+                    "reason": "fetch_error_after_retry", "suggested_action": "retry",
+                    "confidence": None, "evidence": "", "channel": label,
+                    "run_label": label})
+            except Exception as e:
+                print(f"  [pool-write 失败] fetch_fail: {str(e)[:80]}")
+    extract_all(sd / "fetch", sd / "ext", sd / "quar" / f"{label}__s45.jsonl")
+    n_pass, n_comm, n_rej, n_review = _gate_extracted_dir(
+        sd / "ext", sd / "passed", sd / "comm_ext",
+        sd / "quar" / "gate_rejects.jsonl", llm_fn,
+        review_dir=sd / "review", run_label=label)
+    ing_ok, _, pids = ingest_extracted(sd / "passed", sd / "ingest" / f"{label}.jsonl",
+                                       out_dir=cfg.vault_dir)
+    try:
+        # cfg.vault_dir 是 policies 子目录;parent.parent = vault 根
+        n_comm_ing = _ingest_commentary(sd / "comm_ext", sd / "comm_stage",
+                                        vault_root=cfg.vault_dir.parent.parent)
+    except Exception as e:
+        n_comm_ing = 0
+        print(f"  [commentary-ingest 失败] {label[:40]}: {str(e)[:120]}")
+    # 清空工作目录供下个渠道复用(避免跨渠道串;含 comm_stage 的 *.jsonl 暂存日志)
+    for d in ["fetch", "ext", "passed", "comm_ext", "comm_stage"]:
+        for pat in ("*.json", "*.md", "*.jsonl"):
+            for f in (sd / d).glob(pat):
+                f.unlink()
+    return {"channel": label, "scanned": n_scan, "kept": kept,
+            "gate_passed": n_pass, "gate_commentary": n_comm, "gate_rejected": n_rej,
+            "gate_review": n_review,
+            "ingested": ing_ok, "ingested_commentary": n_comm_ing, "pids": pids}
+
+
+def run_incremental(cfg: IncrementalConfig) -> dict:
+    catalog = load_catalog(ROOT / "state/T1_channels/channel_catalog.yaml")
+    channels = _select_channels(catalog, cfg.level, cfg.channel_types)
+    print(f"[run_incremental] level={cfg.level} channels={len(channels)} dry={cfg.dry_run}")
+    llm_fn = None if cfg.dry_run else make_judge_client()
+    results = []
+    with _l1_lock():
+        dedup = DedupIndex.from_vault_policies(cfg.vault_dir)
+        scan_dir = cfg.state_dir / "scan"
+        scan_dir.mkdir(parents=True, exist_ok=True)
+        with ThreadPoolExecutor(max_workers=cfg.scan_workers) as ex:
+            scan_counts = list(ex.map(lambda c: _safe_scan(c, scan_dir), channels))
+        for ch, n_scan in zip(channels, scan_counts):
+            r = _run_channel(ch, cfg, dedup, llm_fn, n_scan)
+            results.append(r)
+            if not cfg.dry_run and r.get("pids"):
+                enqueue_ingested(cfg.l2_queue_path, r["pids"],
+                                 requested_at=datetime.now(CST).isoformat(timespec="seconds"))
+            print(f"  {r['channel'][:48]:48s} scan={r['scanned']} ing={r.get('ingested',0)}")
+    all_pids = [p for r in results for p in r.get("pids", [])]
+    summary = {
+        "channels_run": len(results),
+        "total_scanned": sum(r["scanned"] for r in results),
+        "total_ingested": sum(r.get("ingested", 0) for r in results),
+        "total_commentary": sum(r.get("ingested_commentary", 0) for r in results),
+        "total_gate_rejected": sum(r.get("gate_rejected", 0) for r in results),
+        "total_gate_review": sum(r.get("gate_review", 0) for r in results),
+        "dry_run": cfg.dry_run,
+        "l2_enqueued": len(all_pids) if not cfg.dry_run else 0,
+    }
+    pool_summary = review_pool.summarize()
+    if pool_summary:
+        print(f"[run_incremental] review_pool: {pool_summary}")
+    print(f"[run_incremental] DONE {summary}")
+    return summary
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--level", default="national,province,city")
+    ap.add_argument("--since", default="2026-01-01")
+    ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--channel-type", default="")
+    ap.add_argument("--vault-dir", default="")
+    ap.add_argument("--l2-queue", default="")
+    ap.add_argument("--scan-workers", type=int, default=12)
+    a = ap.parse_args()
+    run_incremental(IncrementalConfig(
+        level=a.level.split(","), since=a.since,
+        dry_run=a.dry_run,
+        channel_types=[s for s in a.channel_type.split(",") if s],
+        vault_dir=Path(a.vault_dir) if a.vault_dir else VAULT_POLICIES,
+        l2_queue_path=Path(a.l2_queue) if a.l2_queue else STATE / "l2_queue.jsonl",
+        scan_workers=a.scan_workers,
+    ))
+
+
+if __name__ == "__main__":
+    main()
