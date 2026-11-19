@@ -1,10 +1,9 @@
-/* 工单系统性原因研判:本地服务上传脱敏工单,平台研判;本页展示结果、下钻脱敏工单,并记录你对每个候选的跟进。
- * 数据只走 guardian 的 /guardian/api/gov-risk/*(平台登录会话 + 所有者校验),不落浏览器存储。
- * 页面上所有文本都用 textContent 写入,不拼 innerHTML。 */
-(function () {
-  'use strict';
-
-  var API = '/guardian/api/gov-risk';
+/* 政诉预判(原"工单系统性原因研判"):本地服务上传脱敏工单,平台研判;本页展示结果、下钻脱敏工单,并记录你对每个候选的跟进。
+ * 数据只走公共事务 /heng/api/v1/gov-risk/*(平台登录会话 + 所有者校验),不落浏览器存储。
+ * 页面上所有文本都用 textContent 写入,不拼 innerHTML。
+ * 门户里切到别的子模块时这块 DOM 会被卸掉:mountGovRisk 返回 dispose,停轮询、清内存;卸载后迟到的请求不再续轮询。 */
+export function mountGovRisk(root) {
+  var API = '/heng/api/v1/gov-risk';
   var POLL_MS = 4000;
   var PAGE = 20;
   var STATUS = {
@@ -30,8 +29,9 @@
     feedback: { revision: 0, data: { candidates: {} } }, locked: false, pollTimer: null,
     dirty: {} // 有未保存编辑的候选;有它们时新结果不自动替换页面,免得冲掉正在写的备注
   };
+  var disposed = false;
 
-  function $(id) { return document.getElementById(id); }
+  function $(id) { return root.querySelector('#' + id); }
 
   function el(tag, attrs) {
     var node = document.createElement(tag);
@@ -46,6 +46,25 @@
       node.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
     }
     return node;
+  }
+
+  // 门户是 Vue 应用,平台下拉 platform-select.js 不接管 Vue 根节点里的 select(怕和框架抢 DOM)。
+  // 这里的 select 由本模块自己管:先脱离文档交给平台下拉,再把包好的节点放回原位;
+  // 之后被移除时平台脚本会连同菜单一起收掉。平台脚本没加载时保留原生下拉。
+  function platformSelect(sel) {
+    var ps = window.PlatformSelect;
+    if (!ps || sel.dataset.pfSelect === '1') return sel;
+    var parent = sel.parentNode, next = sel.nextSibling;
+    var holder = document.createElement('div');
+    holder.appendChild(sel);
+    ps.enhance(sel);
+    var node = holder.firstChild;
+    if (parent) parent.insertBefore(node, next);
+    return node;
+  }
+
+  function enhanceFilters() {
+    ['f-band', 'f-status', 'f-level'].forEach(function (id) { platformSelect($(id)); });
   }
 
   function p2(n) { return n < 10 ? '0' + n : String(n); }
@@ -192,6 +211,7 @@
 
   function schedulePoll() {
     stopPoll();
+    if (disposed) return;
     state.pollTimer = setTimeout(pollRun, POLL_MS);
   }
 
@@ -477,6 +497,7 @@
     var sel = el('select', { 'aria-label': '跟进状态' });
     Object.keys(STATUS).forEach(function (k) { sel.appendChild(el('option', { value: k, text: STATUS[k] })); });
     sel.value = currentStatus(c);
+    var selBox = platformSelect(sel);
     var note = el('textarea', { 'aria-label': '跟进备注', maxlength: '500', placeholder: '核查结论、确认的根因或下一步' });
     note.value = fb.note || '';
     var save = el('button', { type: 'button', className: 'gr-btn gr-btn-primary', text: '保存跟进' });
@@ -486,7 +507,7 @@
     sel.addEventListener('change', markDirty);
     note.addEventListener('input', markDirty);
     save.addEventListener('click', function () { saveFollow(c, sel, note, save, msg, statusPill); });
-    return el('div', { className: 'gr-follow' }, sel, note, save, msg);
+    return el('div', { className: 'gr-follow' }, selBox, note, save, msg);
   }
 
   function saveFollow(c, sel, note, btn, msg, statusPill) {
@@ -600,10 +621,20 @@
   $('conflict-reload').addEventListener('click', load);
   $('run-start').addEventListener('click', startRun);
   $('run-apply').addEventListener('click', loadLatest);
-  window.addEventListener('pagehide', function () {
+  function release() {
     stopPoll();
     state.pkg = null;
     state.feedback = { revision: 0, data: { candidates: {} } };
-  });
+  }
+  window.addEventListener('pagehide', release);
+  if (window.PlatformSelect) enhanceFilters();
+  else window.addEventListener('load', enhanceFilters, { once: true });
   load();
-})();
+
+  return function dispose() {
+    disposed = true;
+    window.removeEventListener('pagehide', release);
+    window.removeEventListener('load', enhanceFilters);
+    release();
+  };
+}
