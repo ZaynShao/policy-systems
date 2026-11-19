@@ -99,7 +99,7 @@ function startRecord() {
   if (recording.value) return;
   const SR = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
   if (!SR) {
-    toast.push('当前浏览器不支持语音识别，可手动输入后点 AI 填表', 'info');
+    toast.push('当前浏览器不支持语音识别，可手动填写表单', 'info');
     return;
   }
   recognition = new SR();
@@ -139,13 +139,18 @@ function stopRecord() {
   }
 }
 
-async function parseTranscript() {
+async function finishRecordAndParse() {
   const text = displayTranscript.value.trim();
+  stopRecord();
+  await parseTranscript(text);
+}
+
+async function parseTranscript(sourceText?: string) {
+  const text = (sourceText ?? displayTranscript.value).trim();
   if (text.length < 2) {
     toast.push('请先说一段或输入拜访内容', 'info');
     return;
   }
-  stopRecord();
   parsing.value = true;
   try {
     const resp = await visitApi.parseVoiceVisit({
@@ -159,7 +164,7 @@ async function parseTranscript() {
     applyParsed(resp.parsed);
     toast.push('已根据语音填入表单，请确认后创建', 'success');
   } catch (e: any) {
-    toast.push(e?.message || 'AI 填表失败，可手动补充', 'error');
+    toast.push(e?.message || '语音解析失败，可手动补充', 'error');
   } finally {
     parsing.value = false;
   }
@@ -234,7 +239,7 @@ function toLocalDatetime(d: Date) {
         <header class="mi-head">
           <div>
             <div class="mi-title">+ 新建拜访</div>
-            <div class="mi-sub">可手填，也可语音后 AI 填表</div>
+            <div class="mi-sub">可手填，也可语音录入</div>
           </div>
           <button class="mi-close" @click="emit('close')">×</button>
         </header>
@@ -249,11 +254,12 @@ function toLocalDatetime(d: Date) {
             ></textarea>
             <div v-if="interimText" class="mi-interim">{{ interimText }}</div>
             <div class="mi-actions">
-              <button v-if="!recording" class="mi-record" :disabled="!speechSupported" @click="startRecord">🎙 开始说话</button>
-              <button v-else class="mi-record mi-recording" @click="stopRecord"><span class="mi-dot"></span>停止录入</button>
-              <button class="mi-parse" :disabled="parsing" @click="parseTranscript">{{ parsing ? 'AI 填表中...' : 'AI 填表' }}</button>
+              <button v-if="!recording" class="mi-record" :disabled="!speechSupported || parsing" @click="startRecord">
+                {{ parsing ? '识别中...' : '开始说话' }}
+              </button>
+              <button v-else class="mi-record mi-recording" @click="finishRecordAndParse"><span class="mi-dot"></span>停止并识别</button>
             </div>
-            <div v-if="!speechSupported" class="mi-hint">当前浏览器不支持语音识别，可直接输入文字后点 AI 填表。</div>
+            <div v-if="!speechSupported" class="mi-hint">当前浏览器不支持语音识别，可直接手动填写表单。</div>
           </div>
 
           <div class="mi-form">
@@ -404,12 +410,11 @@ function toLocalDatetime(d: Date) {
 }
 .mi-actions {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 10px;
   margin-top: 10px;
 }
 .mi-record,
-.mi-parse,
 .mi-submit,
 .mi-secondary {
   height: 42px;
@@ -419,14 +424,14 @@ function toLocalDatetime(d: Date) {
   border: 1px solid transparent;
 }
 .mi-record {
-  background: #EF4444;
+  background: var(--orange);
   color: white;
 }
 .mi-record:disabled {
   background: #CBD5E1;
 }
 .mi-recording {
-  background: #B91C1C;
+  background: var(--orange-2);
 }
 .mi-dot {
   display: inline-block;
@@ -437,7 +442,6 @@ function toLocalDatetime(d: Date) {
   background: white;
   animation: mi-pulse 1s infinite;
 }
-.mi-parse,
 .mi-submit {
   background: var(--orange);
   color: white;
