@@ -1,0 +1,36 @@
+{
+  "name": "guardian-backend-gov-risk",
+  "version": "1.0.0",
+  "private": true,
+  "description": "工单研判工作台的后端（独立版）：原来是 guardian 后端里我写的研判模块，这里只留这个模块和最小外壳，依赖锁到原项目当时装的同一版本",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/main.js",
+    "prisma": "prisma",
+    "typecheck": "tsc --noEmit -p tsconfig.spec.json",
+    "test": "npm run typecheck && TS_NODE_TRANSPILE_ONLY=true npm run test:gov-risk && TS_NODE_TRANSPILE_ONLY=true npm run test:agent-credential && TS_NODE_TRANSPILE_ONLY=true npm run test:smoke",
+    "test:gov-risk": "ts-node test/gov-risk.spec.ts",
+    "test:agent-credential": "ts-node test/gov-risk.agent-credential.spec.ts",
+    "test:smoke": "ts-node test/nest-runtime.smoke.ts"
+  },
+  "prisma": {
+    "schema": "prisma/gov-risk.prisma"
+  },
+  "dependencies": {
+    "@nestjs/common": "11.1.28",
+    "@nestjs/core": "11.1.28",
+    "@nestjs/platform-express": "11.2.6",
+    "@prisma/client": "5.22.0",
+    "jsonwebtoken": "9.0.3",
+    "openai": "4.104.0",
+    "reflect-metadata": "0.2.2",
+    "rxjs": "7.8.2"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "9.0.10",
+    "@types/node": "20.19.41",
+    "prisma": "5.22.0",
+    "ts-node": "10.9.2",
+    "typescript": "5.9.3"
+  }
+}

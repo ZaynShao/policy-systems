@@ -1,0 +1,95 @@
+// 工单研判工作台的数据表(独立版)。
+// 原来这 5 张表写在 guardian 后端同事维护的 prisma/schema.prisma 末尾(原项目 PR 1525 我加的 80 行);
+// 本仓只收我写的部分,原样拆到这个单独的文件。下面的 generator / datasource 两段是独立版补的最小外壳
+// (Prisma 的标准写法;数据库地址只从环境变量 DATABASE_URL 读)。
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---- 以下为原项目 PR 1525 我加的部分(原样) ----
+
+/// 工单系统性原因研判(个人工作台 pending-gov-risk):本地服务上传的脱敏工单,研判在平台上跑。
+/// 本地出本机前已去掉手机号、证件号、车牌、长编号、邮箱、链接、人名,地址/场站换成 ST- 编码,
+/// 工单号换成映射编号 GT-(本地密钥算的短码,映射表只在本机);服务端入库前再扫一遍个人信息。
+/// 每次上传是一份完整快照:不在快照里的旧工单删除。judgment 是逐条研判结果,按 judgmentKey(提示词版本+正文)缓存。
+model GovRiskCase {
+  id          Int      @id @default(autoincrement())
+  /// 工作台所有者的平台登录名(GOV_RISK_OWNER_USERNAME,小写)
+  owner       String   @db.VarChar(64)
+  /// 映射编号 GT-XXXXXXXX
+  caseId      String   @db.VarChar(16)
+  /// 政诉 / 普通客诉 / 舆情
+  channel     String   @db.VarChar(16)
+  occurredAt  DateTime
+  payload     Json
+  judgmentKey String?  @db.VarChar(64)
+  judgment    Json?
+  uploadId    String   @db.VarChar(64)
+  updatedAt   DateTime @updatedAt
+
+  @@unique([owner, caseId])
+  @@index([owner, uploadId])
+  @@map("gov_risk_cases")
+}
+
+/// 最近一次完整上传的数据集信息(条数、数据范围、来源、对标案例),每个所有者一行。
+model GovRiskDataset {
+  owner      String   @id @db.VarChar(64)
+  uploadId   String   @db.VarChar(64)
+  caseCount  Int
+  meta       Json     @default("{}")
+  uploadedAt DateTime @default(now())
+
+  @@map("gov_risk_datasets")
+}
+
+/// 研判运行记录(上传触发或页面手动触发);进度给页面轮询,失败原因如实记录。每个所有者保留最近 50 次。
+model GovRiskRun {
+  id         Int       @id @default(autoincrement())
+  owner      String    @db.VarChar(64)
+  /// upload / manual
+  trigger    String    @db.VarChar(16)
+  /// queued / running / succeeded / failed / interrupted
+  status     String    @db.VarChar(16)
+  progress   Json      @default("{}")
+  stats      Json?
+  error      String?   @db.VarChar(500)
+  createdAt  DateTime  @default(now())
+  startedAt  DateTime?
+  finishedAt DateTime?
+
+  @@index([owner, id])
+  @@map("gov_risk_runs")
+}
+
+/// 研判结果包(候选、统计、复核结论、概览),由平台研判生成;页面只读最新一份。每个所有者保留最近 30 份。
+model GovRiskPackage {
+  id         Int      @id @default(autoincrement())
+  owner      String   @db.VarChar(64)
+  /// 结果包版本,如 gov-risk/v2
+  schema     String   @db.VarChar(32)
+  payload    Json
+  sizeBytes  Int
+  uploadedAt DateTime @default(now())
+
+  @@index([owner, uploadedAt])
+  @@map("gov_risk_packages")
+}
+
+/// 所有者对每个系统性原因候选的跟进(状态、备注)。
+/// revision 做乐观锁:两个页面同时编辑时后保存的一方收到 409,不互相覆盖。
+model GovRiskFeedback {
+  owner     String   @id @db.VarChar(64)
+  revision  Int      @default(0)
+  payload   Json     @default("{}")
+  updatedBy String?  @db.VarChar(64)
+  updatedAt DateTime @updatedAt
+
+  @@map("gov_risk_feedback")
+}

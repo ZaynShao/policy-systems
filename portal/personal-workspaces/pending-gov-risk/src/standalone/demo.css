@@ -1,0 +1,13 @@
+/* 独立版演示入口的顶部提示条(见 ./setup.ts)。 */
+.gr-demo-bar {
+  position: sticky; top: 0; z-index: 60;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px;
+  padding: 9px 16px; border-bottom: 2px solid #f97316;
+  background: #fff7ed; color: #7c2d12; font-size: 13px; line-height: 1.5;
+}
+.gr-demo-bar strong { color: #9a3412; font-size: 14px; font-weight: 800; }
+.gr-demo-tag { padding: 1px 9px; border-radius: 999px; background: #ea580c; color: #fff; font-size: 12px; font-weight: 800; }
+body.gr-demo .pw-side { top: var(--gr-demo-bar-h, 0px) !important; height: calc(100vh - var(--gr-demo-bar-h, 0px)) !important; }
+@media (max-width: 768px) {
+  .gr-demo-bar { position: static; padding: 8px 12px; font-size: 12.5px; }
+}

@@ -9,6 +9,8 @@
 //
 // 依赖直接用公共事务前端(services/heng-guan/frontend)已锁定的那一套:副本本来就是从那里复制的,
 // 版本跟着走,也不在个人目录里再放一份 package.json / lockfile。先在那里执行一次 `npm ci`。
+// 独立版:原来还借公共事务前端的 tailwind 处理复制来的同事页面;独立版只有我自己的总览和政诉预判,
+// 两页都不用 tailwind,这一步去掉(本仓的公共事务前端底座也不带 tailwind)。
 //
 // 个人目录由 nginx 直接静态托管,并且整目录 Cache-Control: no-store,所以产物文件名不带 hash,
 // 每次构建文件名稳定、diff 可读。
@@ -50,9 +52,6 @@ if (args.has('--typecheck')) {
 
 const { build } = await importFromHeng('vite');
 const vue = await load('@vitejs/plugin-vue');
-const tailwindcss = await load('tailwindcss');
-const autoprefixer = await load('autoprefixer');
-const hengTailwind = await load(path.join(hengDir, 'tailwind.config.js'));
 
 // src/ 不在公共事务目录下,裸包名(vue、echarts/core…)按"从公共事务源码里 import"来解析。
 // plugin-vue 会把 vue 加进 resolve.dedupe,dedupe 的包 Vite 固定从 root(src/)找,这里清掉:
@@ -64,7 +63,8 @@ const resolveFromHeng = {
   async resolveId(source, importer, options) {
     if (!importer || source.startsWith('\0') || source.startsWith('.') || source.startsWith('/') || source.startsWith('@/')) return null;
     if (importer.startsWith(hengDir)) return null;
-    return this.resolve(source, path.join(hengDir, 'src/main.ts'), { ...options, skipSelf: true });
+    // 独立版:本仓的公共事务前端底座里没有 src/main.ts(Vite 只拿真实存在的文件当解析起点),改用底座的 package.json
+    return this.resolve(source, path.join(hengDir, 'package.json'), { ...options, skipSelf: true });
   },
 };
 
@@ -77,14 +77,7 @@ try {
     logLevel: 'warn',
     plugins: [resolveFromHeng, vue()],
     resolve: { alias: { '@': srcDir } },
-    css: {
-      postcss: {
-        plugins: [
-          tailwindcss({ ...hengTailwind, content: [path.join(srcDir, '**/*.{vue,ts,js,html}')] }),
-          autoprefixer(),
-        ],
-      },
-    },
+    css: { postcss: { plugins: [] } },
     build: {
       outDir,
       emptyOutDir: true,

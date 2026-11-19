@@ -1,0 +1,96 @@
+/* 独立版外壳:原来的全局样式是从公共事务复制的 tokens.css(同事写的,还有 tailwind),图标来自平台的 platform-icons.css,
+ * 本仓都没有。这里只给我的页面(门户外壳、总览、政诉预判)用到的颜色变量、基础排版和几个通用组件
+ * (卡片、按钮、统计卡、标签、提示条),以及导航里用到的十个线条图标;其后再载入我自己的 portal.css。 */
+:root {
+  --orange: #f97316; --orange-2: #ea580c; --orange-soft: #fff7ed; --orange-border: #fdba74;
+  --bg: #f8fafc; --bg-2: #f1f5f9; --white: #ffffff;
+  --ink: #0f172a; --ink-2: #334155; --ink-3: #64748b; --ink-4: #94a3b8;
+  --line: #e2e8f0; --line-2: #f1f5f9;
+  --blue: #3b82f6; --blue-soft: #eff6ff; --green: #10b981; --green-soft: #ecfdf5;
+  --red: #ef4444; --red-soft: #fef2f2; --amber: #f59e0b; --amber-soft: #fffbeb;
+  --purple: #8b5cf6; --purple-soft: #f5f3ff; --slate: #475569;
+  --shadow: 0 1px 2px rgba(15, 23, 42, .05);
+  --shadow-md: 0 6px 16px -6px rgba(15, 23, 42, .12);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg); color: var(--ink); font-size: 13px; line-height: 1.55; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; -webkit-font-smoothing: antialiased; }
+button, input, select, textarea { font: inherit; color: inherit; }
+a { color: inherit; }
+.boot-status { display: grid; place-items: center; min-height: 60vh; color: var(--ink-3); font-size: 13px; }
+
+/* 布局:左侧导航 + 右侧子模块;窄屏时导航收成顶部一排(App.vue) */
+.app { display: flex; min-height: 100vh; }
+.main { flex: 1 1 auto; min-width: 0; padding: 22px 28px 40px; }
+.app-mobile { display: block; }
+.main-mobile { padding: 14px 14px 40px; }
+
+/* 页头 */
+.page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+.page-title { color: var(--ink); font-size: 22px; font-weight: 750; letter-spacing: -.01em; }
+.page-sub { margin-top: 4px; color: var(--ink-3); font-size: 12.5px; }
+.page-actions { display: flex; gap: 8px; }
+
+/* 卡片 */
+.card { border: 1px solid var(--line); border-radius: 12px; background: var(--white); box-shadow: var(--shadow); }
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 13px 18px; border-bottom: 1px solid var(--line-2); }
+.card-title { color: var(--ink); font-size: 14px; font-weight: 700; }
+.action-link { color: var(--orange-2); font-weight: 600; }
+
+/* 按钮 */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 34px; padding: 0 14px;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--white); color: var(--ink-2);
+  font-size: 13px; font-weight: 600; text-decoration: none; cursor: pointer; white-space: nowrap;
+}
+.btn:hover { border-color: var(--orange-border); }
+.btn:disabled { cursor: progress; opacity: .6; }
+.btn:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+.btn-primary { border-color: var(--orange-2); background: var(--orange-2); color: #fff; }
+.btn-soft { border-color: var(--orange-border); background: var(--orange-soft); color: var(--orange-2); }
+
+/* 统计卡 */
+.stat-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }
+.stat-card { padding: 16px 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--white); box-shadow: var(--shadow); }
+.stat-label { display: flex; align-items: center; gap: 8px; color: var(--ink-3); font-size: 12.5px; font-weight: 600; }
+.stat-icon { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 7px; background: var(--orange-soft); color: var(--orange-2); font-size: 15px; }
+.stat-card.blue .stat-icon { background: var(--blue-soft); color: var(--blue); }
+.stat-card.amber .stat-icon { background: var(--amber-soft); color: #b45309; }
+.stat-card.purple .stat-icon { background: var(--purple-soft); color: var(--purple); }
+.stat-value { margin-top: 10px; color: var(--ink); font-size: 28px; font-weight: 750; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.stat-delta { margin-top: 6px; color: var(--ink-3); font-size: 12px; }
+
+/* 标签 */
+.pill { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 999px; background: var(--bg-2); color: var(--slate); font-size: 11.5px; font-weight: 600; white-space: nowrap; }
+.pill-red { background: var(--red-soft); color: #b91c1c; }
+.pill-amber { background: var(--amber-soft); color: #b45309; }
+.pill-green { background: var(--green-soft); color: #047857; }
+.pill-blue { background: var(--blue-soft); color: #1d4ed8; }
+
+/* 提示条(components/ui/ToastStack.vue) */
+.toast-stack { position: fixed; top: 16px; right: 16px; z-index: 9999; display: grid; gap: 8px; max-width: min(360px, calc(100vw - 32px)); }
+.toast { padding: 10px 14px; border-radius: 8px; background: #16a34a; color: #fff; font-size: 13px; box-shadow: var(--shadow-md); cursor: pointer; }
+.toast.error { background: #dc2626; }
+.toast.warning { background: #d97706; }
+.toast.info { background: #2563eb; }
+
+/* 线条图标:用法与平台图标一致,<span class="pf-i pf-i-名字"> */
+.pf-i {
+  display: inline-block; flex: 0 0 auto; width: 1em; height: 1em; vertical-align: -0.14em; background-color: currentColor;
+  -webkit-mask: var(--pf-i) center / contain no-repeat; mask: var(--pf-i) center / contain no-repeat;
+}
+.pf-i-overview { --pf-i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='7' height='7' rx='1.5'/%3E%3Crect x='14' y='3' width='7' height='7' rx='1.5'/%3E%3Crect x='3' y='14' width='7' height='7' rx='1.5'/%3E%3Crect x='14' y='14' width='7' height='7' rx='1.5'/%3E%3C/svg%3E"); }
+.pf-i-alert { --pf-i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z'/%3E%3Cpath d='M12 9v4'/%3E%3Cpath d='M12 17h.01'/%3E%3C/svg%3E"); }
+.pf-i-policy { --pf-i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z'/%3E%3Cpath d='M14 3v6h6'/%3E%3Cpath d='M8 13h8M8 17h5'/%3E%3C/svg%3E"); }
+.pf-i-policy-library { --pf-i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z'/%3E%3Cpath d='M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5'/%3E%3C/svg%3E"); }
+.pf-i-knowledge { --pf-i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 18h6M10 22h4'/%3E%3Cpath d='M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.8 1-2.3A7 7 0 0 0 12 2z'/%3E%3C/svg%3E"); }
+.pf-i-graph { --pf-i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='6' cy='6' r='2.5'/%3E%3Ccircle cx='18' cy='7' r='2.5'/%3E%3Ccircle cx='12' cy='18' r='2.5'/%3E%3Cpath d='M8.5 6.2 15.5 6.8M7.2 8.3l3.6 7.4M16.8 9.3l-3.6 6.4'/%3E%3C/svg%3E"); }
+.pf-i-news { --pf-i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='16' rx='2'/%3E%3Cpath d='M7 8h10M7 12h10M7 16h6'/%3E%3C/svg%3E"); }
+.pf-i-datasource { --pf-i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cellipse cx='12' cy='5' rx='8' ry='3'/%3E%3Cpath d='M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5'/%3E%3Cpath d='M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3'/%3E%3C/svg%3E"); }
+.pf-i-check { --pf-i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='m8 12 3 3 5-6'/%3E%3C/svg%3E"); }
+.pf-i-refresh { --pf-i: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 12a9 9 0 1 1-2.6-6.4'/%3E%3Cpath d='M21 4v5h-5'/%3E%3C/svg%3E"); }
+
+@media (max-width: 768px) {
+  .page-head { flex-direction: column; align-items: stretch; gap: 12px; }
+}
