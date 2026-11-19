@@ -7,6 +7,8 @@ dependencies = ["pyyaml", "anthropic>=0.40", "psycopg2-binary>=2.9", "trafilatur
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# 独立版补:测试按 `from scripts...` 导入,让 pytest 自己把本目录放进导入路径(原来靠 PYTHONPATH=.)
+pythonpath = ["."]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
