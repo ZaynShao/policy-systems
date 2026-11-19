@@ -3,8 +3,10 @@
 这个脚本的产出会被拿去决定「要不要花 11.5M token 重打全库」,所以它的自检
 比它的统计更重要:一份**看起来正常但其实不可信**的百分比,比没有数据危险。
 
-三条自检各有一条用例:
+四条自检各有一条用例:
   ① 复判模型不得等于被复判样本的产出模型 —— 同模型自评是复读,不是复判
+  ①′ 而且要比**网关自报的**名字:网关会把不存在的模型名静默映射到 flash,
+     只比请求名的话这条守卫形同虚设(2026-09-03 探路轮就这么废了)
   ② 抽样必须都能找回原文 —— 找不回是另一个问题,不该在这里被平均掉
   ③ 复判成功率不足 80% 就中止 —— 失败不是随机的(长文超时、编码损伤),
      按剩下的样本算比例会系统性偏
@@ -16,6 +18,8 @@ import yaml
 
 from scripts._oneshot.measure_theme_recall import (
     assert_enough_judged,
+    assert_judge_is_not_self_by_alias,
+    assert_resume_is_same_judge,
     load_done_rows,
     load_stored,
     main,
@@ -136,11 +140,16 @@ def _framework(vault):
 
 
 class _FakeClient:
-    """按脚本给的 user 依次返回预设文本。complete 签名与真客户端一致。"""
+    """按脚本给的 user 依次返回预设文本。complete 签名与真客户端一致。
 
-    def __init__(self, outputs):
+    ``reported`` 模拟网关在响应里自报的模型名(真客户端把它放在
+    ``last_reported_model``)。默认 None = 端点没回 model 字段。
+    """
+
+    def __init__(self, outputs, reported=None):
         self.outputs = list(outputs)
         self.calls = 0
+        self.last_reported_model = reported
 
     def complete(self, system, user, max_tokens=None):
         self.calls += 1
@@ -256,3 +265,126 @@ def test_without_resume_the_old_detail_file_is_discarded(tmp_path):
     main(["--vault", str(v), "--judge-model", "model-c", "--n", "10",
           "--state", str(state)], _client=_FakeClient([ok] * 10))
     assert len((state / "detail.jsonl").read_text(encoding="utf-8").strip().splitlines()) == 10
+
+
+# ── 自检①′:网关别名把「换了模型」变成「没换」 ──────────────────────
+#
+# 2026-09-03 实况:探路轮点名 deepseek-chat 跑了 40 篇,自检①放行(字符串不等),
+# 报出 39/40 一致。但网关 /models 里根本没有 deepseek-chat,它被静默映射成
+# deepseek-v4-flash——也就是被复判那批自己的产出模型。那 39/40 是复读率,
+# 不是漏检率,整轮作废。守卫只能建立在**网关自报的**模型名上。
+def _lib_with_raw(tmp_path, n=10, model="model-a"):
+    v = tmp_path / "vault"
+    _framework(v)
+    for i in range(n):
+        pid = f"P_X_{i}"
+        _bv(v, pid, ["charging_infra"] if i % 2 else [], model)
+        _raw(v, pid)
+    return v
+
+
+def test_alias_guard_rejects_a_reported_model_that_matches_the_judged_cohort():
+    with pytest.raises(SystemExit, match="网关自报"):
+        assert_judge_is_not_self_by_alias(
+            "deepseek-chat", "deepseek-v4-flash", {"deepseek-v4-flash"})
+
+
+def test_alias_guard_passes_when_the_gateway_really_gave_another_model():
+    assert assert_judge_is_not_self_by_alias(
+        "deepseek-v4-pro", "deepseek-v4-pro", {"deepseek-v4-flash"}) is None
+
+
+def test_alias_guard_passes_when_the_endpoint_reports_nothing():
+    """兼容端点不回 model 字段时不能硬拦——拦了脚本对着这类端点就没法跑。"""
+    assert assert_judge_is_not_self_by_alias("m", None, {"model-a"}) is None
+
+
+def test_run_aborts_on_the_first_call_when_the_gateway_aliased_the_judge(tmp_path):
+    """端到端:名义换了模型,网关其实没换 → 花掉一次调用就停,不是跑完 200 次才发现。"""
+    v = _lib_with_raw(tmp_path)
+    ok = '{"themes":["charging_infra"],"scores":{"D1":5}}'
+    client = _FakeClient([ok] * 10, reported="model-a")   # 库里正是 model-a 产的
+    state = tmp_path / "st"
+    with pytest.raises(SystemExit, match="网关自报"):
+        main(["--vault", str(v), "--judge-model", "看起来不一样的名字", "--n", "10",
+              "--state", str(state)], _client=client)
+    assert client.calls == 1, "第一次调用就该停,不该把预算跑完"
+    assert not (state / "detail.jsonl").exists(), "被别名的结果一行都不该落盘"
+
+
+def test_rows_record_both_the_asked_and_the_reported_judge(tmp_path):
+    v = _lib_with_raw(tmp_path)
+    ok = '{"themes":["charging_infra"],"scores":{"D1":5}}'
+    state = tmp_path / "st"
+    main(["--vault", str(v), "--judge-model", "model-c", "--n", "10", "--state", str(state)],
+         _client=_FakeClient([ok] * 10, reported="model-c-actual"))
+    row = json.loads((state / "detail.jsonl").read_text(encoding="utf-8").splitlines()[0])
+    assert row["judge"] == "model-c" and row["judge_reported"] == "model-c-actual"
+
+
+# ── 续跑不能把两个复判模型的结果混在一起 ──────────────────────────
+def test_resume_refuses_to_mix_results_from_a_different_judge():
+    with pytest.raises(SystemExit, match="不能混算"):
+        assert_resume_is_same_judge([{"pid": "P_1", "judge": "model-x"}], "model-c")
+
+
+def test_resume_refuses_rows_from_before_judge_was_recorded():
+    """探路轮那批没有 judge 字段——它们正是要作废的那批,不能被 --resume 捡回来。"""
+    with pytest.raises(SystemExit, match="不能混算"):
+        assert_resume_is_same_judge([{"pid": "P_1", "verdict": "一致-零主题"}], "model-c")
+
+
+def test_resume_accepts_rows_from_the_same_judge():
+    assert assert_resume_is_same_judge([{"pid": "P_1", "judge": "model-c"}], "model-c") is None
+
+
+# ── --strata zero-theme:把预算全押在漏检方向 ──────────────────────
+#
+# 为什么要这个开关:四层等额时同样的 n 只有一半落在零主题上,而"零主题里漏了多少"
+# 才是"要不要重打全库分"唯一依赖的数。n=10 时 0/10 的 95% 上界是 31%,
+# "一篇没漏"和"漏了三成"分不开;押到 50 篇上界降到 7.1%。
+# 代价是这一轮量不到误挂——那是另一个决定要用的数。
+def test_zero_theme_strata_samples_only_the_unthemed_layers(tmp_path):
+    stored = load_stored(str(_library(tmp_path)))
+    picked = stratified_sample(stored, 20, seed=1, only_zero_theme=True)
+    assert picked, "该抽到东西"
+    assert all(not stored[p]["themes"] for p in picked), "只能抽零主题的"
+    assert len({stored[p]["model"] for p in picked}) == 2, "两个产出模型都要覆盖"
+
+
+def test_zero_theme_strata_doubles_the_sample_on_the_layers_that_matter(tmp_path):
+    """同样的 n,押在两层上每层拿到的篇数应是四层等额时的两倍。"""
+    stored = load_stored(str(_library(tmp_path)))
+    four = stratified_sample(stored, 20, seed=1)
+    two = stratified_sample(stored, 20, seed=1, only_zero_theme=True)
+    zero_in_four = [p for p in four if not stored[p]["themes"]]
+    assert len(two) == 2 * len(zero_in_four), f"{len(two)} vs {len(zero_in_four)}"
+
+
+def test_default_still_measures_both_directions(tmp_path):
+    """默认不变:漏检与误挂同时量。收窄是显式选项,不是新默认。"""
+    stored = load_stored(str(_library(tmp_path)))
+    picked = stratified_sample(stored, 20, seed=1)
+    assert any(stored[p]["themes"] for p in picked)
+    assert any(not stored[p]["themes"] for p in picked)
+
+
+def test_zero_theme_run_says_it_did_not_measure_the_other_direction(tmp_path, capsys):
+    """报告里不能只是"误挂 0%"——那会被读成"没有误挂",实际是没量。"""
+    v = _lib_with_raw(tmp_path)
+    state = tmp_path / "st"
+    main(["--vault", str(v), "--judge-model", "model-c", "--n", "10",
+          "--strata", "zero-theme", "--state", str(state)],
+         _client=_FakeClient(["null"] * 0 + ['{"themes":[],"scores":{"D1":0}}'] * 10))
+    out = capsys.readouterr().out
+    assert "误挂方向这轮没量" in out
+
+
+def test_zero_hits_are_reported_with_their_confidence_bound(tmp_path, capsys):
+    """一篇没漏时必须把上界打出来:0/5 看着完美,其实上界高达 45%。"""
+    v = _lib_with_raw(tmp_path)
+    state = tmp_path / "st"
+    main(["--vault", str(v), "--judge-model", "model-c", "--n", "10",
+          "--strata", "zero-theme", "--state", str(state)],
+         _client=_FakeClient(['{"themes":[],"scores":{"D1":0}}'] * 10))
+    assert "别读成「零漏检」" in capsys.readouterr().out

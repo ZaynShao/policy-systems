@@ -10,7 +10,20 @@ from pathlib import Path
 DEFAULT_MODEL = "claude-opus-4-7"
 
 
-def _log_call(log_path: str, model: str, system: str, user: str, output: str) -> None:
+def _log_call(log_path: str, model: str, system: str, user: str, output: str,
+              reported: str | None = None) -> None:
+    """记一行调用日志。
+
+    ``model`` 是我们**请求**的名字,``reported`` 是网关在响应里**自报**的名字,
+    两者不同时才落 ``model_reported``。
+
+    为什么要记这个:本平台网关只有 deepseek-v4-flash / v4-pro / v4-flash-vision-exp
+    三个条目,请求 ``deepseek-chat`` 或 ``deepseek-reasoner`` 一律 HTTP 200,
+    但响应里自报 ``deepseek-v4-flash``——**这两个名字被静默映射**
+    (2026-08-28 实测,见 docker-compose.production.yml 的同名注释)。
+    只记请求名的话,日志会信誓旦旦地说"这批是换了模型跑的",而其实没换;
+    靠"模型名不同"建立的守卫也会被整个绕过。
+    """
     Path(log_path).parent.mkdir(parents=True, exist_ok=True)
     rec = {
         "ts": datetime.datetime.now().isoformat(timespec="seconds"),
@@ -18,6 +31,8 @@ def _log_call(log_path: str, model: str, system: str, user: str, output: str) ->
         "prompt_sha": hashlib.sha1((system + "\x00" + user).encode()).hexdigest()[:16],
         "output_chars": len(output),
     }
+    if reported and reported != model:
+        rec["model_reported"] = reported
     with open(log_path, "a", encoding="utf-8") as f:
         f.write(json.dumps(rec, ensure_ascii=False) + "\n")
 
@@ -34,6 +49,7 @@ class LLMClient:
         self._client = client
         self.model = model
         self.log_path = log_path
+        self.last_reported_model: str | None = None
 
     def complete(self, system: str, user: str, max_tokens: int = 1024) -> str:
         resp = self._client.messages.create(
@@ -43,7 +59,8 @@ class LLMClient:
         # reasoning 模型(如 MiniMax-M2.7)返回 thinking 块 + text 块;只取 text。
         # ⚠ 这类模型 max_tokens 须够大覆盖"思考+输出",否则预算耗在 thinking 上→截断成空。
         text = "".join(getattr(b, "text", "") for b in resp.content)
-        _log_call(self.log_path, self.model, system, user, text)
+        self.last_reported_model = getattr(resp, "model", None)
+        _log_call(self.log_path, self.model, system, user, text, self.last_reported_model)
         return text
 
 
@@ -59,6 +76,7 @@ class OpenAICompatClient:
         self.base_url = (base_url or os.environ.get("OPENAI_BASE_URL") or "").rstrip("/")
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
         self._post = _post or self._http_post
+        self.last_reported_model: str | None = None
 
     def complete(self, system: str, user: str, max_tokens: int = 1024) -> str:
         data = self._post(f"{self.base_url}/chat/completions", {
@@ -67,7 +85,9 @@ class OpenAICompatClient:
                          {"role": "user", "content": user}],
         }, self.api_key)
         text = (data["choices"][0]["message"].get("content") or "")
-        _log_call(self.log_path, self.model, system, user, text)
+        # 网关自报的模型名。别名映射时它与 self.model 不同,是唯一能看出"换没换成"的地方。
+        self.last_reported_model = data.get("model")
+        _log_call(self.log_path, self.model, system, user, text, self.last_reported_model)
         return text
 
     @staticmethod
