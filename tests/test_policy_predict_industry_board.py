@@ -43,19 +43,19 @@ class PolicyPredictIndustryBoardTests(unittest.TestCase):
         for word in ["阳光厨房", "采买", "分拣", "备料", "掌勺", "出餐", "mock", "演示", "示例", "deepseek"]:
             self.assertNotIn(word, html)
 
-    def test_data_bundle_covers_19_industries_with_frozen_t0(self):
+    def test_data_bundle_covers_24_industries_with_frozen_t0(self):
         data = (BOARD / "data.js").read_text(encoding="utf-8")
         meta = json.loads(re.search(r"window\.BOARD_META=(\{.*?\});\n", data).group(1))
         rows = json.loads(re.search(r"window\.INDUSTRY_DATA=(\[.*\]);\n", data, re.S).group(1))
         self.assertTrue(meta["validated"])
         self.assertEqual(meta["missing"], [])
-        self.assertEqual(len(rows), 19)
+        self.assertEqual(len(rows), 24)
         self.assertEqual({row["id"] for row in rows}, set(meta["order"]))
         t0s = {row["t0"] for row in rows}
-        self.assertEqual(len(t0s), 1, f"19 份行业 JSON 的 t0 不一致:{sorted(t0s)}")
+        self.assertEqual(len(t0s), 1, f"各行业 JSON 的 t0 不一致:{sorted(t0s)}")
         t0 = t0s.pop()
         self.assertRegex(t0, r"^\d{4}-\d{2}-\d{2}$")
-        self.assertTrue(meta["source"].endswith(f"snapshots/T0-{t0}/industries"), f"打包源 {meta['source']} 与 T0 {t0} 不一致")
+        self.assertRegex(meta["source"], rf"snapshots/T0-{t0}(-r\d+)?/industries$", f"打包源 {meta['source']} 与 T0 {t0} 不一致")
         for row in rows:
             self.assertEqual(row["process"]["kind"], "analyst_record")
             for node in row["timeline"]:
