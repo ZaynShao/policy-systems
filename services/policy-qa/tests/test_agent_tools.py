@@ -288,6 +288,85 @@ async def test_continuing_the_same_policy_does_not_cost_a_read(vault_store):
 
 
 @pytest.mark.asyncio
+async def test_thinking_before_the_marker_never_reaches_the_user(vault_store):
+    """最后一轮的规划自语要被标记挡掉。
+
+    delta_reset 只在"本轮还有工具调用"时才触发,挡不住最后一轮——实测漏出来过
+    「我已读取了足够多关键文件的原文。现在整理最终答复。」,第二次连内心纠结
+    (「让我修正——我检索用的 date_from=…」)都写出来了。
+    """
+    from app.agent import ANSWER_MARKER
+
+    agent = build_agent(
+        _scripted(
+            f"我已读取了足够多的原文。现在整理最终答复。\n{ANSWER_MARKER}\n结论:该政策要求年底前完成。"
+        )
+    )
+    events = await _collect(agent, vault_store, [{"role": "user", "content": "q"}])
+    text = "".join(d["text"] for n, d in events if n == "delta")
+    assert "结论:该政策要求年底前完成。" in text
+    assert "整理最终答复" not in text, "标记之前的思考不该出现在用户眼前"
+    assert ANSWER_MARKER not in text, "标记本身也不该露出来"
+
+
+@pytest.mark.asyncio
+async def test_answer_without_a_marker_is_still_delivered_intact(vault_store):
+    """模型不用标记时要原样放出去——宁可多显示,也不能把答复吞掉。"""
+    agent = build_agent(_scripted("直接给结论:该政策要求年底前完成。"))
+    events = await _collect(agent, vault_store, [{"role": "user", "content": "q"}])
+    text = "".join(d["text"] for n, d in events if n == "delta")
+    assert text.strip() == "直接给结论:该政策要求年底前完成。"
+
+
+@pytest.mark.asyncio
+async def test_long_answer_without_a_marker_is_not_held_back(vault_store):
+    """超过 HOLD_MAX_CHARS 还没见标记就放行,首字延迟有上界。"""
+    from app.agent import HOLD_MAX_CHARS
+
+    long_answer = "结" + "论" * (HOLD_MAX_CHARS + 200)
+    agent = build_agent(_scripted(long_answer))
+    events = await _collect(agent, vault_store, [{"role": "user", "content": "q"}])
+    text = "".join(d["text"] for n, d in events if n == "delta")
+    assert text == long_answer, "一个字都不能少"
+
+
+@pytest.mark.asyncio
+async def test_fabricated_doc_number_raises_a_verify_event(vault_store):
+    """模型编了个文号,核验要在 done 之前发 verify 事件把它点出来。
+
+    答案是流式吐给用户的,回头改写既做不到也不该做;标出来让用户点引用核对,
+    比服务端偷偷改字更符合这套纪律。
+    """
+    agent = build_agent(
+        _scripted(
+            ("get_policy_fulltext", {"pid": "P_2026_TEST_1"}),
+            "该件文号为发改能源〔2099〕999号,要求年底前完成。",
+        )
+    )
+    events = await _collect(agent, vault_store, [{"role": "user", "content": "q"}])
+    names = [n for n, _ in events]
+    assert "verify" in names
+    assert names.index("verify") < names.index("done"), "verify 要排在 done 之前"
+
+    payload = next(d for n, d in events if n == "verify")
+    assert payload["unsupported"][0]["kind"] == "doc_number"
+    assert "〔2099〕999号" in payload["unsupported"][0]["text"]
+
+
+@pytest.mark.asyncio
+async def test_clean_answer_emits_no_verify_event(vault_store):
+    """没问题就别发——一个总在报警的核验器等于没有核验器。"""
+    agent = build_agent(
+        _scripted(
+            ("get_policy_fulltext", {"pid": "P_2026_TEST_1"}),
+            "这份文件要求加快充电基础设施建设。",
+        )
+    )
+    events = await _collect(agent, vault_store, [{"role": "user", "content": "q"}])
+    assert "verify" not in [n for n, _ in events]
+
+
+@pytest.mark.asyncio
 async def test_plan_reaches_the_model_as_instructions(vault_store):
     """规划结果要真的进到模型的 instructions 里,并作为 plan 事件发给前端。
 
@@ -425,10 +504,10 @@ async def test_intermediate_planning_text_is_not_streamed(vault_store):
 
     agent = build_agent(_model(fn))
     events = await _collect(agent, vault_store, [{"role": "user", "content": "q"}])
-    names = [n for n, _ in events]
-    assert "delta_reset" in names, "发现本轮有工具调用后必须让前端丢弃已显示文本"
 
-    # 模拟前端:收到 delta_reset 就清空当前累积
+    # 断言的是**结果**不是机制:自语不能出现在用户眼前。短自语现在压根不会发出去
+    # (攒着等标记,发现有工具调用就丢掉),所以也就没有 delta_reset 可发——
+    # 不发比发了再撤回更好。
     shown = ""
     for n, d in events:
         if n == "delta":
@@ -437,6 +516,42 @@ async def test_intermediate_planning_text_is_not_streamed(vault_store):
             shown = ""
     assert "我先做几轮并行检索" not in shown, "中间轮次的规划自语不得留在答复里"
     assert "充电桩10万个" in shown, "最终答复必须完整送达"
+
+
+@pytest.mark.asyncio
+async def test_long_planning_text_still_gets_a_delta_reset(vault_store):
+    """自语长到超过 HOLD_MAX_CHARS 就已经发出去了,这时必须补 delta_reset 撤回。
+
+    压着不发是有上界的(否则首字延迟无界),超了就得靠撤回兜底。两条路径都要通。
+    """
+    from app.agent import HOLD_MAX_CHARS
+
+    long_chatter = "我先并行检索," + "再深挖原文," * (HOLD_MAX_CHARS // 6)
+    turns = {"n": 0}
+
+    def fn(messages, info):
+        turns["n"] += 1
+        if turns["n"] == 1:
+            return ModelResponse(
+                parts=[
+                    TextPart(content=long_chatter),
+                    ToolCallPart(tool_name="search_policies", args={"keyword": "充电"}),
+                ]
+            )
+        return ModelResponse(parts=[TextPart(content="结论:该通知要求建成充电桩10万个。")])
+
+    agent = build_agent(_model(fn))
+    events = await _collect(agent, vault_store, [{"role": "user", "content": "q"}])
+    assert "delta_reset" in [n for n, _ in events]
+
+    shown = ""
+    for n, d in events:
+        if n == "delta":
+            shown += d["text"]
+        elif n == "delta_reset":
+            shown = ""
+    assert "再深挖原文" not in shown
+    assert "充电桩10万个" in shown
 
 
 @pytest.mark.asyncio

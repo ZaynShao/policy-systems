@@ -100,12 +100,19 @@ event: tool   data: {"seq":1,"name":"search_policies","args_preview":"business_l
 event: tool   data: {"seq":1,"name":"search_policies","status":"done","result_chars":2317}
 event: delta  data: {"text":"……"}
 event: delta_reset  data: {}
+event: verify data: {"checked":{"doc_numbers":3,"quotes":1},"unsupported":[{"kind":"doc_number","text":"浙发改价格〔2026〕21号","hint":"……"}]}
 event: done   data: {"citations":[...],"usage":{...}}
 event: error  data: {"message":"..."}
 ```
 
 `plan` 只在规划开启时出现,且每轮至多一条(规划失败就不发)。客户端可以不处理它——
 它是给用户看"我打算怎么查"的,不影响后续事件的含义。
+
+`verify` **只在发现问题时才发**,排在 `done` 之前。它把答案里的文号与引文拿回
+本轮工具返回过的材料做逐字比对,列出对不上的。**不调模型、不改写答案**——
+"文号必须逐字照抄"本来就是字面规则,字面比对比再叫一个模型去 judge 更可靠;
+答案已经流出去了,标出存疑处让用户点引用核对,也比服务端偷偷改字更符合这套纪律。
+客户端**必须**把这条显示出来:不显示等于这层核验没做。详见 `docs/analysis-loop.md`。
 
 `args_preview` 是给 UI 显示的一行摘要(60 字上限);`args_full` 是完整入参,
 会话日志记的是它。别把两者搞反——排查故障时,决定成败的参数往往正好在被截掉的那段里。

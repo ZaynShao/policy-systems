@@ -102,6 +102,10 @@ async def chat(request: Request, body: ChatRequest) -> StreamingResponse:
                 elif name == "plan":
                     # 计划也落日志:线上答得不对时,第一个要看的就是"它当时打算怎么查"
                     record["plan"] = data
+                elif name == "verify":
+                    # 核验结果同样要落日志。只发在流里的话,想回头统计"模型多久编
+                    # 一次文号"就无从查起——这个亏已经吃过一次了。
+                    record["verify"] = data
                 elif name == "done":
                     record["citations"] = [c["pid"] for c in data.get("citations", [])]
                     record["usage"] = data.get("usage")

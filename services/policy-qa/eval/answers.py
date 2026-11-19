@@ -42,6 +42,7 @@ async def run_case(case: dict, store, agent, cfg, planner=None) -> dict:
 
     parts: list[str] = []
     cited: list[str] = []
+    unsupported: list[str] = []
     tools = 0
     async for name, data in stream_answer(
         agent,
@@ -56,6 +57,8 @@ async def run_case(case: dict, store, agent, cfg, planner=None) -> dict:
             tools += 1
         elif name == "done":
             cited = [c["pid"] for c in data.get("citations", [])]
+        elif name == "verify":
+            unsupported = [u["text"] for u in data.get("unsupported", [])]
         elif name == "error":
             return {"case": case, "error": data.get("message"), "answer": "", "cited": [], "checks": []}
     answer = "".join(parts)
@@ -64,6 +67,9 @@ async def run_case(case: dict, store, agent, cfg, planner=None) -> dict:
         "answer": answer,
         "cited": cited,
         "tools": tools,
+        # 事实核验的命中要报出来:它是这套纪律的最后一道闸,
+        # 评测时不看,等于白装。
+        "unsupported": unsupported,
         "checks": _check(case, answer, cited),
     }
 
@@ -105,6 +111,8 @@ async def main_async(only: list[str]) -> int:
             else:
                 failed += 1
         print(f"  引用: {res['cited']}  工具 {res['tools']} 次")
+        if res["unsupported"]:
+            print(f"  ⚠ 事实核验存疑: {res['unsupported']}")
         print("  ---- 回答 ----")
         print("  " + res["answer"].strip().replace("\n", "\n  ")[:1600])
         if case.get("note"):
