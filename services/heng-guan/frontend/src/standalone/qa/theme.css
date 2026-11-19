@@ -1,0 +1,14 @@
+/* 独立版:政策解读页用到的样式变量和 .page、.btn 基础样式。原来在平台公共样式里(同事维护,不在本仓),这里按页面的白橙配色给最小一套。 */
+:root {
+  --ink: #0f172a; --ink-2: #334155; --ink-3: #64748b; --ink-4: #94a3b8; --muted: #64748b;
+  --line: #e2e8f0; --bg: #f8fafc;
+  --orange: #fb923c; --orange-2: #ea580c; --orange-soft: #fff7ed;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--ink); }
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif; font-size: 14px; -webkit-font-smoothing: antialiased; }
+.boot-status { display: grid; place-items: center; min-height: 60vh; color: var(--ink-3); font-size: 13px; }
+.page { max-width: 1080px; margin: 0 auto; padding: 18px 20px 24px; display: flex; flex-direction: column; min-height: calc(100vh - 44px); }
+.page-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 14px; border: 0; border-radius: 8px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
