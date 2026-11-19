@@ -6,6 +6,7 @@ SSE 帧手写(不引 sse-starlette):事件名要与契约逐字一致,手写反�
 from __future__ import annotations
 
 import json
+import logging
 import uuid
 from typing import Any, AsyncIterator
 
@@ -16,6 +17,8 @@ from pydantic import BaseModel, Field
 from .agent import stream_answer
 from .auth import require_token
 from .store import StoreError
+
+logger = logging.getLogger("policy-qa")
 
 router = APIRouter()
 
@@ -89,7 +92,11 @@ async def chat(request: Request, body: ChatRequest) -> StreamingResponse:
                     answer_chars += len(data.get("text", ""))
                 elif name == "tool" and data.get("status") == "start":
                     record["tool_calls"].append(
-                        {"name": data.get("name"), "args": data.get("args_preview")}
+                        {
+                            "name": data.get("name"),
+                            # 记完整入参,不是 UI 那个 60 字摘要——排查要靠它
+                            "args": data.get("args_full") or data.get("args_preview"),
+                        }
                     )
                 elif name == "done":
                     record["citations"] = [c["pid"] for c in data.get("citations", [])]
@@ -97,6 +104,11 @@ async def chat(request: Request, body: ChatRequest) -> StreamingResponse:
                 yield _frame(name, data)
         except Exception as exc:  # noqa: BLE001 - 流已开始,只能以事件形式报错
             record["error"] = f"{type(exc).__name__}: {exc}"
+            # 用户只看到脱敏文本,排查得有地方看真因。只写会话 jsonl 的话,
+            # 运维第一反应是 docker logs,那里却什么都没有。
+            logger.warning(
+                "对话失败 request_id=%s: %s", request_id, record["error"], exc_info=exc
+            )
             yield _frame("error", {"message": _safe_error(exc)})
         finally:
             record["answer_chars"] = answer_chars

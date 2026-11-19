@@ -30,6 +30,28 @@ def _like(value: str) -> str:
     return f"%{escaped}%"
 
 
+#: 本服务读到的所有列。启动自检拿它跟 information_schema 对,缺了直接不启动。
+#: 与 SEARCH_COLUMNS/DETAIL_COLUMNS 手工同步——那两个是拼进 SQL 的字符串,
+#: 从里面反解列名比重复列一遍更容易出错。
+REQUIRED_POLICY_COLUMNS = (
+    "pipelinePid", "title", "docNumber", "issuer", "issueDate", "region",
+    "level", "importance", "pipelineThemes", "pipelineImpact", "sourceUrl",
+    "content", "pipelineScores", "syncedAt",
+    # 只有 region_keyword 检索会用到,所以它缺失时前几轮检索照样成功,
+    # 直到模型问了个带地区的问题才炸——2026-08-18 线上就是这么misleading。
+    "adcode",
+)
+
+
+def build_required_columns_sql() -> tuple[str, dict]:
+    """查 Policy 表实际有哪些列。启动自检用。"""
+    sql = (
+        "SELECT column_name FROM information_schema.columns "
+        "WHERE table_schema = current_schema() AND table_name = 'Policy'"
+    )
+    return sql, {}
+
+
 def build_search_sql(
     *,
     keyword: str | None = None,
