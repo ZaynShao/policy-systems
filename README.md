@@ -18,7 +18,7 @@
 | 工单系统性原因研判工作台：研判引擎（guardian 后端模块）+ 我的工作台小门户 | `services/guardian-backend/`、`portal/personal-workspaces/pending-gov-risk/` | `node portal/personal-workspaces/pending-gov-risk/build-offline.mjs` |
 | 公共事务平台里的政策功能：站内消息铃铛、L1 源质量审核页、移动端拜访语音录入、政策大盘对齐 L2 | `services/heng-guan/backend/`、`services/heng-guan/frontend/` | `node build-offline.mjs parts`（公共事务前端目录） |
 
-演示数据都是真实结果（各系统自己的代码或我的工具跑出来的），只有两处例外：工单研判的工单是**编的脱敏样例**（研判结果是用我的引擎
+演示数据都是真实结果（各系统自己的代码或我的工具跑出来的；问答助手的 8 轮回答是 2026-11-19 在测试站上真实问出来的），只有两处例外：工单研判的工单是**编的脱敏样例**（研判结果是用我的引擎
 在本机算出来的），公共事务平台演示里的消息、拜访机构和 3 条 L1 审核示意样例是编的。每份演示数据旁边的 `README.md` 写了来历。
 
 ## 怎么跑测试
@@ -102,3 +102,5 @@ python3 -m unittest tests/test_policy_predict_industry_board.py
 | 48 | 独立版收尾：工单研判工作台 | 2026-11-19 |
 | 49 | 独立版收尾：政策问答助手 | 2026-11-19 |
 | 50 | 独立版说明：各系统在哪、怎么看、怎么跑 | 2026-11-19 |
+| 51 | 问答演示补上测试站上录的真实回答 | 2026-11-19 |
+| 52 | 总说明补上第 51 步 | 2026-11-19 |
