@@ -1,0 +1,120 @@
+<!doctype html>
+<!-- 独立版补的:政策分析 pipeline 链路看板的页面骨架。build.py 把样式、脚本和演示数据填进三个占位处。 -->
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>政策分析 pipeline 链路看板(演示)</title>
+<style>
+/*__STYLE__*/
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap">
+    <div class="brand">政策分析 pipeline<small>链路看板 · 演示版</small></div>
+    <nav class="nav" aria-label="页面分区">
+      <a href="#chain">链路</a>
+      <a href="#audit">守恒巡检</a>
+      <a href="#library">政策库</a>
+    </nav>
+    <button type="button" class="theme-btn" id="theme-btn">外观:跟随系统</button>
+  </div>
+</header>
+
+<main>
+  <div class="wrap hero">
+    <h1>政策从采集到出口,每一段有多少件、丢在哪</h1>
+    <p>L1 采集 → L2 分析 → 政策库(vault)→ 平台库与政策大盘、问答助手、月刊、对外只读接口。件数都是用本服务自己的代码对本机政策库重算的;连不到的地方写明原因,不编数。</p>
+    <div class="asof" id="asof"></div>
+  </div>
+
+  <section class="block" id="chain" aria-labelledby="chain-h">
+    <div class="wrap">
+      <h2 id="chain-h">链路</h2>
+      <p class="lede">箭头上写的是这一段过去了多少、卡住了多少;红点是要留意的缺口。</p>
+      <div class="flow" id="flow"></div>
+      <div class="minis" id="minis"></div>
+      <details class="method" id="method"></details>
+    </div>
+  </section>
+
+  <section class="block" id="audit" aria-labelledby="audit-h">
+    <div class="wrap">
+      <h2 id="audit-h">守恒巡检</h2>
+      <p class="lede">每段链路查一个能核对的等式,差额不为零就点名(原项目 PR 1184 的巡检代码,按数据截至日 <span data-asof></span> 在本机重算)。活性审计只看文件动没动,对丢件是盲的;这里问的是「东西有没有丢」。</p>
+      <div class="audit-grid" id="audit-grid"></div>
+      <details class="method" id="audit-raw"></details>
+      <p class="muted" id="audit-note" style="font-size:12.5px;margin:10px 0 0"></p>
+    </div>
+  </section>
+
+  <section class="block" id="library" aria-labelledby="library-h">
+    <div class="wrap">
+      <h2 id="library-h">政策库</h2>
+      <p class="lede">政策库里的条目共 <b id="lib-total" class="num"></b> 条(数据截至 <span data-asof></span>),可搜、可筛,点开看文号、机关、摘要、L2 主题与影响判断和原文链接。<span id="lib-excluded"></span></p>
+      <div class="filters card" role="search">
+        <div class="row">
+          <label class="field grow"><span>搜索</span><input type="search" id="f-q" placeholder="标题、文号、机关、编号、摘要里的字词,空格分开"></label>
+          <label class="field w-s"><span>层级</span><select id="f-level"></select></label>
+          <label class="field w-l"><span>省份 / 地区</span><select id="f-prov"></select></label>
+          <label class="field w-l"><span>发文机关</span><input id="f-issuer" list="issuer-list" placeholder="如 国家能源局"></label>
+          <datalist id="issuer-list"></datalist>
+        </div>
+        <div class="row">
+          <div class="field dates"><span>发文日</span>
+            <div class="date-pair"><input type="date" id="f-from" aria-label="发文日从"><span class="muted">至</span><input type="date" id="f-to" aria-label="发文日到"></div>
+          </div>
+          <label class="field w-l"><span>L2 主题</span><select id="f-theme"></select></label>
+          <label class="field w-l"><span>链路状态</span>
+            <select id="f-status">
+              <option value="">全部</option>
+              <option value="qa_yes">进了平台库(问答查得到)</option>
+              <option value="qa_no">不在平台库(问答查不到)</option>
+              <option value="impact">有影响分析</option>
+              <option value="collision">编号撞车</option>
+              <option value="monthly">进过月刊</option>
+            </select>
+          </label>
+          <label class="field w-m"><span>排序</span>
+            <select id="f-sort">
+              <option value="date_desc">发文日从新到旧</option>
+              <option value="date_asc">发文日从旧到新</option>
+              <option value="imp_desc">重要性从高到低</option>
+            </select>
+          </label>
+          <button type="button" class="btn-ghost" id="f-reset">清空条件</button>
+        </div>
+      </div>
+      <div class="result-head"><span class="count" id="lib-count" aria-live="polite"></span></div>
+      <div class="results card" id="results"></div>
+      <div class="pager" id="pager"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div>数据来源与边界</div>
+    <ul>
+      <li>政策库:本机政策库克隆(只读),截至 <span data-asof></span>;月刊件数取自本机月刊产线各期选目单,只数件数、不取内容。</li>
+      <li>没读:<code>00 背景资料/</code>、<code>开发日记/</code>、<code>_meta/framework/</code>(业务战略画像)等内部资料。</li>
+      <li>条目列表里不放人员名单类公告和点了个人姓名的条目(链路件数照算);L2 文字里的电话、邮箱换成「略」;正文只带开头一小段。</li>
+      <li>演示版只读:不连平台库、不调接口、不联网;「打开原文网页」才会去政府网站。</li>
+    </ul>
+  </div>
+</footer>
+
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="d-title" hidden>
+  <div class="drawer-head"><h3 id="d-title"></h3><button type="button" class="close-btn" id="d-close" aria-label="关闭详情">×</button></div>
+  <div class="drawer-body" id="d-body"></div>
+</aside>
+
+<script type="application/json" id="pp-data">/*__DATA__*/</script>
+<script>
+/*__SCRIPT__*/
+</script>
+</body>
+</html>

@@ -1,0 +1,341 @@
+{
+ "as_of": "2026-11-08",
+ "vault_head": {
+  "commit": "2ab3d7c5b",
+  "committed_at": "2026-11-08T03:00:22+08:00",
+  "subject": "l2(signals): nightly derived signals"
+ },
+ "recorded_at": "2026-11-19",
+ "l1": {
+  "policy_files": 2138,
+  "policy_pids": 2090,
+  "collision_groups": 27,
+  "collision_files": 75,
+  "commentaries": 4029,
+  "archived": 759,
+  "duplicates": 15,
+  "quarantined": 1,
+  "by_level": [
+   [
+    "省",
+    1304
+   ],
+   [
+    "国家",
+    518
+   ],
+   [
+    "市",
+    287
+   ],
+   [
+    "区",
+    25
+   ],
+   [
+    "县",
+    4
+   ]
+  ],
+  "by_fetch_month": [
+   [
+    "2026-04",
+    251
+   ],
+   [
+    "2026-05",
+    612
+   ],
+   [
+    "2026-06",
+    460
+   ],
+   [
+    "2026-07",
+    143
+   ],
+   [
+    "2026-08",
+    152
+   ],
+   [
+    "2026-09",
+    106
+   ],
+   [
+    "2026-10",
+    94
+   ],
+   [
+    "2026-11",
+    320
+   ]
+  ],
+  "channels": {
+   "total": 925,
+   "by_status": {
+    "候选": 755,
+    "验证": 170
+   }
+  }
+ },
+ "vault_dirs": [
+  {
+   "dir": "0_raw/policies/",
+   "what": "L1 政策原文,入库后不改",
+   "count": 2138,
+   "unit": "篇"
+  },
+  {
+   "dir": "0_raw/commentaries/",
+   "what": "L1 评论、解读原文",
+   "count": 4029,
+   "unit": "篇"
+  },
+  {
+   "dir": "0_raw/_archive/ · _duplicates/",
+   "what": "重抓换下的旧版、去重隔离",
+   "count": 774,
+   "unit": "份"
+  },
+  {
+   "dir": "1_extracted/",
+   "what": "L2 通用派生:摘要、关系、评论信号",
+   "count": 3322,
+   "unit": "条"
+  },
+  {
+   "dir": "_meta/business_view/",
+   "what": "L2 业务派生:主题打分、影响分析",
+   "count": 1816,
+   "unit": "份"
+  },
+  {
+   "dir": "2_crystallized/",
+   "what": "结晶层:主题页、地区页(维持,不再更新)",
+   "count": 106,
+   "unit": "页"
+  },
+  {
+   "dir": "3_lints/",
+   "what": "lint 报告(停在 2026-04)",
+   "count": 3,
+   "unit": "份"
+  },
+  {
+   "dir": "_quarantine/",
+   "what": "隔离区:转发来的重复件",
+   "count": 1,
+   "unit": "篇"
+  }
+ ],
+ "l2": {
+  "business_view": 1816,
+  "business_view_with_raw": 1805,
+  "business_view_orphan": 11,
+  "pids_without_l2": 285,
+  "themed": 769,
+  "impact": 743,
+  "summaries": 816,
+  "relations": 2312,
+  "relations_by_type": [
+   [
+    "references",
+    824
+   ],
+   [
+    "aligns_with",
+    819
+   ],
+   [
+    "cites_basis",
+    331
+   ],
+   [
+    "clarifies",
+    190
+   ],
+   [
+    "derives_from",
+    112
+   ],
+   [
+    "extends",
+    15
+   ],
+   [
+    "iterates",
+    13
+   ],
+   [
+    "supersedes",
+    8
+   ]
+  ],
+  "commentary_signals": 194,
+  "market_intel_signals": 6,
+  "by_theme": [
+   [
+    "power_market",
+    "电力市场",
+    221
+   ],
+   [
+    "charging_infra",
+    "充电基础设施",
+    158
+   ],
+   [
+    "vpp_theme",
+    "虚拟电厂",
+    129
+   ],
+   [
+    "energy_storage_theme",
+    "新型储能",
+    126
+   ],
+   [
+    "petroleum_retail_compliance",
+    "加油零售/平台合规",
+    115
+   ],
+   [
+    "equipment_renewal_theme",
+    "设备更新与以旧换新",
+    101
+   ],
+   [
+    "distribution_grid_opening",
+    "配电网开放/增量配电",
+    90
+   ],
+   [
+    "green_power_trading_theme",
+    "绿电交易",
+    84
+   ],
+   [
+    "v2g",
+    "V2G(车网互动)",
+    55
+   ],
+   [
+    "aggregator_access",
+    "聚合商准入",
+    54
+   ],
+   [
+    "carbon_market_theme",
+    "碳市场",
+    39
+   ],
+   [
+    "residential_charging",
+    "居住区充电",
+    39
+   ],
+   [
+    "gas_station_transition_theme",
+    "加油站转型",
+    20
+   ]
+  ],
+  "by_model": [
+   {
+    "model": "deepseek-v4-flash",
+    "count": 1048,
+    "themed": 247
+   },
+   {
+    "model": "MiniMax-M2.7-highspeed",
+    "count": 768,
+    "themed": 522
+   }
+  ]
+ },
+ "exits": {
+  "platform": {
+   "rows": 1789,
+   "rejected": [
+    [
+     "发文日缺失",
+     16
+    ],
+    [
+     "L2 找不到原文",
+     11
+    ]
+   ],
+   "rows_without_adcode": 40,
+   "relation_rows": 2312,
+   "commentary_rows": 194
+  },
+  "qa": {
+   "searchable": 1789,
+   "no_l2": 285,
+   "collision_hidden": 48
+  },
+  "monthly": {
+   "issues": [
+    {
+     "issue": "2026-07月刊",
+     "window": [
+      "2026-07-01",
+      "2026-08-06"
+     ],
+     "selected": 39,
+     "in_vault": 38,
+     "outside_vault": 1,
+     "detail": 13,
+     "roundup_groups": 4
+    },
+    {
+     "issue": "2026-08月刊",
+     "window": [
+      "2026-08-01",
+      "2026-09-03"
+     ],
+     "selected": 37,
+     "in_vault": 36,
+     "outside_vault": 1,
+     "detail": 7,
+     "roundup_groups": 9
+    },
+    {
+     "issue": "2026-09月刊",
+     "window": [
+      "2026-09-01",
+      "2026-10-08"
+     ],
+     "selected": 36,
+     "in_vault": 32,
+     "outside_vault": 4,
+     "detail": 9,
+     "roundup_groups": 7
+    },
+    {
+     "issue": "2026-10月刊",
+     "window": [
+      "2026-10-01",
+      "2026-11-09"
+     ],
+     "selected": 41,
+     "in_vault": 40,
+     "outside_vault": 1,
+     "detail": 7,
+     "roundup_groups": 9
+    }
+   ]
+  },
+  "corpus": {
+   "exported": 2137,
+   "excluded": [
+    [
+     "已知重复件",
+     1
+    ]
+   ]
+  }
+ }
+}

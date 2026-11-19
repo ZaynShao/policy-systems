@@ -1,5 +1,31 @@
 # 政策分析 Pipeline
 
+## 独立版:装依赖、跑测试、看链路看板
+
+> 这一节是独立版补的;下面从「能源政策分析项目的工程层」起是原来的说明,原样保留(里面的本机路径是原开发机上的)。
+
+要 Python 3.10 以上。在本目录(`services/policy-pipeline`)下:
+
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -r requirements-dev.txt   # 版本全部钉死;运行依赖与 constraints.txt 同版本
+.venv/bin/python -m pytest                      # 全套 1,261 项,十几秒跑完
+```
+
+- **测试不联网**:`tests/conftest.py` 在测试期间把网络断掉——往外连、连本机代理、解析外网域名、连 Postgres 都直接报错,
+  所以跑测试不会调到大模型、不会碰平台库;各项测试本来就用假连接。
+- **有一项要读本机政策库**(`tests/l1_collect/test_channel_discovery.py` 的 `test_province_targets_from_registry`):
+  它写死读原开发机上的 `~/Documents/Zayn Main/政策分析/_meta/channel_registry.yaml`。那里没有这份文件就跳过并写明原因;
+  设 `VAULT=<政策库克隆目录>` 再跑就照常执行。原项目里也是这样,只在原开发机上能过。
+- 2026-11-19 实测(Python 3.10.0):不设 `VAULT` 1,260 项通过、1 项跳过;设了 `VAULT` 1,261 项全过。
+  原项目 GitHub 上的 CI 只挑其中 401 项跑(月刊产线、业务口径守卫等几组),全套没进过 CI。
+- **链路看板**:`python3 dashboard/build.py` 生成一个双击就能打开的页面,看 L1 采集 → L2 分析 → 政策库 → 四个出口每段的件数、
+  守恒巡检结果,政策库条目可搜可筛。说明见 `dashboard/README.md`,演示数据的来历见 `dashboard/data/README.md`。
+- 服务器上的部署(`Dockerfile`、`docker-compose.server.yml`、cron)照旧,见 `OPERATIONS.md`;对外只读接口另有
+  `docker/corpus.Dockerfile`(fastapi、uvicorn)。
+
+---
+
 能源政策分析项目的**工程层**。数据(政策 raw、派生产物)住在另一个仓:vault。
 
 ```
