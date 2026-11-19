@@ -117,6 +117,6 @@ def load_config(env: dict | None = None) -> Config:
         access_token=access_token,
         trust_platform_auth=trust_platform_auth,
         log_dir=(os.getenv("POLICY_QA_LOG_DIR") or "").strip() or "./qa_logs",
-        max_tool_rounds=_int_env("POLICY_QA_MAX_TOOL_ROUNDS", 12),
+        max_tool_rounds=_int_env("POLICY_QA_MAX_TOOL_ROUNDS", 18),
         request_timeout_s=_int_env("POLICY_QA_REQUEST_TIMEOUT_S", 120),
     )

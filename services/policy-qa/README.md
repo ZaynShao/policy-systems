@@ -72,7 +72,7 @@ DEEPSEEK_API_KEY=sk-xxx \
 | `POLICY_QA_ACCESS_TOKEN` | 见右 | — | 静态 bearer。独立部署时必填;平台内部署可不填,改设下一行 |
 | `POLICY_QA_TRUST_PLATFORM_AUTH` | 见右 | 关 | 设 `1` 表示鉴权由上游 nginx 的平台登录态完成,服务不再要 bearer。**它与上一行必须至少配一个,否则启动即失败** |
 | `POLICY_QA_LOG_DIR` | | `./qa_logs` | 会话 jsonl |
-| `POLICY_QA_MAX_TOOL_ROUNDS` | | `12` | 单次回答的工具调用上限;耗尽后工具停摆让模型收尾,不报错 |
+| `POLICY_QA_MAX_TOOL_ROUNDS` | | `18` | 单次回答的工具调用上限;耗尽后工具停摆让模型收尾,不报错 |
 | `POLICY_QA_REQUEST_TIMEOUT_S` | | `120` | |
 
 ## 接口
@@ -95,9 +95,16 @@ event: meta   data: {"request_id":"...","history_truncated":false}
 event: tool   data: {"seq":1,"name":"search_policies","args_preview":"business_line=充电","status":"start"}
 event: tool   data: {"seq":1,"name":"search_policies","status":"done","result_chars":2317}
 event: delta  data: {"text":"……"}
+event: delta_reset  data: {}
 event: done   data: {"citations":[...],"usage":{...}}
 event: error  data: {"message":"..."}
 ```
+
+`delta_reset` 的意思是「刚才发的 delta 不算数,清空重来」。模型在**还要接着调工具**的
+轮次里也会输出文本,那是规划自语(实测:"我先做几轮并行检索…现在深挖几篇原文");
+流式下当场分不出它和正式答复(`output_type` 是 str,任何文本都匹配输出模式,
+`FinalResultEvent` 照样触发),但一旦本轮冒出工具调用就能确定。客户端收到它
+必须清空当前这条回复已累积的文本。
 
 流开始之后出错只能以 `error` 事件收尾(HTTP 状态码已经发出去了)。错误文本经过脱敏,
 不回显异常细节。
