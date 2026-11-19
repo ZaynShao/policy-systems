@@ -76,12 +76,17 @@ def province_targets_from_registry(registry_path: Path) -> list:
         seen.add(domain)
         issuer = e.get("issuer_canonical") or ""
         ctype = "发改委" if ("发展" in issuer or "改革" in issuer) else \
-                "能源局" if "能源" in issuer else "政府网"
-        out.append({
+                "能源局" if "能源" in issuer else \
+                "工信" if any(x in issuer for x in ("工业和信息化", "经济和信息化", "工信", "经信")) else \
+                "政府网"
+        target = {
             "city": prov, "province": prov, "level": "省",
             "city_code": f"{_PROV_CODE[prov]}0000",
             "channel_type": ctype, "root_domain": domain,
-        })
+        }
+        if ctype == "工信":
+            target["search_name"] = _industry_search_name(prov)
+        out.append(target)
     return out
 
 
@@ -248,6 +253,34 @@ def province_energy_targets() -> list:
     return out
 
 
+_INDUSTRY_AGENCY = {
+    "北京市": "北京市经济和信息化局",
+    "天津市": "天津市工业和信息化局",
+    "上海市": "上海市经济和信息化委员会",
+    "重庆市": "重庆市经济和信息化委员会",
+    "浙江省": "浙江省经济和信息化厅",
+    "安徽省": "安徽省经济和信息化厅",
+    "湖北省": "湖北省经济和信息化厅",
+    "四川省": "四川省经济和信息化厅",
+    "西藏自治区": "西藏自治区经济和信息化厅",
+}
+
+
+def _industry_search_name(prov: str) -> str:
+    agency = _INDUSTRY_AGENCY.get(prov, f"{prov}工业和信息化厅")
+    return f"{agency} 工信厅 工信局 经信委 经信局"
+
+
+def province_industry_targets() -> list:
+    """31 省 × 工信/经信类无条件目标,绕开 registry 冷启动循环。"""
+    return [{
+        "city": prov, "province": prov, "level": "省",
+        "city_code": f"{code}0000",
+        "channel_type": "工信", "root_domain": None,
+        "search_name": _industry_search_name(prov),
+    } for prov, code in _PROV_CODE.items()]
+
+
 NEA_REGIONAL = [
     "国家能源局华北能源监管局",
     "国家能源局东北能源监管局",
@@ -285,14 +318,15 @@ def discover_one(target: dict) -> Optional[Channel]:
     已知域名(known):同域过滤;未知域名(None):gov.cn 过滤 + 反推域名 + 机构名核验。
     治 LLM 选了 JS 空壳/坏 URL:probe 不通时自动试其它候选,用第一个验证的。
     """
-    query = f"{target['city']} 政策文件 通知公告 列表"
+    target_name = target.get("search_name") or target["city"]
+    query = f"{target_name} 政策文件 通知公告 列表"
     candidates = _tavily_search(query)
     known = target.get("root_domain")
     if known:
         on_domain = [u for u in candidates if _same_domain(u, known)]
     else:
         on_domain = [u for u in candidates if _is_gov_host(u)]   # 域名未知→gov 过滤
-    picked = _llm_pick(target["city"], on_domain)
+    picked = _llm_pick(target_name, on_domain)
     ordered = ([picked] if picked else []) + [u for u in on_domain if u != picked]
     list_url, pr = _first_verified(ordered)
     if list_url is None:  # 无候选 → 首页兜底(仅 known-domain 路径有意义)

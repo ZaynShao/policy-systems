@@ -13,12 +13,13 @@ from collections import Counter
 
 from scripts.l1_collect.channel_discovery import (
     NATIONAL_TARGETS, province_targets_from_registry, province_energy_targets,
-    commerce_market_targets, nea_regulatory_targets, discover_one)
+    province_industry_targets, commerce_market_targets,
+    nea_regulatory_targets, discover_one)
 from scripts.l1_collect.channel_catalog import load_catalog, save_catalog, ChannelStatus
 
 CAT = Path("state/T1_channels/channel_catalog.yaml")
 REG = Path.home() / "Documents/Zayn Main/政策分析/_meta/channel_registry.yaml"
-LEVEL_CN = {"national": "国家", "province": "省", "nea_regulatory": "能源监管"}
+LEVEL_CN = {"national": "国家", "province": "省", "industry": "工信", "nea_regulatory": "能源监管"}
 
 
 def _merge_province_targets(targets: list) -> list:
@@ -38,6 +39,10 @@ def targets_for_levels(levels: list[str]) -> list:
     if "province" in levels:
         targets += _merge_province_targets(
             province_targets_from_registry(REG) + province_energy_targets()
+        )
+    if "industry" in levels:
+        targets += _merge_province_targets(
+            province_targets_from_registry(REG) + province_industry_targets()
         )
     if "commerce_market" in levels:
         targets += commerce_market_targets(registry_path=REG)

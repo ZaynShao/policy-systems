@@ -1,5 +1,5 @@
 """ingester region 推断:省级渠道(city=省名/code末尾0000)不能被误标 level=市。"""
-from scripts.l1_collect.ingester import _infer_region, _sanitize_filename
+from scripts.l1_collect.ingester import compute_pid, _infer_region, _sanitize_filename
 
 
 def test_sanitize_filename_strips_control_chars():
@@ -35,3 +35,15 @@ def test_infer_region_national_by_issuer_when_no_city():
 def test_infer_region_empty_when_unknown():
     r = _infer_region(None, None, None)
     assert r["level"] == ""
+
+
+def test_compute_pid_uses_industry_channel_short():
+    pid = compute_pid(
+        "2022-01-12",
+        issuer=None,
+        official_number="苏工信规〔2022〕2号",
+        title="江苏省充换电设施建设运营管理办法",
+        city_code="320000",
+        channel_type="工信",
+    )
+    assert pid == "P_2022_JS_GX_2"

@@ -167,6 +167,80 @@ def test_province_energy_targets_shape():
     assert by_prov["吉林省"] == {"发改委", "能源局"}
 
 
+def test_province_industry_targets_shape():
+    from scripts.l1_collect.channel_discovery import province_industry_targets
+    targets = province_industry_targets()
+    assert len(targets) == 31
+    by_prov = {t["province"]: t for t in targets}
+    assert set(by_prov) >= {"江苏省", "浙江省", "四川省", "北京市", "新疆维吾尔自治区"}
+    for prov, t in by_prov.items():
+        assert t["city"] == prov
+        assert t["level"] == "省"
+        assert t["city_code"].endswith("0000")
+        assert t["channel_type"] == "工信"
+        assert t["root_domain"] is None
+        assert prov in t["search_name"]
+        assert "工信" in t["search_name"]
+    assert "工业和信息化" in by_prov["江苏省"]["search_name"]
+    assert "经济和信息化" in by_prov["浙江省"]["search_name"]
+
+
+def test_province_targets_from_registry_infers_industry_type(tmp_path):
+    from scripts.l1_collect.channel_discovery import province_targets_from_registry
+    reg = tmp_path / "registry.yaml"
+    reg.write_text(
+        """
+- domain: gxt.jiangsu.gov.cn
+  issuer_canonical: 江苏省工业和信息化厅
+  region: {level: 省, code: '320000', name: 江苏省}
+- domain: jxt.zj.gov.cn
+  issuer_canonical: 浙江省经济和信息化厅
+  region: {level: 省, code: '330000', name: 浙江省}
+- domain: gdii.gd.gov.cn
+  issuer_canonical: 广东省工信厅
+  region: {level: 省, code: '440000', name: 广东省}
+""",
+        encoding="utf-8",
+    )
+    targets = province_targets_from_registry(reg)
+    by_domain = {t["root_domain"]: t for t in targets}
+    assert by_domain["gxt.jiangsu.gov.cn"]["channel_type"] == "工信"
+    assert by_domain["jxt.zj.gov.cn"]["channel_type"] == "工信"
+    assert by_domain["gdii.gd.gov.cn"]["channel_type"] == "工信"
+    assert "江苏省工业和信息化厅" in by_domain["gxt.jiangsu.gov.cn"]["search_name"]
+
+
+def test_discover_uses_search_name_without_changing_channel_region(monkeypatch):
+    from scripts.l1_collect import channel_discovery as cd
+    from scripts.l1_collect.connectivity_probe import ProbeResult
+    seen = {}
+
+    def fake_search(query):
+        seen["query"] = query
+        return ["https://gxt.jiangsu.gov.cn/col/col5776/"]
+
+    def fake_pick(name, urls):
+        seen["pick_name"] = name
+        return urls[0]
+
+    monkeypatch.setattr(cd, "_tavily_search", fake_search)
+    monkeypatch.setattr(cd, "_llm_pick", fake_pick)
+    monkeypatch.setattr(cd, "probe_url",
+                        lambda u, **k: ProbeResult(url=u, http_status=200,
+                                                   page_has_list_pattern=True, verdict="ok"))
+
+    ch = cd.discover_one({
+        "city": "江苏省", "province": "江苏省", "level": "省",
+        "city_code": "320000", "channel_type": "工信", "root_domain": None,
+        "search_name": "江苏省工业和信息化厅 工信厅",
+    })
+
+    assert "江苏省工业和信息化厅" in seen["query"]
+    assert seen["pick_name"] == "江苏省工业和信息化厅 工信厅"
+    assert ch.city == "江苏省"
+    assert ch.channel_type == "工信"
+
+
 def test_nea_regulatory_targets_shape():
     from scripts.l1_collect.channel_discovery import nea_regulatory_targets
     targets = nea_regulatory_targets()

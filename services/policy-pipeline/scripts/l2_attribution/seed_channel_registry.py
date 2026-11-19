@@ -13,6 +13,20 @@ from scripts.l1_audit.corpus import load_policies
 _ROW_RE = re.compile(r"^\|\s*([a-z0-9.\-]+\.gov\.cn|[a-z0-9.\-]+\.cn)\s*\|\s*([^|]+?)\s*\|", re.M)
 _PROV_RE = re.compile(r"(北京市|天津市|上海市|重庆市|河北省|山西省|内蒙古自治区|辽宁省|吉林省|黑龙江省|江苏省|浙江省|安徽省|福建省|江西省|山东省|河南省|湖北省|湖南省|广东省|广西壮族自治区|海南省|四川省|贵州省|云南省|西藏自治区|陕西省|甘肃省|青海省|宁夏回族自治区|新疆维吾尔自治区)")
 _CITY_RE = re.compile(r"([一-龥]{2,8}?市)")
+_INDUSTRY_DOMAIN_PREFIXES = {
+    "gxt", "jxt", "jxj", "jxw", "jxxw", "gxj", "gdii", "eitc", "sheitc", "jjxxw",
+}
+_INDUSTRY_CANONICAL = {
+    "北京市": "北京市经济和信息化局",
+    "天津市": "天津市工业和信息化局",
+    "上海市": "上海市经济和信息化委员会",
+    "重庆市": "重庆市经济和信息化委员会",
+    "浙江省": "浙江省经济和信息化厅",
+    "安徽省": "安徽省经济和信息化厅",
+    "湖北省": "湖北省经济和信息化厅",
+    "四川省": "四川省经济和信息化厅",
+    "西藏自治区": "西藏自治区经济和信息化厅",
+}
 
 
 def parse_channel_md(text: str) -> list:
@@ -70,6 +84,20 @@ def _last_label(host: str) -> str:
     return segs[-1] if segs else ""
 
 
+def _labels(host: str) -> list[str]:
+    core = host[:-len(".gov.cn")] if host.endswith(".gov.cn") else host
+    return [s for s in core.split(".") if s]
+
+
+def _is_industry_domain(host: str) -> bool:
+    labels = _labels(host)
+    return any(s in _INDUSTRY_DOMAIN_PREFIXES for s in labels[:-1])
+
+
+def _industry_canonical(prov: str) -> str:
+    return _INDUSTRY_CANONICAL.get(prov, f"{prov}工业和信息化厅")
+
+
 def derive_from_domain(host: str):
     """域名拼音 -> entry dict;定不了返回 None。"""
     key = _last_label(host)
@@ -81,7 +109,8 @@ def derive_from_domain(host: str):
         prov = PROVINCE_PINYIN[key]
         p = PROVINCE[prov]
         muni = prov in ("北京市", "天津市", "上海市", "重庆市")
-        return {"domain": host, "issuer_short": p["issuer_short"], "issuer_canonical": prov,
+        issuer = _industry_canonical(prov) if _is_industry_domain(host) else prov
+        return {"domain": host, "issuer_short": p["issuer_short"], "issuer_canonical": issuer,
                 "region": {"level": ("市" if muni else "省"), "code": p["code2"] + "0000", "name": prov}}
     if key in CITY_PINYIN:
         city = CITY_PINYIN[key]

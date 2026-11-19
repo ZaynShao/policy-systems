@@ -52,6 +52,19 @@ def test_derive_from_domain_province_fullpinyin():
     assert e["issuer_short"] == "FJ" and e["region"]["level"] == "省"
 
 
+def test_derive_from_domain_province_industry_subdomain():
+    from scripts.l2_attribution.seed_channel_registry import derive_from_domain
+    js = derive_from_domain("gxt.jiangsu.gov.cn")
+    assert js["issuer_short"] == "JS"
+    assert js["issuer_canonical"] == "江苏省工业和信息化厅"
+    assert js["region"] == {"level": "省", "code": "320000", "name": "江苏省"}
+
+    zj = derive_from_domain("jxt.zj.gov.cn")
+    assert zj["issuer_short"] == "ZJ"
+    assert zj["issuer_canonical"] == "浙江省经济和信息化厅"
+    assert zj["region"] == {"level": "省", "code": "330000", "name": "浙江省"}
+
+
 def test_derive_from_domain_city():
     from scripts.l2_attribution.seed_channel_registry import derive_from_domain
     e = derive_from_domain("www.jinan.gov.cn")
