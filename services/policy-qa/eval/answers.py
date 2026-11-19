@@ -37,14 +37,18 @@ def _check(case: dict, answer: str, cited: list[str]) -> list[tuple[bool, str]]:
     return checks
 
 
-async def run_case(case: dict, store, agent, cfg) -> dict:
+async def run_case(case: dict, store, agent, cfg, planner=None) -> dict:
     from app.agent import stream_answer
 
     parts: list[str] = []
     cited: list[str] = []
     tools = 0
     async for name, data in stream_answer(
-        agent, store=store, messages=[{"role": "user", "content": case["question"]}], cfg=cfg
+        agent,
+        store=store,
+        messages=[{"role": "user", "content": case["question"]}],
+        cfg=cfg,
+        planner=planner,
     ):
         if name == "delta":
             parts.append(data.get("text", ""))
@@ -68,11 +72,16 @@ async def main_async(only: list[str]) -> int:
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
     from app.agent import build_agent
     from app.config import load_config
+    from app.planner import build_planner
     from app.main import build_model, build_store
 
     cfg = load_config()
     store = build_store(cfg)
-    agent = build_agent(build_model(cfg))
+    model = build_model(cfg)
+    agent = build_agent(model)
+    # 评测要走**生产同款路径**:生产开着规划器,评测不带就测不到真实行为
+    planner = build_planner(model) if cfg.enable_planner else None
+    print(f"规划器: {'开' if planner else '关'}\n")
 
     cases = json.loads(GOLDEN.read_text("utf-8"))["cases"]
     if only:
@@ -84,7 +93,7 @@ async def main_async(only: list[str]) -> int:
         print("=" * 78)
         print(f"[{case['id']}] {case['question']}")
         print(f"  理由: {case['why']}")
-        res = await run_case(case, store, agent, cfg)
+        res = await run_case(case, store, agent, cfg, planner)
         if res.get("error"):
             print(f"  !! 出错: {res['error']}")
             failed += 1

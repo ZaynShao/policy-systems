@@ -85,6 +85,7 @@ async def chat(request: Request, body: ChatRequest) -> StreamingResponse:
                 store=app.state.store,
                 messages=messages,
                 cfg=app.state.config,
+                planner=getattr(app.state, "planner", None),
             ):
                 if name == "meta":
                     data = {"request_id": request_id, **data}
@@ -98,6 +99,9 @@ async def chat(request: Request, body: ChatRequest) -> StreamingResponse:
                             "args": data.get("args_full") or data.get("args_preview"),
                         }
                     )
+                elif name == "plan":
+                    # 计划也落日志:线上答得不对时,第一个要看的就是"它当时打算怎么查"
+                    record["plan"] = data
                 elif name == "done":
                     record["citations"] = [c["pid"] for c in data.get("citations", [])]
                     record["usage"] = data.get("usage")
