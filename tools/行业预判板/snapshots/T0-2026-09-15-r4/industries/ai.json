@@ -1,0 +1,2250 @@
+{
+  "id": "ai",
+  "name": "AI 产业",
+  "group": "新兴产业",
+  "scope": "“人工智能+”产业与要素政策(国务院意见、工信部场景征集与试点、国家数据局数据集与算力)+ 网信办治理(生成式 AI 备案、内容标识、安全与伦理指引、综合性立法);不含具身智能/人形机器人本体(归具身智能)。",
+  "t0": "2026-09-15",
+  "direction": {
+    "stance": "支持",
+    "basis_fact_ids": [
+      "A3",
+      "F8",
+      "F33",
+      "F30"
+    ],
+    "note": "国发〔2025〕11号(A3)提出“率先实现人工智能与6大重点领域广泛深度融合……智能经济成为我国经济发展的重要增长极”;2026 年政府工作报告(F8)“深化拓展“人工智能+”，促进新一代智能终端和智能体加快推广”;2026-09-11 国常会(F33)“算力网是人工智能发展的基础支撑……进一步完善算力基础设施”;至 T0' 部委已印发 8 份“人工智能+X”领域文件(最新 F30 软件)。网信办规章与执法同期加密,但为治理并行,不构成压缩/禁止/总量控制,方向仍为支持(用户 2026-09-15 裁定台确认)",
+    "judged_by": "S4-AI与工业组(2026-09-15 独立复核 S0 草案,结论一致,依据扩至 F33、F30)",
+    "judged_at": "2026-09-15",
+    "confirmed": true
+  },
+  "stance": "support",
+  "temp": 34,
+  "temp_calc": [
+    {
+      "node_id": "F1",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.4,
+      "role_factor": 1.0,
+      "push": "up",
+      "push_weight": 0.5,
+      "contribution": -4.0
+    },
+    {
+      "node_id": "F2",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.4,
+      "role_factor": 1.0,
+      "push": "0",
+      "push_weight": 1.0,
+      "contribution": 0.0
+    },
+    {
+      "node_id": "F3",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.4,
+      "role_factor": 1.0,
+      "push": "dn",
+      "push_weight": 1.0,
+      "contribution": 8.0
+    },
+    {
+      "node_id": "F4",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.4,
+      "role_factor": 1.0,
+      "push": "up",
+      "push_weight": 1.0,
+      "contribution": -8.0
+    },
+    {
+      "node_id": "F5",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.4,
+      "role_factor": 1.0,
+      "push": "0",
+      "push_weight": 1.0,
+      "contribution": 0.0
+    },
+    {
+      "node_id": "F6",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.4,
+      "role_factor": 1.0,
+      "push": "dn",
+      "push_weight": 1.0,
+      "contribution": 8.0
+    },
+    {
+      "node_id": "F7",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.4,
+      "role_factor": 1.0,
+      "push": "up",
+      "push_weight": 0.5,
+      "contribution": -4.0
+    },
+    {
+      "node_id": "F8",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.4,
+      "role_factor": 1.0,
+      "push": "0",
+      "push_weight": 1.0,
+      "contribution": 0.0
+    },
+    {
+      "node_id": "F9",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.7,
+      "role_factor": 1.0,
+      "push": "up",
+      "push_weight": 1.0,
+      "contribution": -14.0
+    },
+    {
+      "node_id": "F10",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.7,
+      "role_factor": 1.0,
+      "push": "up",
+      "push_weight": 1.0,
+      "contribution": -14.0
+    },
+    {
+      "node_id": "F11",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.7,
+      "role_factor": 1.0,
+      "push": "dn",
+      "push_weight": 1.0,
+      "contribution": 14.0
+    },
+    {
+      "node_id": "F12",
+      "tier_weight": 1.0,
+      "level_weight": 0.7,
+      "recency_weight": 0.7,
+      "role_factor": 1.0,
+      "push": "dn",
+      "push_weight": 1.0,
+      "contribution": 9.8
+    },
+    {
+      "node_id": "F13",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.7,
+      "role_factor": 1.0,
+      "push": "0",
+      "push_weight": 1.0,
+      "contribution": 0.0
+    },
+    {
+      "node_id": "F14",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.7,
+      "role_factor": 1.0,
+      "push": "dn",
+      "push_weight": 1.0,
+      "contribution": 14.0
+    },
+    {
+      "node_id": "F15",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.7,
+      "role_factor": 1.0,
+      "push": "0",
+      "push_weight": 1.0,
+      "contribution": 0.0
+    },
+    {
+      "node_id": "F16",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.7,
+      "role_factor": 1.0,
+      "push": "up",
+      "push_weight": 0.5,
+      "contribution": -7.0
+    },
+    {
+      "node_id": "F17",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.7,
+      "role_factor": 1.0,
+      "push": "dn",
+      "push_weight": 1.0,
+      "contribution": 14.0
+    },
+    {
+      "node_id": "F18",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 0.7,
+      "role_factor": 1.0,
+      "push": "dn",
+      "push_weight": 1.0,
+      "contribution": 14.0
+    },
+    {
+      "node_id": "F19",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 1.0,
+      "role_factor": 1.0,
+      "push": "up",
+      "push_weight": 0.5,
+      "contribution": -10.0
+    },
+    {
+      "node_id": "F20",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 1.0,
+      "role_factor": 1.0,
+      "push": "dn",
+      "push_weight": 1.0,
+      "contribution": 20.0
+    },
+    {
+      "node_id": "F21",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 1.0,
+      "role_factor": 1.0,
+      "push": "dn",
+      "push_weight": 1.0,
+      "contribution": 20.0
+    },
+    {
+      "node_id": "F22",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 1.0,
+      "role_factor": 1.0,
+      "push": "0",
+      "push_weight": 1.0,
+      "contribution": 0.0
+    },
+    {
+      "node_id": "F23",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 1.0,
+      "role_factor": 1.0,
+      "push": "dn",
+      "push_weight": 1.0,
+      "contribution": 20.0
+    },
+    {
+      "node_id": "F24",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 1.0,
+      "role_factor": 1.0,
+      "push": "0",
+      "push_weight": 1.0,
+      "contribution": 0.0
+    },
+    {
+      "node_id": "F25",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 1.0,
+      "role_factor": 1.0,
+      "push": "up",
+      "push_weight": 0.5,
+      "contribution": -10.0
+    },
+    {
+      "node_id": "F26",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 1.0,
+      "role_factor": 1.0,
+      "push": "up",
+      "push_weight": 0.5,
+      "contribution": -10.0
+    },
+    {
+      "node_id": "F27",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 1.0,
+      "role_factor": 1.0,
+      "push": "up",
+      "push_weight": 1.0,
+      "contribution": -20.0
+    },
+    {
+      "node_id": "F28",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 1.0,
+      "role_factor": 1.0,
+      "push": "up",
+      "push_weight": 0.5,
+      "contribution": -10.0
+    },
+    {
+      "node_id": "F29",
+      "tier_weight": 1.0,
+      "level_weight": 0.7,
+      "recency_weight": 0.4,
+      "role_factor": 1.0,
+      "push": "dn",
+      "push_weight": 1.0,
+      "contribution": 5.6
+    },
+    {
+      "node_id": "C1",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 1.0,
+      "role_factor": 0.5,
+      "push": "0",
+      "push_weight": 1.0,
+      "contribution": 0.0
+    },
+    {
+      "node_id": "C2",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 1.0,
+      "role_factor": 0.5,
+      "push": "0",
+      "push_weight": 1.0,
+      "contribution": 0.0
+    },
+    {
+      "node_id": "F30",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 1.0,
+      "role_factor": 1.0,
+      "push": "dn",
+      "push_weight": 1.0,
+      "contribution": 20.0
+    },
+    {
+      "node_id": "F31",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 1.0,
+      "role_factor": 1.0,
+      "push": "dn",
+      "push_weight": 1.0,
+      "contribution": 20.0
+    },
+    {
+      "node_id": "F32",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 1.0,
+      "role_factor": 1.0,
+      "push": "dn",
+      "push_weight": 1.0,
+      "contribution": 20.0
+    },
+    {
+      "node_id": "F33",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 1.0,
+      "role_factor": 1.0,
+      "push": "dn",
+      "push_weight": 1.0,
+      "contribution": 20.0
+    },
+    {
+      "node_id": "F34",
+      "tier_weight": 1.0,
+      "level_weight": 1.0,
+      "recency_weight": 1.0,
+      "role_factor": 1.0,
+      "push": "dn",
+      "push_weight": 1.0,
+      "contribution": 20.0
+    }
+  ],
+  "stage": "正式",
+  "line": "促进与治理双线并进:部委“人工智能+”领域文件密集印发,网信办规章与网安标委指引同步加密,执法常态化",
+  "next": {
+    "date": "2026-12-31",
+    "text": "《数字虚拟人信息服务管理办法》正式稿观察截止(基率中位落点 2026-10-01,p75 落点 2026-12-14);同期看新领域“人工智能+X”文件与 TC260“总则”去向(2026-09-15 第二轮复核:三张卡依据仍成立,未到期)",
+    "source_node_id": "F9"
+  },
+  "cards": [
+    {
+      "id": "AI-001",
+      "title": "2026-12-31 前国家网信办(或会同有关部门)正式公布《数字虚拟人信息服务管理办法》",
+      "actor": "国家互联网信息办公室",
+      "action": "正式公布",
+      "object": "数字虚拟人信息服务管理办法(2026-04-03 征求意见稿)",
+      "carrier": "部门规章",
+      "window": {
+        "from": "2026-09-15",
+        "to": "2026-12-31"
+      },
+      "verify_date": "2027-01-10",
+      "level": "较大可能",
+      "hypotheses": [
+        {
+          "key": "H1",
+          "text": "2026-12-31 前正式公布(单独发布或与其他部门联合发布)",
+          "p": 0.55
+        },
+        {
+          "key": "H2",
+          "text": "2027-01-01 至 2027-03-31 公布,或其规则并入《互联网信息服务管理办法》修订稿而不再单独出台",
+          "p": 0.25
+        },
+        {
+          "key": "H0",
+          "text": "2027-03-31 后仍未公布且无并入迹象",
+          "p": 0.2
+        }
+      ],
+      "failure_conditions": [
+        "2026-12-31 前未公布且网信办未公开说明并入其他规章",
+        "网信办公开表示暂缓或二次征求意见"
+      ],
+      "basis_fact_ids": [
+        "F9",
+        "F10",
+        "F5",
+        "F15",
+        "F22"
+      ],
+      "counter_evidence": [
+        "自征求意见起至 T0 已 164 天,超过基率 p25(≈117 天)但未超中位(181 天),尚不构成拖延信号",
+        "《互联网信息服务管理办法》修订草案(F22)新增“智能信息服务”专章,存在把数字虚拟人规则并入上位行政法规的替代路径",
+        "同类规章周期离散大(93–591 天),人脸识别办法曾拖 591 天",
+        "2026-09-15 复核:网信办站 2026-09-14/15 未见数字虚拟人办法正式稿;09-11 国常会、09-14 治理框架 3.0 均未提及该办法"
+      ],
+      "impact": {
+        "strategy": "数字人/虚拟主播类产品的准入与内容责任将从“参照拟人化办法”变为专门规章,影响产品路线与上线节奏",
+        "gr": "跟踪网信办网络管理技术局与算法备案窗口,正式稿公布后 30 日内完成条款—控制映射",
+        "compliance": "预置备案、显著标识、未成年人保护、账号实名与内容审核四类控制,对齐拟人化办法第二十二/二十六条的安全评估与备案义务"
+      },
+      "status": "AI初稿·待复核"
+    },
+    {
+      "id": "AI-002",
+      "title": "2026-12-31 前国务院部门再印发至少 2 份新领域的“人工智能+X”专项文件(领域不在制造/教育/能源/信通/消费/交通/人社之列)",
+      "actor": "国务院部门(卫生健康、农业农村、科技、金融、文旅、政务等主管部门)",
+      "action": "印发领域专项实施意见/行动方案",
+      "object": "“人工智能+”新领域(医疗卫生、农业、科学、金融、文旅、政务等)",
+      "carrier": "实施意见/行动方案/行动计划",
+      "window": {
+        "from": "2026-09-15",
+        "to": "2026-12-31"
+      },
+      "verify_date": "2027-01-10",
+      "level": "较大可能",
+      "hypotheses": [
+        {
+          "key": "H1",
+          "text": "新印发 ≥2 份新领域国家级“人工智能+X”专项文件",
+          "p": 0.55
+        },
+        {
+          "key": "H2",
+          "text": "仅新印发 1 份,其余以场景征集、试点名单或既有领域二次文件承载",
+          "p": 0.25
+        },
+        {
+          "key": "H0",
+          "text": "无新领域专项文件印发",
+          "p": 0.2
+        }
+      ],
+      "failure_conditions": [
+        "2026-12-31 前新领域国家级专项文件为 0",
+        "国务院或部委公开表示领域文件已发完、转入评估期"
+      ],
+      "basis_fact_ids": [
+        "F6",
+        "F11",
+        "F14",
+        "F18",
+        "F20",
+        "F21",
+        "F23",
+        "F8",
+        "F3",
+        "F30"
+      ],
+      "counter_evidence": [
+        "国发 11 号“六大重点行动”中产业、消费、民生(教育、人社)、治理相关领域已陆续出文,剩余领域(科学、全球合作)未必以部委专项文件形式承载",
+        "2026 年上半年密集出文后,下半年可能转向名单/试点动作而非新文件(F24 已显示动作前移)",
+        "2026-09-15 复核:09-11 印发的“人工智能+软件”方案(F30)是第 8 份领域文件但早于观察窗起点 2026-09-15,不计入 H1;它说明领域文件节奏未停,但也把“软件”从待出领域中移出"
+      ],
+      "impact": {
+        "strategy": "领域文件决定下一批高价值场景与数据集的分配方向,提前识别医疗/农业/金融等新赛道的准入窗口",
+        "gr": "按领域主管部门建立申报链路(场景征集、试点、案例遴选),文件印发后 30 日内摸清申报条件与截止日",
+        "compliance": "每份领域文件通常同步引用网信办备案、数据安全与伦理要求,需按领域补齐数据来源与场景责任边界"
+      },
+      "status": "AI初稿·待复核"
+    },
+    {
+      "id": "AI-003",
+      "title": "2026-12-31 前网安标委正式发布《人工智能应用安全指引 总则》(实践指南正式版)",
+      "actor": "全国网络安全标准化技术委员会秘书处",
+      "action": "发布正式版",
+      "object": "人工智能应用安全指引 总则(2026-01-13 征求意见稿)",
+      "carrier": "网络安全标准实践指南",
+      "window": {
+        "from": "2026-09-15",
+        "to": "2026-12-31"
+      },
+      "verify_date": "2027-01-10",
+      "level": "可能",
+      "hypotheses": [
+        {
+          "key": "H1",
+          "text": "2026-12-31 前以实践指南形式正式发布《人工智能应用安全指引 总则》",
+          "p": 0.35
+        },
+        {
+          "key": "H2",
+          "text": "不再单独发布实践指南,而是转为国家标准化指导性技术文件立项/征求意见,或只发布分行业指引(教育、卫生健康、广播电视等)",
+          "p": 0.4
+        },
+        {
+          "key": "H0",
+          "text": "既无正式版也无转轨迹象",
+          "p": 0.25
+        }
+      ],
+      "failure_conditions": [
+        "2026-12-31 前未发布且 TC260 通知公告栏无“总则”相关立项/征求意见",
+        "TC260 公开撤回该征求意见稿"
+      ],
+      "basis_fact_ids": [
+        "F7",
+        "F26",
+        "F25",
+        "F13",
+        "F16"
+      ],
+      "counter_evidence": [
+        "历史类比 COUNTER:自征求意见起至 T0 已 244 天,超过 TC260 实践指南 8 个样本的最大值(223 天),提示程序性拖延或转轨",
+        "2026-03-26 TC260 组建人工智能安全标准工作组(WG9),7 月起密集征集“人工智能应用安全 ×行业”指导性技术文件参编单位,总则可能升格为指导性技术文件而非实践指南",
+        "2026-09-15 复核:tc260 首页最新通知为 09-02 换届通知,“总则”等 3 项仍未发布(至 T0' 245 天)"
+      ],
+      "impact": {
+        "strategy": "总则一旦发布将成为各行业 AI 应用安全指引的模板,决定合规基线的统一口径",
+        "gr": "跟踪 TC260 通知公告与 WG9 动态,区分“实践指南”与“指导性技术文件”两条轨道的参与窗口",
+        "compliance": "先按征求意见稿建立控制矩阵,正式版发布后核对差异;分行业指引(教育、卫生健康)已先行,可作实操参照"
+      },
+      "status": "AI初稿·待复核"
+    }
+  ],
+  "timeline": [
+    {
+      "id": "A1",
+      "date": "2023-07-13",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "生成式人工智能服务管理暂行办法",
+      "docno": "国家互联网信息办公室、国家发展和改革委员会、教育部、科学技术部、工业和信息化部、公安部、国家广播电视总局令第15号",
+      "issuer": "国家互联网信息办公室等七部门",
+      "excerpt": "提供具有舆论属性或者社会动员能力的生成式人工智能服务的，应当按照国家有关规定开展安全评估，并按照《互联网信息服务算法推荐管理规定》履行算法备案和变更、注销备案手续。……本办法自2023年8月15日起施行。",
+      "source_name": "国家互联网信息办公室等七部门",
+      "url": "https://www.cac.gov.cn/2023-07/13/c_1690898327029107.htm",
+      "fetched_at": "2026-09-14",
+      "push": "0",
+      "use": "D3 锚点:生成式 AI 备案制度的上位规章;只用于定阶段与历史类比",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch",
+      "http_status": 200,
+      "stage": "实施",
+      "issued_on": "2023-07-10",
+      "out_of_window": true
+    },
+    {
+      "id": "A2",
+      "date": "2025-03-14",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "人工智能生成合成内容标识办法",
+      "docno": "国信办通字〔2025〕2号",
+      "issuer": "国家互联网信息办公室、工业和信息化部、公安部、国家广播电视总局",
+      "excerpt": "为了促进人工智能健康发展，规范人工智能生成合成内容标识，保护公民、法人和其他组织合法权益，维护社会公共利益……制定本办法。……本办法自2025年9月1日起施行。",
+      "source_name": "国家互联网信息办公室、工业和信息化部、公安部、国家广播电视总局",
+      "url": "https://www.cac.gov.cn/2025-03/14/c_1743654684782215.htm",
+      "fetched_at": "2026-09-14",
+      "push": "0",
+      "use": "D3 锚点:内容标识制度;施行日 2025-09-01 仍在窗外,窗内执法(F4)以此为依据",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch",
+      "http_status": 200,
+      "stage": "实施",
+      "out_of_window": true
+    },
+    {
+      "id": "A3",
+      "date": "2025-08-26",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "国务院关于深入实施“人工智能+”行动的意见",
+      "docno": "国发〔2025〕11号",
+      "issuer": "国务院",
+      "excerpt": "率先实现人工智能与6大重点领域广泛深度融合，新一代智能终端、智能体等应用普及率超70%，智能经济核心产业规模快速增长，人工智能在公共治理中的作用明显增强，……我国人工智能全面赋能高质量发展，新一代智能终端、智能体等应用普及率超90%，智能经济成为我国经济发展的重要增长极，……",
+      "source_name": "国务院",
+      "url": "https://www.gov.cn/zhengce/content/202508/content_7037861.htm",
+      "fetched_at": "2026-09-14",
+      "push": "0",
+      "use": "D3 锚点:“人工智能+”行动的上位文件;用于定阶段与措辞变化(“深入实施”→政府工作报告“深化拓展”);不计 3 条/温度",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch",
+      "http_status": 200,
+      "stage": "部署",
+      "issued_on": "2025-08-21",
+      "out_of_window": true
+    },
+    {
+      "id": "F1",
+      "date": "2025-09-15",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "《人工智能安全治理框架》2.0版发布",
+      "docno": "",
+      "issuer": "全国网络安全标准化技术委员会(国家网信办指导,网信办网站发布)",
+      "excerpt": "9月15日，在2025年国家网络安全宣传周主论坛上，《人工智能安全治理框架》2.0版（以下简称《框架》2.0版）正式发布。……《框架》2.0版在2024年《框架》基础上，结合人工智能技术发展和应用实践，持续跟踪风险变化，完善优化风险分类，研究探索风险分级，动态调整更新防范治理措施。",
+      "source_name": "全国网络安全标准化技术委员会(国家网信办指导,网信办网站发布)",
+      "url": "https://www.cac.gov.cn/2025-09/15/c_1759653448369123.htm",
+      "fetched_at": "2026-09-14",
+      "push": "up",
+      "use": "治理框架年度迭代(1.0→2.0→3.0),定治理线的“正式”阶段;与 F28 构成年度节奏",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch",
+      "http_status": 200,
+      "stage": "正式",
+      "note": "2026-09-15 本轮按 §2 重判:push up→0(安全指引与指导性技术文件(治理框架,非约束)→中性)\n2026-09-15 D12(用户裁定 D):软规则按半额计收紧,push 0→up,push_weight 0.5",
+      "push_weight": 0.5
+    },
+    {
+      "id": "F2",
+      "date": "2025-10-29",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "全国人民代表大会常务委员会关于修改《中华人民共和国网络安全法》的决定(新增人工智能条款)",
+      "docno": "",
+      "issuer": "全国人民代表大会常务委员会",
+      "excerpt": "国家支持人工智能基础理论研究和算法等关键技术研发，推进训练数据资源、算力等基础设施建设，完善人工智能伦理规范，加强风险监测评估和安全监管，促进人工智能应用和健康发展。",
+      "source_name": "全国人民代表大会常务委员会",
+      "url": "https://www.gov.cn/yaowen/liebiao/202510/content_7046194.htm",
+      "fetched_at": "2026-09-14",
+      "push": "0",
+      "use": "法律层面首次写入人工智能条款(第二十条),促进与监管并举,推力记中性;2026-01-01 施行",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch",
+      "http_status": 200,
+      "stage": "正式",
+      "issued_on": "2025-10-28",
+      "note": "2026-09-15 本轮按 §2 复核:维持 0。法律同时含促进条款(“国家支持人工智能基础理论研究和算法等关键技术研发”)与监管条款(“加强风险监测评估和安全监管”)"
+    },
+    {
+      "id": "F3",
+      "date": "2025-11-07",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "国务院办公厅关于加快场景培育和开放推动新场景大规模应用的实施意见",
+      "docno": "国办发〔2025〕37号",
+      "issuer": "国务院办公厅",
+      "excerpt": "人工智能领域。加强关键核心技术攻关和推广应用，加快高价值应用场景培育和开放，更好满足科技、产业、消费、民生、治理、全球合作等各领域发展需要。",
+      "source_name": "国务院办公厅",
+      "url": "https://www.gov.cn/zhengce/zhengceku/202511/content_7047420.htm",
+      "fetched_at": "2026-09-14",
+      "push": "dn",
+      "use": "国办层面把“人工智能领域场景”列为首位,是部委场景征集/试点动作的上位依据",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch",
+      "http_status": 200,
+      "stage": "部署",
+      "issued_on": "2025-11-02",
+      "note": "2026-09-15 用户裁定 G1=b(D10):促进类文件不进温度,push dn→0;内容只进产业方向\n2026-09-15 D12(用户裁定 D):促进类全额计宽松,push 0→dn"
+    },
+    {
+      "id": "F4",
+      "date": "2025-11-25",
+      "kind": "enforce",
+      "role": "fact",
+      "tier": "S1",
+      "title": "网信部门依法集中查处一批存在人工智能生成合成内容标识违法违规问题的移动互联网应用程序",
+      "docno": "",
+      "issuer": "中央网络安全和信息化委员会办公室",
+      "excerpt": "近期网信部门集中查处一批违法违规移动互联网应用程序，依法依规予以约谈、责令限期改正、下架下线等处置处罚。",
+      "source_name": "中央网络安全和信息化委员会办公室",
+      "url": "https://www.cac.gov.cn/2025-11/25/c_1765795550841819.htm",
+      "fetched_at": "2026-09-14",
+      "push": "up",
+      "use": "标识办法(A2)施行后首轮集中执法;治理线进入“执法”",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch",
+      "http_status": 200,
+      "stage": "执法",
+      "note": "2026-09-15 本轮按 §2 复核:维持 up(处罚与执法通报)"
+    },
+    {
+      "id": "F5",
+      "date": "2025-12-27",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "国家互联网信息办公室关于《人工智能拟人化互动服务管理暂行办法（征求意见稿）》公开征求意见的通知",
+      "docno": "",
+      "issuer": "国家互联网信息办公室",
+      "excerpt": "为了促进人工智能拟人化互动服务健康发展和规范应用，依据《中华人民共和国民法典》《中华人民共和国网络安全法》《中华人民共和国数据安全法》等法律法规，国家互联网信息办公室起草了《人工智能拟人化互动服务管理暂行办法（征求意见稿）》，现向社会公开征求意见。",
+      "source_name": "国家互联网信息办公室",
+      "url": "https://www.cac.gov.cn/2025-12/27/c_1768571207311996.htm",
+      "fetched_at": "2026-09-14",
+      "push": "0",
+      "use": "同线,方向计在 F10;网信办 AI 专项规章第 4 部的征求意见起点(截止 2026-01-25),与 F10 组成一对“征求意见→公布”实测样本",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch",
+      "http_status": 200,
+      "stage": "征求意见",
+      "note": "2026-09-15 本轮按 §2 重判:push up→0(同一规则线只计一次:拟人化办法征求意见→正式件 F10 计方向)"
+    },
+    {
+      "id": "F6",
+      "date": "2026-01-07",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "工业和信息化部等八部门关于印发《“人工智能+制造”专项行动实施意见》的通知",
+      "docno": "工信部联科〔2025〕279号",
+      "issuer": "工业和信息化部、中央网信办、国家发展改革委、教育部、商务部、国务院国资委、市场监管总局、国家数据局",
+      "excerpt": "现将《“人工智能+制造”专项行动实施意见》印发给你们，请结合实际认真抓好落实。",
+      "source_name": "工业和信息化部、中央网信办、国家发展改革委、教育部、商务部、国务院国资委、市场监管总局、国家数据局",
+      "url": "https://www.miit.gov.cn/zwgk/zcwj/wjfb/tz/art/2026/art_01010414608a4226b30687773bb21bdf.html",
+      "fetched_at": "2026-09-14",
+      "push": "dn",
+      "use": "国发 11 号后第一份部委“人工智能+X”领域文件;2027 年目标(500 个典型应用场景等)见 sources 全文页摘录,用于目标反推",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "browser",
+      "http_status": 200,
+      "stage": "部署",
+      "issued_on": "2025-12-25",
+      "note": "2026-09-15 用户裁定 G1=b(D10):促进类文件不进温度,push dn→0;内容只进产业方向\n2026-09-15 D12(用户裁定 D):促进类全额计宽松,push 0→dn"
+    },
+    {
+      "id": "F7",
+      "date": "2026-01-13",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "关于对《人工智能应用安全指引 总则（征求意见稿）》等4项网络安全标准实践指南公开征求意见的通知",
+      "docno": "网安秘字〔2026〕2号",
+      "issuer": "全国网络安全标准化技术委员会秘书处",
+      "excerpt": "秘书处组织编制了《人工智能应用安全指引 总则》《人工智能应用安全指引 广播电视和网络视听》《用户使用人工智能安全指南》《人工智能训练数据清洗安全指南》等4项网络安全标准实践指南征求意见稿。……如有意见或建议，请于2026年1月27日前反馈至秘书处。",
+      "source_name": "全国网络安全标准化技术委员会秘书处",
+      "url": "https://www.tc260.org.cn/tc260/tzgg/202601/30714edfabf34696add34739cdcacd91.shtml",
+      "fetched_at": "2026-09-14",
+      "push": "up",
+      "use": "TC260 实践指南征求意见起点;其中“用户使用”一项已于 2026-08-24 发布(F26),“总则”等 3 项至 T0 未见正式版(卡 AI-003)",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "browser",
+      "http_status": 200,
+      "stage": "征求意见",
+      "note": "2026-09-15 本轮按 §2 重判:push up→0(TC260 实践指南征求意见(指导性技术文件)→中性)\n2026-09-15 D12(用户裁定 D):软规则按半额计收紧,push 0→up,push_weight 0.5",
+      "push_weight": 0.5
+    },
+    {
+      "id": "F8",
+      "date": "2026-03-05",
+      "kind": "speech",
+      "role": "fact",
+      "tier": "S1",
+      "title": "2026年政府工作报告(人工智能相关段落)",
+      "docno": "",
+      "issuer": "国务院",
+      "excerpt": "深化拓展“人工智能+”，促进新一代智能终端和智能体加快推广，推动重点行业领域人工智能商业化规模化应用……完善人工智能治理",
+      "source_name": "国务院",
+      "url": "https://www.gov.cn/yaowen/liebiao/202603/content_7062625.htm",
+      "fetched_at": "2026-09-14",
+      "push": "0",
+      "use": "共用件。措辞由国发 11 号“深入实施”升级为“深化拓展”,同时首提“完善人工智能治理”;§2 共用件含双向内容记中性,产业方向另在 direction 计",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch",
+      "http_status": 200,
+      "stage": "方向",
+      "note": "2026-09-15 本轮按 §2 重判:push dn→0(共用件(政府工作报告)含促进与治理双向内容→中性)"
+    },
+    {
+      "id": "F9",
+      "date": "2026-04-03",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "国家互联网信息办公室关于《数字虚拟人信息服务管理办法（征求意见稿）》公开征求意见的通知",
+      "docno": "",
+      "issuer": "国家互联网信息办公室",
+      "excerpt": "为了促进数字虚拟人信息服务健康发展和规范应用，根据《中华人民共和国网络安全法》、《中华人民共和国数据安全法》、《中华人民共和国个人信息保护法》、《互联网信息服务管理办法》等法律、行政法规，国家互联网信息办公室起草了《数字虚拟人信息服务管理办法（征求意见稿）》，现向社会公开征求意见。……通过数字虚拟人向中华人民共和国境内公众提供互联网信息服务（以下简称数字虚拟人服务），适用本办法。",
+      "source_name": "国家互联网信息办公室",
+      "url": "https://www.cac.gov.cn/2026-04/03/c_1776952992709096.htm",
+      "fetched_at": "2026-09-14",
+      "push": "up",
+      "use": "卡 AI-001 锚点事实:征求意见截止 2026-05-06,至 T0 未见正式稿",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch",
+      "http_status": 200,
+      "stage": "征求意见",
+      "note": "2026-09-15 本轮按 §2 复核:维持 up。征求意见稿含禁止条款(第十条)与罚则(第二十四条,一万元以上十万元以下罚款),为该规则线唯一节点"
+    },
+    {
+      "id": "F10",
+      "date": "2026-04-10",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "人工智能拟人化互动服务管理暂行办法(五部门公布)",
+      "docno": "国家互联网信息办公室、国家发展和改革委员会、工业和信息化部、公安部、国家市场监督管理总局令第21号",
+      "issuer": "国家互联网信息办公室、国家发展改革委、工业和信息化部、公安部、市场监管总局",
+      "excerpt": "拟人化互动服务提供者应当按照《互联网信息服务算法推荐管理规定》履行算法备案和变更、注销备案手续。网信部门对备案材料实施年度核验。",
+      "source_name": "国家互联网信息办公室、国家发展改革委、工业和信息化部、公安部、市场监管总局",
+      "url": "https://www.cac.gov.cn/2026-04/10/c_1777558395078289.htm",
+      "fetched_at": "2026-09-14",
+      "push": "up",
+      "use": "征求意见(F5)后 104 天公布,2026-07-15 施行;网信办 AI 专项规章最新实测周期",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch",
+      "http_status": 200,
+      "stage": "正式",
+      "issued_on": "2026-02-02",
+      "note": "2026-09-15 本轮按 §2 复核:维持 up。部门规章含禁止条款(第十四条)与罚则(第三十条),为拟人化办法规则线的正式件,方向计在此"
+    },
+    {
+      "id": "F11",
+      "date": "2026-04-10",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "教育部等五部门关于印发《“人工智能+教育”行动计划》的通知",
+      "docno": "教科信〔2026〕1号",
+      "issuer": "教育部、国家发展改革委、工业和信息化部、科技部、国家数据局",
+      "excerpt": "到2030年，人工智能与教育深度融合格局基本形成，构建起纵向贯通、横向联通的人工智能全学段教育和全社会通识教育体系，人工智能人才培养规模与质量显著提升，形成全民人工智能素养培育长效机制。",
+      "source_name": "国家数据局政策发布(共同发文机关)",
+      "url": "https://www.nda.gov.cn/sjj/zwgk/zcfb/0413/20260410162428109058250_pc.html",
+      "fetched_at": "2026-09-14",
+      "push": "dn",
+      "use": "部委“人工智能+X”领域文件之二(教育);基率样本",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch",
+      "http_status": 200,
+      "stage": "部署",
+      "issued_on": "2026-04-02",
+      "note": "2026-09-15 用户裁定 G1=b(D10):促进类文件不进温度,push dn→0;内容只进产业方向\n2026-09-15 D12(用户裁定 D):促进类全额计宽松,push 0→dn"
+    },
+    {
+      "id": "F12",
+      "date": "2026-04-22",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "广东省人民政府办公厅关于印发《广东省加快推进人工智能全域全时全行业高水平应用行动方案》的通知",
+      "docno": "粤办函〔2026〕50号",
+      "issuer": "广东省人民政府办公厅",
+      "excerpt": "推动3个以上专业大模型在电网、发电、油气等领域深度应用，形成5个以上典型应用案例",
+      "source_name": "广东省人民政府办公厅",
+      "url": "https://www.gd.gov.cn/zwgk/wjk/qbwj/ybh/content/post_4887794.html",
+      "fetched_at": "2026-09-14",
+      "push": "dn",
+      "use": "省级承接国发 11 号的样本(与海南 F29 同类,合并为 1 个独立簇)",
+      "after_t0": false,
+      "issuer_level": "省",
+      "fetch_tool": "WebFetch",
+      "http_status": 200,
+      "stage": "部署",
+      "issued_on": "2026-04-09",
+      "note": "2026-09-15 用户裁定 G1=b(D10):促进类文件不进温度,push dn→0;内容只进产业方向\n2026-09-15 D12(用户裁定 D):促进类全额计宽松,push 0→dn"
+    },
+    {
+      "id": "F13",
+      "date": "2026-05-08",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "智能体规范应用与创新发展实施意见",
+      "docno": "",
+      "issuer": "国家互联网信息办公室(中国网信网发布;保障措施段列网信办、发改委、工信部)",
+      "excerpt": "加快研究智能体相关政策法规及伦理规范……制定智能体开发、部署、应用、维护等全周期安全规范……实行备案、检测、问题产品召回等管理措施",
+      "source_name": "国家互联网信息办公室(中国网信网发布;保障措施段列网信办、发改委、工信部)",
+      "url": "https://www.cac.gov.cn/2026-05/08/c_1779979789523320.htm",
+      "fetched_at": "2026-09-14",
+      "push": "0",
+      "use": "双向文件:促进句“推动重点领域开放智能体应用场景…开展智能体应用试点”,义务句“实行备案、检测、问题产品召回等管理措施”;网信办对智能体的规则供给预告,是后续规章/标准的措辞前置",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch",
+      "http_status": 200,
+      "stage": "部署",
+      "note": "2026-09-15 本轮按 §2 重判:push up→0(实施意见同时含促进条款与管理措施:“促进智能体规范应用与创新发展…开展智能体应用试点”与“实行备案、检测、问题产品召回等管理措施”→中性)"
+    },
+    {
+      "id": "F14",
+      "date": "2026-05-08",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "国家发展改革委 国家能源局 工业和信息化部 国家数据局印发《关于促进人工智能与能源双向赋能的行动方案》的通知",
+      "docno": "国能发科技〔2026〕34号",
+      "issuer": "国家发展改革委、国家能源局、工业和信息化部、国家数据局",
+      "excerpt": "到2027年，支撑人工智能创新发展的安全、绿色、经济的能源保障体系初步构建，清洁能源与算力设施互动能力显著提升。……到2030年，人工智能算力设施的清洁能源供给保障能力、能源领域人工智能专用技术研发和应用达到世界领先水平，人工智能与能源双向赋能取得明显成效。",
+      "source_name": "国家能源局(原文页)",
+      "url": "https://www.nea.gov.cn/20260508/4dae97ca01d348e4871bb8654be34b3a/c.html",
+      "fetched_at": "2026-09-15",
+      "push": "dn",
+      "use": "部委“人工智能+X”领域文件之三(能源);基率样本",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "curl",
+      "http_status": 200,
+      "stage": "部署",
+      "note": "2026-09-15 URL 由国家数据局转载页改为国家能源局原文页,摘录按原文重录(转载页“力争到2030年…大幅提升”与原文措辞不同,见 sources 备注);推力按 §2 复核维持 dn(行动方案)\n2026-09-15 用户裁定 G1=b(D10):促进类文件不进温度,push dn→0;内容只进产业方向\n2026-09-15 D12(用户裁定 D):促进类全额计宽松,push 0→dn",
+      "issued_on": "2026-04-08"
+    },
+    {
+      "id": "F15",
+      "date": "2026-05-11",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "国务院办公厅关于印发《国务院2026年度立法工作计划》的通知(人工智能综合性立法段落)",
+      "docno": "国办发〔2026〕14号",
+      "issuer": "国务院办公厅",
+      "excerpt": "完善人工智能治理，加快推进人工智能健康发展综合性立法；加快完善保障数据、算力、算法、产权、网络安全、供应链安全等人工智能共性要素及规范重点应用场景方面的立法。",
+      "source_name": "国务院办公厅",
+      "url": "https://www.gov.cn/zhengce/zhengceku/202605/content_7068346.htm",
+      "fetched_at": "2026-09-14",
+      "push": "0",
+      "use": "共用件。综合性立法未列入“拟提请/预备”具体项目,只作方向句;同段落列“修订互联网信息服务管理办法”(F22 的上位安排)",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch",
+      "http_status": 200,
+      "stage": "部署",
+      "issued_on": "2026-05-08",
+      "note": "2026-09-15 本轮按 §2 重判:push up→0(立法计划→中性)"
+    },
+    {
+      "id": "F16",
+      "date": "2026-05-19",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "《人工智能应用伦理安全指引1.0》发布(TC260-005)",
+      "docno": "TC260-005",
+      "issuer": "全国网络安全标准化技术委员会",
+      "excerpt": "5月19日，在2026年中国网络文明大会人工智能赋能网络文明建设分论坛上，全国网络安全标准化技术委员会（以下简称“网安标委”）发布了《人工智能应用伦理安全指引1.0》",
+      "source_name": "全国网络安全标准化技术委员会",
+      "url": "https://www.cac.gov.cn/2026-05/22/c_1781191242686496.htm",
+      "fetched_at": "2026-09-14",
+      "push": "up",
+      "use": "TC260 技术文件;征求意见(2026-04-17)→发布 32 天,是 TC260 实践指南基率样本之一",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch",
+      "http_status": 200,
+      "stage": "正式",
+      "note": "2026-09-15 本轮按 §2 重判:push up→0(TC260 技术文件(伦理安全指引,非约束)→中性)\n2026-09-15 D12(用户裁定 D):软规则按半额计收紧,push 0→up,push_weight 0.5",
+      "push_weight": 0.5
+    },
+    {
+      "id": "F17",
+      "date": "2026-06-08",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "国家数据局关于印发《关于推进行业高质量数据集建设行动的实施方案》的通知",
+      "docno": "国数科基〔2026〕25号",
+      "issuer": "国家数据局",
+      "excerpt": "到2028年底，建成一批覆盖重点领域、经过应用验证的行业高质量数据集……行业高质量数据集是推动“人工智能+”赋能千行百业、实现产业落地的基础性、关键性资源",
+      "source_name": "国家数据局",
+      "url": "https://www.nda.gov.cn/sjj/zwgk/zcfb/0608/20260608172117399715004_pc.html",
+      "fetched_at": "2026-09-14",
+      "push": "dn",
+      "use": "要素侧(数据集)支持政策",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch",
+      "http_status": 200,
+      "stage": "部署",
+      "issued_on": "2026-06-03",
+      "note": "2026-09-15 用户裁定 G1=b(D10):促进类文件不进温度,push dn→0;内容只进产业方向\n2026-09-15 D12(用户裁定 D):促进类全额计宽松,push 0→dn"
+    },
+    {
+      "id": "F18",
+      "date": "2026-06-11",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "工业和信息化部关于印发《“人工智能+信息通信”创新发展实施意见（2026—2028年）》的通知",
+      "docno": "工信部通信〔2026〕121号",
+      "issuer": "工业和信息化部",
+      "excerpt": "到2028年，人工智能与信息通信初步构建融合互促的创新发展格局……形成30个以上高价值典型场景……城域算力1毫秒时延圈覆盖率不低于75%",
+      "source_name": "工业和信息化部",
+      "url": "https://hubca.miit.gov.cn/zwgk/zcwj/wjfb/art/2026/art_1a6880738cfc4235afeda815d6ae8ab4.html",
+      "fetched_at": "2026-09-14",
+      "push": "dn",
+      "use": "部委“人工智能+X”领域文件之四(信通);目标值用于目标反推(场景征集/试点仍将持续)",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch",
+      "http_status": 200,
+      "stage": "部署",
+      "issued_on": "2026-06-03",
+      "note": "2026-09-15 用户裁定 G1=b(D10):促进类文件不进温度,push dn→0;内容只进产业方向\n2026-09-15 D12(用户裁定 D):促进类全额计宽松,push 0→dn"
+    },
+    {
+      "id": "F19",
+      "date": "2026-06-18",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "国家网信办等三部门联合公布《网络数据安全风险评估办法》",
+      "docno": "国家互联网信息办公室、工业和信息化部、公安部令第24号",
+      "issuer": "国家互联网信息办公室、工业和信息化部、公安部",
+      "excerpt": "6月18日，国家网信办、工业和信息化部、公安部联合公布《网络数据安全风险评估办法》（以下简称《办法》），自2026年8月20日起施行。……重要数据处理者应当每年度开展风险评估。",
+      "source_name": "国家互联网信息办公室、工业和信息化部、公安部",
+      "url": "https://www.cac.gov.cn/2026-06/18/c_1783525609778371.htm",
+      "fetched_at": "2026-09-14",
+      "push": "up",
+      "use": "数据侧合规程序件:重要数据处理者年度风险评估与 20 个工作日内报送(第五条、第十六条);征求意见 2025-12-06→公布 194 天,基率样本",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch",
+      "http_status": 200,
+      "stage": "正式",
+      "issued_on": "2026-06-01",
+      "note": "2026-09-15 本轮按 §2 重判:push up→0(程序性/执行衔接件:落实数据安全法与网络数据安全管理条例既有的风险评估义务(“规范网络数据安全风险评估活动”),办法本身无罚则条款→中性)\n2026-09-15 D12(用户裁定 D):软规则按半额计收紧,push 0→up,push_weight 0.5",
+      "push_weight": 0.5
+    },
+    {
+      "id": "F20",
+      "date": "2026-06-18",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "商务部等8部门关于加快“人工智能+消费”发展的实施意见",
+      "docno": "商建发〔2026〕89号",
+      "issuer": "商务部、中央网信办、国家发展改革委、教育部、工业和信息化部、民政部、住房城乡建设部、文化和旅游部",
+      "excerpt": "为贯彻落实《国务院关于深入实施“人工智能+”行动的意见》和《中共中央办公厅 国务院办公厅关于印发〈提振消费专项行动方案〉的通知》有关部署，推动人工智能与消费深度融合，培育消费新增长点，形成消费新动能，提出如下意见。……加快人工智能新产品新服务新场景示范应用，促进人工智能进千家万户、进千商万店",
+      "source_name": "商务部、中央网信办、国家发展改革委、教育部、工业和信息化部、民政部、住房城乡建设部、文化和旅游部",
+      "url": "https://scjss.mofcom.gov.cn/zlgh/zcfb/art/2026/art_e24c3760c5e3453199d2701febe7abbc.html",
+      "fetched_at": "2026-09-14",
+      "push": "dn",
+      "use": "部委“人工智能+X”领域文件之五(消费);基率样本",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch",
+      "http_status": 200,
+      "stage": "部署",
+      "issued_on": "2026-06-09",
+      "note": "2026-09-15 用户裁定 G1=b(D10):促进类文件不进温度,push dn→0;内容只进产业方向\n2026-09-15 D12(用户裁定 D):促进类全额计宽松,push 0→dn"
+    },
+    {
+      "id": "F21",
+      "date": "2026-06-25",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "交通运输部等五单位关于印发《“人工智能+交通运输”典型应用场景创新行动方案》的通知",
+      "docno": "交科技发〔2026〕60号",
+      "issuer": "交通运输部、国家铁路局、中国民用航空局、国家邮政局、中国国家铁路集团有限公司",
+      "excerpt": "到2030年，开放一批高价值应用场景，形成一批高水平算法模型，涌现一批“人工智能+交通运输”新基础设施、新技术装备、新服务模式、新产业形态",
+      "source_name": "交通运输部、国家铁路局、中国民用航空局、国家邮政局、中国国家铁路集团有限公司",
+      "url": "https://xxgk.mot.gov.cn/jigou/kjs/202606/t20260624_4208160.html",
+      "fetched_at": "2026-09-14",
+      "push": "dn",
+      "use": "部委“人工智能+X”领域文件之六(交通);基率样本",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch",
+      "http_status": 200,
+      "stage": "部署",
+      "issued_on": "2026-06-04",
+      "note": "2026-09-15 用户裁定 G1=b(D10):促进类文件不进温度,push dn→0;内容只进产业方向\n2026-09-15 D12(用户裁定 D):促进类全额计宽松,push 0→dn"
+    },
+    {
+      "id": "F22",
+      "date": "2026-07-03",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "国家互联网信息办公室关于《互联网信息服务管理办法（修订草案征求意见稿）》再次公开征求意见的通知",
+      "docno": "",
+      "issuer": "国家互联网信息办公室",
+      "excerpt": "提供生成合成服务的智能信息服务提供者，应当按照法律、行政法规以及国家有关规定、强制性国家标准对人工智能生成合成内容进行标识。",
+      "source_name": "国家互联网信息办公室",
+      "url": "https://www.cac.gov.cn/2026-07/03/c_1784822399677167.htm",
+      "fetched_at": "2026-09-14",
+      "push": "0",
+      "use": "行政法规层面新增“智能信息服务”专节(第五十五至六十四条):促进句“国家坚持发展和安全并重…鼓励人工智能技术在互联网信息服务领域的创新应用”,义务句“提供生成合成服务的智能信息服务提供者，应当按照…强制性国家标准对人工智能生成合成内容进行标识”;征求意见截止 2026-08-02",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch",
+      "http_status": 200,
+      "stage": "征求意见",
+      "note": "2026-09-15 本轮按 §2 重判:push up→0(行政法规修订草案既有促进条款(第五十五条“鼓励人工智能技术在互联网信息服务领域的创新应用”)又有义务与罚则条款(第五十七条备案、第六十条标识、第七十七条罚款)→中性)"
+    },
+    {
+      "id": "F23",
+      "date": "2026-07-08",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "人力资源社会保障部等四部门关于加快推进“人工智能＋人社”应用发展的实施意见",
+      "docno": "人社部发〔2026〕40号",
+      "issuer": "人力资源社会保障部、国家发展改革委、工业和信息化部、国家数据局",
+      "excerpt": "到2026年，人社行业领域人工智能应用体系、标准体系、保障体系等初步成形……打造20个左右基于人社行业大模型建设的应用场景及相应高质量数据集……到2027年，普及应用一批人社行业大模型和智能体",
+      "source_name": "国家数据局政策发布(共同发文机关)",
+      "url": "https://www.nda.gov.cn/sjj/zwgk/zcfb/0708/20260708133949899211227_pc.html",
+      "fetched_at": "2026-09-14",
+      "push": "dn",
+      "use": "部委“人工智能+X”领域文件之七(人社);基率样本",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch",
+      "http_status": 200,
+      "stage": "部署",
+      "issued_on": "2026-06-22",
+      "note": "2026-09-15 F 门第二轮抽样发现摘录两段顺序与原文相反(20 个场景为 2026 年目标),已按原文顺序重录并补“到2026年”句;推力按 §2 复核维持 dn\n2026-09-15 用户裁定 G1=b(D10):促进类文件不进温度,push dn→0;内容只进产业方向\n2026-09-15 D12(用户裁定 D):促进类全额计宽松,push 0→dn"
+    },
+    {
+      "id": "F24",
+      "date": "2026-07-23",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "交通运输部办公厅关于组织实施第一批“人工智能+交通运输”典型应用场景项目的通知",
+      "docno": "交办科技函〔2026〕1583号",
+      "issuer": "交通运输部办公厅",
+      "excerpt": "现就组织实施第一批“人工智能+交通运输”典型应用场景项目工作有关事项通知如下。……项目实施周期原则上不超过2年",
+      "source_name": "交通运输部办公厅",
+      "url": "https://xxgk.mot.gov.cn/jigou/kjs/202607/t20260723_4210306.html",
+      "fetched_at": "2026-09-14",
+      "push": "0",
+      "use": "同线,方向计在 F21;领域文件(F21)印发 28 天后即启动项目组织,是“文件→场景动作”的最短实测链",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch",
+      "http_status": 200,
+      "stage": "实施",
+      "issued_on": "2026-07-16",
+      "note": "2026-09-15 本轮按 §2 重判:push dn→0(同一规则线只计一次:交通运输领域文件 F21 计方向,第一批项目组织为其执行件)"
+    },
+    {
+      "id": "F25",
+      "date": "2026-07-29",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "关于对《网络安全标准实践指南——智能体交互安全要求（征求意见稿）》等2项网络安全标准实践指南公开征求意见的通知",
+      "docno": "网安秘字〔2026〕93号",
+      "issuer": "全国网络安全标准化技术委员会秘书处",
+      "excerpt": "秘书处组织编制了《智能体交互安全要求》《AI浏览器安全实践指南》等2项网络安全标准实践指南征求意见稿。……请于2026年8月12日前反馈至秘书处。",
+      "source_name": "全国网络安全标准化技术委员会秘书处",
+      "url": "https://www.tc260.org.cn/tc260/tzgg/202607/931debfd1e6d47809b9207eb6edf92b6.shtml",
+      "fetched_at": "2026-09-14",
+      "push": "up",
+      "use": "智能体实施意见(F13)“制定全周期安全规范”的标准层落地起点",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "browser",
+      "http_status": 200,
+      "stage": "征求意见",
+      "note": "2026-09-15 本轮按 §2 重判:push up→0(TC260 实践指南征求意见(指导性技术文件)→中性)\n2026-09-15 D12(用户裁定 D):软规则按半额计收紧,push 0→up,push_weight 0.5",
+      "push_weight": 0.5
+    },
+    {
+      "id": "F26",
+      "date": "2026-08-24",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "关于发布《网络安全标准实践指南——个人用户使用人工智能服务安全指南》的通知",
+      "docno": "网安秘字〔2026〕105号",
+      "issuer": "全国网络安全标准化技术委员会秘书处",
+      "excerpt": "为指导个人用户更加安全地使用人工智能服务，防范化解相关安全风险，秘书处组织编制了《网络安全标准实践指南——个人用户使用人工智能服务安全指南》。",
+      "source_name": "全国网络安全标准化技术委员会秘书处",
+      "url": "https://www.tc260.org.cn/tc260/tzgg/202608/1586c71e2ebf4db28ed4a7651788ca87.shtml",
+      "fetched_at": "2026-09-14",
+      "push": "up",
+      "use": "F7 四项征求意见稿中“用户使用人工智能安全指南”一项的正式版(更名),征求意见→发布 223 天;其余 3 项未发布",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "browser",
+      "http_status": 200,
+      "stage": "正式",
+      "note": "2026-09-15 本轮按 §2 重判:push up→0(TC260 实践指南发布(指导性技术文件)→中性)\n2026-09-15 D12(用户裁定 D):软规则按半额计收紧,push 0→up,push_weight 0.5",
+      "push_weight": 0.5
+    },
+    {
+      "id": "F27",
+      "date": "2026-09-02",
+      "kind": "enforce",
+      "role": "fact",
+      "tier": "S1",
+      "title": "中央网信办深入开展“清朗·整治AI应用乱象”专项行动第二阶段工作",
+      "docno": "",
+      "issuer": "中央网络安全和信息化委员会办公室",
+      "excerpt": "聚焦利用AI制作发布虚假信息、传播暴力低俗内容、假冒仿冒他人、侵害未成年人权益等突出问题……累计清理违法违规信息561万余条……查处账号4.9万余个……处置违规网站、应用程序等2400余个",
+      "source_name": "中央网络安全和信息化委员会办公室",
+      "url": "https://www.cac.gov.cn/2026-09/02/c_1790099041364574.htm",
+      "fetched_at": "2026-09-14",
+      "push": "up",
+      "use": "T0 前最近的执法动作;治理线“执法”阶段仍在延续",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch",
+      "http_status": 200,
+      "stage": "执法",
+      "note": "2026-09-15 本轮按 §2 复核:维持 up(专项整治)"
+    },
+    {
+      "id": "F28",
+      "date": "2026-09-14",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "《人工智能安全治理框架3.0》发布",
+      "docno": "",
+      "issuer": "全国网络安全标准化技术委员会",
+      "excerpt": "9月14日，在2026年国家网络安全宣传周开幕式上，全国网络安全标准化技术委员会（以下简称“网安标委”）发布《人工智能安全治理框架3.0》……与时俱进梳理更新了风险分类，优化调整了技术应对和综合治理措施",
+      "source_name": "全国网络安全标准化技术委员会",
+      "url": "https://www.cac.gov.cn/2026-09/14/c_1791137092283345.htm",
+      "fetched_at": "2026-09-14",
+      "push": "up",
+      "use": "T0 当日发布(date=T0,计入窗内);治理框架 1.0(2024-09)→2.0(2025-09)→3.0(2026-09)年度节奏",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch",
+      "http_status": 200,
+      "stage": "正式",
+      "note": "2026-09-15 本轮按 §2 重判:push up→0(安全指引与指导性技术文件(治理框架 3.0,非约束)→中性)\n2026-09-15 D12(用户裁定 D):软规则按半额计收紧,push 0→up,push_weight 0.5",
+      "push_weight": 0.5
+    },
+    {
+      "id": "F29",
+      "date": "2026-02-24",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "海南省人民政府办公厅关于印发《海南省推动“人工智能+”行动方案（2026—2028年）》的通知",
+      "docno": "琼府办〔2026〕6号",
+      "issuer": "海南省人民政府办公厅",
+      "excerpt": "到2028年底，算力满足人工智能产业需求，数据潜能充分释放，建成若干高能级人工智能创新平台，培育形成一批具有核心竞争力的行业企业，人工智能核心产业规模大幅提升。",
+      "source_name": "海南省人民政府办公厅",
+      "url": "https://db.hainan.gov.cn/xxgk/xzgfxwj/swszfygwj/202602/t20260225_4032261.html",
+      "fetched_at": "2026-09-14",
+      "push": "dn",
+      "use": "省级承接样本(与广东 F12 合并为 1 簇);页面为省营商环境建设厅“省委省政府有关文件”栏目",
+      "after_t0": false,
+      "issuer_level": "省",
+      "fetch_tool": "WebFetch",
+      "http_status": 200,
+      "stage": "部署",
+      "issued_on": "2026-02-18",
+      "note": "2026-09-15 用户裁定 G1=b(D10):促进类文件不进温度,push dn→0;内容只进产业方向\n2026-09-15 D12(用户裁定 D):促进类全额计宽松,push 0→dn"
+    },
+    {
+      "id": "C1",
+      "date": "2026-07-20",
+      "kind": "econ",
+      "role": "context",
+      "tier": "S1",
+      "title": "国新办新闻发布会:2026年上半年工业和信息化发展情况(人工智能应用与算力数据)",
+      "docno": "",
+      "issuer": "工业和信息化部",
+      "excerpt": "规模以上制造业企业人工智能技术应用普及率超30%，人工智能开源大模型全球累计下载量突破100亿次。……我国智能算力规模达2185EFLOPS，同比增长177%。",
+      "source_name": "工业和信息化部",
+      "url": "https://www.miit.gov.cn/xwfb/bldhd/art/2026/art_bc4cf76777cb4fd2896082ca2ff7039d.html",
+      "fetched_at": "2026-09-14",
+      "push": "0",
+      "use": "官方运行数据:应用普及与算力扩张放大“人工智能+”文件的落地压力",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch",
+      "http_status": 200,
+      "relation": {
+        "to_fact_id": "F6",
+        "effect": "amplify"
+      },
+      "note": "2026-09-15 本轮按 §2 重判:push dn→0(数据发布→中性)"
+    },
+    {
+      "id": "C2",
+      "date": "2026-09-14",
+      "kind": "industry",
+      "role": "context",
+      "tier": "S1",
+      "title": "关于发布生成式人工智能服务已备案信息的公告（2026年7月至8月）",
+      "docno": "",
+      "issuer": "中央网络安全和信息化委员会办公室、国家互联网信息办公室",
+      "excerpt": "2026年7月至8月，新增124款生成式人工智能服务在国家网信办完成备案……截至8月31日，累计有1112款生成式人工智能服务完成备案，731款生成式人工智能应用或功能完成登记。",
+      "source_name": "中央网络安全和信息化委员会办公室、国家互联网信息办公室",
+      "url": "https://www.cac.gov.cn/2026-09/14/c_1791136833136332.htm",
+      "fetched_at": "2026-09-14",
+      "push": "0",
+      "use": "备案制度运行数据(双月公告),说明 A1 备案机制在常态运转;不作断言依据",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch",
+      "http_status": 200,
+      "relation": {
+        "to_fact_id": "F10",
+        "effect": "background"
+      }
+    },
+    {
+      "id": "F30",
+      "date": "2026-09-11",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "工业和信息化部关于印发《“人工智能+软件”专项行动实施方案》的通知",
+      "docno": "工信部信发〔2026〕209号",
+      "issuer": "工业和信息化部",
+      "excerpt": "现将《“人工智能+软件”专项行动实施方案》印发给你们，请结合实际，抓好贯彻落实。",
+      "source_name": "工业和信息化部政策文件库",
+      "url": "https://www.miit.gov.cn/zwgk/zcwj/wjfb/tz/art/2026/art_49783ce685f042029111c8b6e94f0f30.html",
+      "fetched_at": "2026-09-15",
+      "push": "dn",
+      "use": "部委“人工智能+X”领域文件之八(软件);发布于 T0 前 3 天,本轮补录;不在卡 AI-002 观察窗内(窗自 2026-09-15 起),只作节奏证据",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "curl",
+      "http_status": 200,
+      "note": "2026-09-15 本轮补录(2026-09-14 前已公开、上一轮漏检;本轮按 §2 判 push=dn)\n2026-09-15 用户裁定 G1=b(D10):促进类文件不进温度,push dn→0;内容只进产业方向\n2026-09-15 D12(用户裁定 D):促进类全额计宽松,push 0→dn",
+      "stage": "部署",
+      "issued_on": "2026-09-02"
+    },
+    {
+      "id": "F31",
+      "date": "2026-08-31",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "工业和信息化部办公厅关于开展人工智能应用服务商培育专项行动的通知",
+      "docno": "工信厅科函〔2026〕414号",
+      "issuer": "工业和信息化部办公厅",
+      "excerpt": "到2026年底，全国服务商资源池内服务商数量突破2000家，形成结构合理、分工有序、协同创新的多层次梯队，复杂场景交付能力显著增强。到2027年底，全国服务商资源池内服务商数量不少于3000家",
+      "source_name": "工业和信息化部政策文件库",
+      "url": "https://www.miit.gov.cn/zwgk/zcwj/wjfb/tz/art/2026/art_6fbc038bf15c445ab53b2a94a3f9d4e4.html",
+      "fetched_at": "2026-09-15",
+      "push": "dn",
+      "use": "落实国发 11 号“培育人工智能应用服务商”的部委行动;资源池 2000/3000 家目标用于目标反推;资源池信息 2026-12-01 前报送",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "curl",
+      "http_status": 200,
+      "note": "2026-09-15 本轮补录(2026-09-14 前已公开、上一轮漏检;本轮按 §2 判 push=dn)\n2026-09-15 用户裁定 G1=b(D10):促进类文件不进温度,push dn→0;内容只进产业方向\n2026-09-15 D12(用户裁定 D):促进类全额计宽松,push 0→dn",
+      "stage": "实施",
+      "issued_on": "2026-08-27"
+    },
+    {
+      "id": "F32",
+      "date": "2026-08-28",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "工业和信息化部办公厅关于公布国家算力互联互通区域节点建设名单的通知",
+      "docno": "工信厅信管函〔2026〕404号",
+      "issuer": "工业和信息化部办公厅",
+      "excerpt": "确定北京等17个省（自治区、直辖市）入选为国家算力互联互通区域节点，现予以公布。",
+      "source_name": "工业和信息化部政策文件库",
+      "url": "https://www.miit.gov.cn/zwgk/zcwj/wjfb/tz/art/2026/art_7ad2d311e6e249388a16c684c1d4e237.html",
+      "fetched_at": "2026-09-15",
+      "push": "dn",
+      "use": "要素侧(算力)项目落地动作:工信厅信管函〔2026〕35号节点建设通知的名单公布,17 省入选",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "curl",
+      "http_status": 200,
+      "note": "2026-09-15 本轮补录(2026-09-14 前已公开、上一轮漏检;本轮按 §2 判 push=dn)\n2026-09-15 用户裁定 G1=b(D10):促进类文件不进温度,push dn→0;内容只进产业方向\n2026-09-15 D12(用户裁定 D):促进类全额计宽松,push 0→dn",
+      "stage": "实施",
+      "issued_on": "2026-08-20"
+    },
+    {
+      "id": "F33",
+      "date": "2026-09-11",
+      "kind": "speech",
+      "role": "fact",
+      "tier": "S1",
+      "title": "李强主持召开国务院常务会议(研究算力网建设有关工作)",
+      "docno": "",
+      "issuer": "国务院(国务院常务会议)",
+      "excerpt": "会议指出，算力网是人工智能发展的基础支撑。要坚持合理布局、规范有序，进一步完善算力基础设施，积极推进关键技术和装备研发应用，构建多层次网络化算力体系。",
+      "source_name": "中国政府网(新华社电)",
+      "url": "https://www.gov.cn/yaowen/liebiao/202609/content_7080787.htm",
+      "fetched_at": "2026-09-15",
+      "push": "dn",
+      "use": "国务院层面对算力要素的最新部署:“完善算力基础设施”“构建多层次网络化算力体系”;“规范有序”为布局要求而非限制措施,推力按促进记",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "curl",
+      "http_status": 200,
+      "note": "2026-09-15 本轮补录(2026-09-14 前已公开、上一轮漏检;本轮按 §2 判 push=dn)\n2026-09-15 用户裁定 G1=b(D10):促进类文件不进温度,push dn→0;内容只进产业方向\n2026-09-15 D12(用户裁定 D):促进类全额计宽松,push 0→dn",
+      "stage": "部署"
+    },
+    {
+      "id": "F34",
+      "date": "2026-09-04",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "工业和信息化部办公厅关于印发《人工智能中小企业创业支持计划（2026-2028年）》的通知",
+      "docno": "工信厅企业〔2026〕31号",
+      "issuer": "工业和信息化部办公厅",
+      "excerpt": "现将《人工智能中小企业创业支持计划（2026-2028年）》印发给你们，请结合实际认真抓好落实。",
+      "source_name": "工业和信息化部中小企业局文件发布",
+      "url": "https://www.miit.gov.cn/jgsj/qyj/wjfb/art/2026/art_86c400b4473849818629663a94a6d44b.html",
+      "fetched_at": "2026-09-15",
+      "push": "dn",
+      "use": "主体培育侧支持政策(中小企业);计划量化目标见 sources 附加摘录(gov.cn 新华社稿)",
+      "after_t0": false,
+      "issuer_level": "国家",
+      "fetch_tool": "curl",
+      "http_status": 200,
+      "note": "2026-09-15 本轮补录(2026-09-14 前已公开、上一轮漏检;本轮按 §2 判 push=dn)\n2026-09-15 用户裁定 G1=b(D10):促进类文件不进温度,push dn→0;内容只进产业方向\n2026-09-15 D12(用户裁定 D):促进类全额计宽松,push 0→dn",
+      "stage": "部署",
+      "issued_on": "2026-08-29"
+    },
+    {
+      "id": "P1",
+      "date": "2026-12-31",
+      "kind": "policy",
+      "role": "fact",
+      "tier": "S1",
+      "title": "预测窗口截止:《数字虚拟人信息服务管理办法》正式稿待判定",
+      "excerpt": "",
+      "source_name": "",
+      "url": "https://www.cac.gov.cn/",
+      "fetched_at": "",
+      "push": "0",
+      "after_t0": true,
+      "pending": true,
+      "issuer_level": "国家",
+      "fetch_tool": "WebFetch"
+    }
+  ],
+  "process": {
+    "kind": "analyst_record",
+    "retrieval": {
+      "window_from": "2025-09-15",
+      "window_to": "2026-09-15",
+      "queries": [
+        "人工智能+ 行动 实施意见 印发 gov.cn 2026",
+        "网信办 征求意见的通知 2026 人工智能 生成式 智能体 算法",
+        "人工智能拟人化互动服务管理暂行办法 公布 施行",
+        "网络数据安全风险评估办法 印发 答记者问",
+        "人工智能应用伦理安全指引 1.0 发布 tc260",
+        "四项人工智能应用安全实践指南 公开征求意见 2026年1月",
+        "个人用户使用人工智能服务安全指南 发布 2026年8月",
+        "全国人大常委会 修改网络安全法 决定 人工智能 第二十条",
+        "国务院办公厅 场景培育 国办发〔2025〕37号",
+        "2026年政府工作报告 全文 gov.cn",
+        "省人民政府 人工智能+ 行动方案 2026",
+        "工信部 2026年上半年 工业和信息化发展 新闻发布会 人工智能",
+        "(基率)算法推荐/深度合成/生成式/人脸识别/标识办法 征求意见稿 与 正式公布 日期",
+        "(第二轮 2026-09-15)工信部政策文件库 文件发布 分页 1–3(2026-08-06 至 09-11)逐条筛选",
+        "(第二轮)网信办首页 2026-09-14/15 新件;tc260 首页最新通知;gov.cn 最新政策;发改委通知;国家数据局政策发布",
+        "(第二轮)国家能源局 人工智能与能源双向赋能 国能发科技〔2026〕34号 原文页",
+        "(第二轮)人工智能中小企业创业支持计划（2026—2028年） 工信部 原文页",
+        "(第二轮)七问+一图 读懂 人工智能+软件 专项行动实施方案",
+        "(第二轮)海南省人民政府 琼府办〔2026〕6号 原文页(未果)"
+      ],
+      "sources_checked": [
+        "gov.cn 政策文件库与要闻",
+        "cac.gov.cn(首页、网信发布、政策法规)",
+        "tc260.org.cn(通知公告 list_1–list_18,浏览器面板)",
+        "nda.gov.cn 政策发布列表",
+        "miit.gov.cn(政策文件、新闻发布,浏览器面板)",
+        "hubca.miit.gov.cn",
+        "xxgk.mot.gov.cn",
+        "scjss.mofcom.gov.cn",
+        "gd.gov.cn",
+        "db.hainan.gov.cn",
+        "npc.gov.cn(经 gov.cn 转)",
+        "(2026-09-15)miit.gov.cn 政策文件库文件发布分页 1–3 与中小企业局文件发布(浏览器面板+curl)",
+        "(2026-09-15)nea.gov.cn 原文页",
+        "(2026-09-15)gov.cn 首页/最新政策/国常会稿"
+      ],
+      "fetched": 81,
+      "admitted": 39,
+      "rejected": [
+        {
+          "title": "专家解读｜《网络安全法》修改，积极应对人工智能治理安全挑战(网信办 2026-01-02)",
+          "url": "https://www.cac.gov.cn/2026-01/02/c_1769093523928606.htm",
+          "reason": "解读文章(S2),只用来定位原文;已用 gov.cn 人大常委会决定原文(F2)替代"
+        },
+        {
+          "title": "《网络数据安全风险评估办法》实施有关事项答记者问(网信办 2026-08-20)",
+          "url": "https://www.cac.gov.cn/2026-08/20/c_1788889498173657.htm",
+          "reason": "与办法公布(F19)同一事件,不另设节点;答记者问内容存入 sources/ai/F19.md 备注"
+        },
+        {
+          "title": "国家互联网信息办公室关于《网络数据安全风险评估办法（征求意见稿）》公开征求意见的通知(2025-12-06)",
+          "url": "https://www.cac.gov.cn/2025-12/06/c_1766578179367262.htm",
+          "reason": "只作基率样本起点,不进时间链(数据安全与 AI 范围边缘)"
+        },
+        {
+          "title": "国务院印发《关于深入实施“人工智能+”行动的意见》(工信部转载页,phase1 AI-001 证据 1)",
+          "url": "https://www.miit.gov.cn/xwfb/szyw/art/2025/art_f8bd63905b384841a84e643c1b9455c7.html",
+          "reason": "转载页;已改用 gov.cn 原文(A3)且日期在窗外,按 D3 作锚点"
+        },
+        {
+          "title": "工信部等《关于征集 2026 年度智能体育典型案例的通知》(提示词“弱”件)",
+          "url": "https://wap.miit.gov.cn/xwfb/gxdt/sjdt/art/2026/art_92b65fe5907e41a6898e4de32480b4c7.html",
+          "reason": "未重抓;体育案例征集与本行业范围(“人工智能+”产业与要素政策)关联弱,且已有 9 份领域文件覆盖同类动作"
+        },
+        {
+          "title": "TC260 四项人工智能应用安全实践指南公开征求意见(提示词给的 portal/article URL)",
+          "url": "https://www.tc260.org.cn/portal/article/2/e58c0ee56a5a47ebaf6b5404e8611f65",
+          "reason": "该 URL 跳转首页(站点改版);已用 .shtml 文章页替代(F7)"
+        },
+        {
+          "title": "《人工智能应用伦理安全指引 1.0》PDF(网信办站)",
+          "url": "https://www.cac.gov.cn/rootimages/uploadimg/1781191242772713/1781191242772713.pdf",
+          "reason": "PDF 已下载并抽取封面/摘要(见 F16 备注);节点 URL 改用网信办新闻页,PDF 作附证"
+        },
+        {
+          "title": "山东省“人工智能+制造”行动方案（2026-2028年）(省工信厅)",
+          "url": "http://gxt.shandong.gov.cn/art/2026/5/18/art_103863_10357012.html",
+          "reason": "站点证书错误未能打开;省级承接已有广东、海南两件,未补"
+        },
+        {
+          "title": "江苏省“人工智能＋”行动方案(南京市数据局转载)、武汉市“人工智能+”行动方案、深圳市行动计划、广东 OPC 行动方案",
+          "url": "https://njsj.nanjing.gov.cn/njszwfwglbgs/202601/t20260116_5770516.html",
+          "reason": "多省市同类承接动作,按 D1 合并为 1 簇,只取广东、海南原文;未逐一打开"
+        },
+        {
+          "title": "国家数据局政策发布列表其余 9 条(数据产权登记、房屋建筑代码、非化石能源核算、数据流通服务机构、汽车数据跨境、医保气象数据要素×、数据科技创新、碳足迹因子库、数字人才、物流数据)",
+          "url": "https://www.nda.gov.cn/sjj/zwgk/zcfb/list/index_pc_1.html",
+          "reason": "列表筛除:不属“人工智能+”与 AI 治理范围"
+        },
+        {
+          "title": "网信办首页“政策法规”栏 3 条数字乡村专家解读(2026-09-11)",
+          "url": "https://www.cac.gov.cn/",
+          "reason": "列表筛除:非 AI 范围"
+        },
+        {
+          "title": "关于印发《可能影响未成年人身心健康的网络信息分类办法》的通知(网信办 2026-01-23)",
+          "url": "https://www.cac.gov.cn/2026-01/23/c_1770728781060093.htm",
+          "reason": "搜索定位到但未打开;主体是未成年人网络信息分类,AI 仅作为提供者类型之一,范围边缘,未进链"
+        },
+        {
+          "title": "2026年政府工作报告(猜测的 gov.cn 旧路径)",
+          "url": "https://www.gov.cn/yaowen/liebiao/202603/content_7060216.htm",
+          "reason": "404;已改用 gov.cn 专题页给出的全文 URL(F8)"
+        },
+        {
+          "title": "澎湃/科技政策汇/中国钢铁新闻网等转载“工信部公示”类页面",
+          "url": "https://m.thepaper.cn/newsDetail_forward_25095703",
+          "reason": "非官方来源(S5),只用来定位日期,不作事实"
+        },
+        {
+          "title": "工业和信息化部关于印发《信息通信行业发展“十五五”规划》的通知(工信部规〔2026〕188号,2026-09-07)",
+          "url": "https://www.miit.gov.cn/zwgk/zcwj/wjfb/tz/art/2026/art_456511e63be14508aa5b0d113af559fe.html",
+          "reason": "2026-09-15 列表筛除:信息通信行业规划,AI/算力仅为其中内容,不属“人工智能+”与 AI 治理范围"
+        },
+        {
+          "title": "工业和信息化部等九部门关于印发《智能网联新能源汽车产业发展“十五五”规划》的通知(2026-09-10)",
+          "url": "https://www.miit.gov.cn/zwgk/zcwj/wjfb/index.html",
+          "reason": "2026-09-15 列表筛除:归自动驾驶/汽车组"
+        },
+        {
+          "title": "工业和信息化部等十部门关于印发《促进中小企业发展“十五五”规划》的通知(2026-09-03)",
+          "url": "https://www.miit.gov.cn/zwgk/zcwj/wjfb/index.html",
+          "reason": "2026-09-15 列表筛除:中小企业综合规划,范围外"
+        },
+        {
+          "title": "数字乡村高质量发展行动计划（2026—2030年）及答记者问(网信办 2026-09-11)",
+          "url": "https://www.cac.gov.cn/2026-09/11/c_1790876575309197.htm",
+          "reason": "2026-09-15 列表筛除:数字乡村,非 AI 范围"
+        },
+        {
+          "title": "数据出境安全管理政策法规问答（2026年9月）(网信办 2026-09-11)",
+          "url": "https://www.cac.gov.cn/2026-09/11/c_1790876549989064.htm",
+          "reason": "2026-09-15 列表筛除:数据出境,非 AI 范围"
+        },
+        {
+          "title": "关于全国网络安全标准化技术委员会换届及征集委员的通知(2026-09-02)",
+          "url": "https://www.tc260.org.cn/tc260/tzgg/202609/47c1e48359ea469899c2dfab76d35d68.shtml",
+          "reason": "2026-09-15 列表筛除:机构事务性通知"
+        },
+        {
+          "title": "中共中央办公厅 国务院办公厅 中央军委办公厅印发《退役军人服务和保障“十五五”规划》(2026-09-14)",
+          "url": "https://www.gov.cn/zhengce/202609/content_7081017.htm",
+          "reason": "2026-09-15 gov.cn 最新政策筛除:范围外"
+        },
+        {
+          "title": "工信部印发《人工智能中小企业创业支持计划》各新闻站转载(财联社、界面、中新网等)",
+          "url": "https://www.chinanews.com.cn/cj/2026/09-04/10690326.shtml",
+          "reason": "2026-09-15 搜索定位用,S3/S5 不作事实;已用工信部中小企业局原文页(F34)"
+        }
+      ],
+      "log_path": "sources/ai/retrieval_log.md"
+    },
+    "grading": [
+      {
+        "node_id": "A1",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": "锚点,不计 3 条/温度/信号"
+      },
+      {
+        "node_id": "A2",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": "锚点,不计 3 条/温度/信号"
+      },
+      {
+        "node_id": "A3",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": "锚点,不计 3 条/温度/信号"
+      },
+      {
+        "node_id": "F1",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": ""
+      },
+      {
+        "node_id": "F2",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": ""
+      },
+      {
+        "node_id": "F3",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": ""
+      },
+      {
+        "node_id": "F4",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": ""
+      },
+      {
+        "node_id": "F5",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": ""
+      },
+      {
+        "node_id": "F6",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": ""
+      },
+      {
+        "node_id": "F7",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": ""
+      },
+      {
+        "node_id": "F8",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": ""
+      },
+      {
+        "node_id": "F9",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": ""
+      },
+      {
+        "node_id": "F10",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": ""
+      },
+      {
+        "node_id": "F11",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": ""
+      },
+      {
+        "node_id": "F12",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": ""
+      },
+      {
+        "node_id": "F13",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": ""
+      },
+      {
+        "node_id": "F14",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": ""
+      },
+      {
+        "node_id": "F15",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": ""
+      },
+      {
+        "node_id": "F16",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": ""
+      },
+      {
+        "node_id": "F17",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": ""
+      },
+      {
+        "node_id": "F18",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": ""
+      },
+      {
+        "node_id": "F19",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": ""
+      },
+      {
+        "node_id": "F20",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": ""
+      },
+      {
+        "node_id": "F21",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": ""
+      },
+      {
+        "node_id": "F22",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": ""
+      },
+      {
+        "node_id": "F23",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": ""
+      },
+      {
+        "node_id": "F24",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": ""
+      },
+      {
+        "node_id": "F25",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": ""
+      },
+      {
+        "node_id": "F26",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": ""
+      },
+      {
+        "node_id": "F27",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": ""
+      },
+      {
+        "node_id": "F28",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": ""
+      },
+      {
+        "node_id": "F29",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": ""
+      },
+      {
+        "node_id": "C1",
+        "tier": "S1",
+        "role": "context",
+        "weight": 1.0,
+        "note": "社会要素,只作解释"
+      },
+      {
+        "node_id": "C2",
+        "tier": "S1",
+        "role": "context",
+        "weight": 1.0,
+        "note": "社会要素,只作解释"
+      },
+      {
+        "node_id": "F30",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": "2026-09-15 本轮补录"
+      },
+      {
+        "node_id": "F31",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": "2026-09-15 本轮补录"
+      },
+      {
+        "node_id": "F32",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": "2026-09-15 本轮补录"
+      },
+      {
+        "node_id": "F33",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": "2026-09-15 本轮补录"
+      },
+      {
+        "node_id": "F34",
+        "tier": "S1",
+        "role": "fact",
+        "weight": 1.0,
+        "note": "2026-09-15 本轮补录"
+      }
+    ],
+    "operators": [
+      {
+        "name": "HISTORICAL_ANALOGY",
+        "status": "SUPPORTED",
+        "summary": "网信办 AI/算法类规章“征求意见→公布”7 个样本(93–591 天,中位 181 天),最新一对拟人化办法 104 天(F5→F10);部委领域文件在国发 11 号后 134–316 天陆续印发(7 份);TC260 实践指南 8 个样本 28–223 天,但“总则”已超最大值(卡 AI-003 记 COUNTER)。",
+        "fact_ids": [
+          "F5",
+          "F10",
+          "F9",
+          "F6",
+          "F11",
+          "F14",
+          "F18",
+          "F20",
+          "F21",
+          "F23",
+          "F7",
+          "F26"
+        ]
+      },
+      {
+        "name": "WORDING_CHANGE",
+        "status": "SUPPORTED",
+        "summary": "促进线:国发 11 号“深入实施”→2026 年政府工作报告“深化拓展”,并首提“完善人工智能治理”(A3→F8);治理线:网络安全法新增第二十条“加强风险监测评估和安全监管”(F2)→立法计划“加快推进综合性立法”(F15)→智能体意见“实行备案、检测、问题产品召回”(F13)→互联网信息服务管理办法修订草案专章(F22,标识义务明确“按照…强制性国家标准”),措辞从原则走向具体义务。",
+        "fact_ids": [
+          "F8",
+          "F2",
+          "F15",
+          "F13",
+          "F22"
+        ]
+      },
+      {
+        "name": "TARGET_REVERSE_INFERENCE",
+        "status": "SUPPORTED",
+        "summary": "领域文件自带 2027/2028 年量化目标(制造 500 个典型应用场景、信通 30 个以上高价值场景、人社 2026 年 20 个左右应用场景),倒逼后续场景征集/试点/名单动作与新领域文件持续供给;C1 显示应用普及率超 30% 与算力同比增长 177%,官方口径与目标同向。",
+        "fact_ids": [
+          "F6",
+          "F18",
+          "F23"
+        ]
+      },
+      {
+        "name": "CROSS_SOURCE_COMBINATION",
+        "status": "SUPPORTED",
+        "summary": "独立簇划分:①国务院/国办(F3、F8、F15,共用件按 URL 归并);②网信办规章与执法(F5、F9、F10、F19、F22、F4、F27);③网安标委标准层(F7、F16、F25、F26、F28、F1);④工信部/教育部/能源局/商务部/交通部/人社部/国家数据局领域文件(F6、F11、F14、F17、F18、F20、F21、F23、F24,按机关各成一簇);⑤省级承接(F12、F29 合并为 1 簇);⑥全国人大常委会(F2)。簇数≥3、权力层级≥2(人大/国务院/部委/省)。",
+        "fact_ids": [
+          "F3",
+          "F8",
+          "F15",
+          "F9",
+          "F10",
+          "F22",
+          "F7",
+          "F26",
+          "F6",
+          "F18",
+          "F23",
+          "F12",
+          "F29",
+          "F2"
+        ]
+      }
+    ],
+    "base_rate": {
+      "pattern": "draft_to_final/国家互联网信息办公室(AI 与算法类部门规章,征求意见挂网→公布)",
+      "n": 7,
+      "median_days": 181,
+      "p25": 117,
+      "p75": 256,
+      "anchor_node_id": "F9",
+      "missing": false,
+      "samples": [
+        {
+          "title": "互联网信息服务算法推荐管理规定",
+          "start": "2021-08-27",
+          "end": "2022-01-04",
+          "days": 130,
+          "url": "https://www.cac.gov.cn/2022-01/04/c_1642894606364259.htm"
+        },
+        {
+          "title": "互联网信息服务深度合成管理规定",
+          "start": "2022-01-28",
+          "end": "2022-12-11",
+          "days": 317,
+          "url": "https://www.cac.gov.cn/2022-12/11/c_1672221949354811.htm"
+        },
+        {
+          "title": "生成式人工智能服务管理暂行办法",
+          "start": "2023-04-11",
+          "end": "2023-07-13",
+          "days": 93,
+          "url": "https://www.cac.gov.cn/2023-07/13/c_1690898327029107.htm"
+        },
+        {
+          "title": "人脸识别技术应用安全管理办法",
+          "start": "2023-08-08",
+          "end": "2025-03-21",
+          "days": 591,
+          "url": "https://www.cac.gov.cn/2025-03/21/c_1744174262156096.htm"
+        },
+        {
+          "title": "人工智能生成合成内容标识办法",
+          "start": "2024-09-14",
+          "end": "2025-03-14",
+          "days": 181,
+          "url": "https://www.cac.gov.cn/2025-03/14/c_1743654684782215.htm"
+        },
+        {
+          "title": "网络数据安全风险评估办法",
+          "start": "2025-12-06",
+          "end": "2026-06-18",
+          "days": 194,
+          "url": "https://www.cac.gov.cn/2026-06/18/c_1783525609815499.htm"
+        },
+        {
+          "title": "人工智能拟人化互动服务管理暂行办法",
+          "start": "2025-12-27",
+          "end": "2026-04-10",
+          "days": 104,
+          "url": "https://www.cac.gov.cn/2026-04/10/c_1777558395078289.htm"
+        }
+      ],
+      "proxy": false
+    },
+    "reasoning_trace": "阶段:T0 前最新政策事实为 2026-09-14 治理框架 3.0(正式)与 09-02 清朗第二阶段(执法),促进线处于部委领域文件“部署→实施”(F24 已进入项目组织)。事实链:A3 国发 11 号(窗外锚点)→F3 国办场景意见→F6 制造→F8 政府工作报告“深化拓展”→F11/F14/F18/F20/F21/F23 六份领域文件→F24 项目组织;治理链:A1/A2 备案与标识(锚点)→F1 框架 2.0→F2 网络安全法第二十条→F4 标识执法→F5/F10 拟人化办法(104 天)→F9 数字虚拟人征求意见→F13 智能体意见→F15 立法计划→F19 数据风险评估办法→F22 互联网信息服务管理办法修订专章→F25/F26 智能体与用户指南→F27 清朗二期→F28 框架 3.0。算子 4/4 SUPPORTED(AI-003 的历史类比单卡 COUNTER)。基率:网信办规章征求意见→公布 n=7,中位 181 天,自 2026-04-03 起中位落点 2026-10-01、p75 落点 2026-12-14,故 AI-001 H1 取 0.55。部委领域文件节奏:国发 11 号后 7 份文件的滞后 134–316 天、2026 年 1–7 月月均 1 份,AI-002 H1(≥2 份)取 0.55 并因主体不特定不给高度可能。TC260 实践指南 n=8 中位 74 天,总则已超最大值 223 天,AI-003 历史类比 COUNTER,档位由较大可能降为可能,H1 取 0.35。温度按 D2 由 tools/temp_calc.py 计算写回;非约束性的网安标委指引与部门规章同权计入“收紧”,是温度偏高的原因之一,已在 gaps 说明。\n\n第二轮(2026-09-15,T0'=2026-09-15):观察窗 2025-09-15→2026-09-15,无节点滚出(F1 2025-09-15 正好在窗起点)。补录 T0 前漏检的工信部五件(F30 人工智能+软件、F31 应用服务商培育、F32 算力节点名单、F34 中小企业创业支持计划)与 09-11 国常会算力网部署(F33);2026-09-14 之后未见新件。按 §2 重判:治理框架/指引/立法计划/执行衔接件/双向件记 0,促进类记支持,收紧只剩执法与带罚则规章;温度由工具重算。方向:支持(A3、F8、F33、F30)。三张卡未到期,依据仍成立。",
+    "review_checks": [
+      {
+        "check": "三张卡 basis_fact_ids 全部指向 T0 前窗内 fact 节点,可回链",
+        "result": "pass"
+      },
+      {
+        "check": "S4 内部件:本行业无 S4 节点,未单独支撑断言",
+        "result": "pass"
+      },
+      {
+        "check": "社会要素(C1、C2)未进入 basis_fact_ids,只作放大/背景解释",
+        "result": "pass"
+      },
+      {
+        "check": "卡片与 line 中的数字均可回链:104/164/181/223/244 天来自基率样本与节点日期;500/30/20 个场景来自 F6/F18/F23 原文",
+        "result": "pass"
+      },
+      {
+        "check": "未把预测写成事实:数字虚拟人办法、新领域文件、总则均标注“待判定”(P1)",
+        "result": "pass"
+      },
+      {
+        "check": "S5 材料:搜索摘要与自媒体转载只用于定位 URL,已全部退回并登记",
+        "result": "pass"
+      },
+      {
+        "check": "锚点 A1/A2/A3 未计入 3 条 S1、未计温度、未进 basis_fact_ids;国发 11 号发布日(2025-08-26)早于窗口起点,提示词标“窗内”有误已纠正",
+        "result": "pass",
+        "note": "提示词与实际日期不一致处已在 meta.stops 记录"
+      },
+      {
+        "check": "共用件(政府工作报告、国办发〔2026〕14 号)使用统一 URL,装配时按 URL 归并簇",
+        "result": "pass"
+      },
+      {
+        "check": "第二轮(T0'=2026-09-15):全部 39 个非 pending 节点 URL 于 2026-09-15 用 curl 复核,HTTP 200,无死链;F14 URL 改为能源局原文页并按原文重录摘录",
+        "result": "pass"
+      },
+      {
+        "check": "第二轮:按 PROMPT-04 §2 逐节点重判 push,14 处改动均写 note(“2026-09-15 本轮按 §2 重判:push x→y”),同线只计一次(F5→F10、F24→F21),法律/行政法规双向件 use 各引一句(F2、F22、F13)",
+        "result": "pass"
+      },
+      {
+        "check": "第二轮:direction 依据 A3/F8/F33/F30 均为 S1 国家级 fact,note 引原文措辞;confirmed=false 待用户确认",
+        "result": "pass"
+      },
+      {
+        "check": "第二轮:新增 5 节点(F30–F34)摘录逐字核对(脚本对页面文本去空白比对)并交 F 门 subagent 复核;temp 由 tools/temp_calc.py --write 写回,未手改",
+        "result": "pass"
+      },
+      {
+        "check": "第二轮:到期卡结算——三张卡 verify_date 2027-01-10 > T0',无到期卡,settlement 未填",
+        "result": "pass"
+      }
+    ],
+    "calibration": null,
+    "base_rate_secondary": [
+      {
+        "card_id": "AI-002",
+        "pattern": "national_opinion_to_sector_doc/国发〔2025〕11号→部委领域专项文件(滞后天数)",
+        "n": 7,
+        "median_days": 289,
+        "samples": [
+          {
+            "title": "“人工智能+制造”专项行动实施意见(工信部等八部门)",
+            "start": "2025-08-26",
+            "end": "2026-01-07",
+            "days": 134,
+            "url": "https://www.miit.gov.cn/zwgk/zcwj/wjfb/tz/art/2026/art_01010414608a4226b30687773bb21bdf.html"
+          },
+          {
+            "title": "“人工智能+教育”行动计划(教育部等五部门)",
+            "start": "2025-08-26",
+            "end": "2026-04-10",
+            "days": 227,
+            "url": "https://www.nda.gov.cn/sjj/zwgk/zcfb/0413/20260410162428109058250_pc.html"
+          },
+          {
+            "title": "关于促进人工智能与能源双向赋能的行动方案(能源局等四部门)",
+            "start": "2025-08-26",
+            "end": "2026-05-08",
+            "days": 255,
+            "url": "https://www.nda.gov.cn/sjj/zwgk/zcfb/0508/20260508194112925527578_pc.html"
+          },
+          {
+            "title": "“人工智能+信息通信”创新发展实施意见(工信部)",
+            "start": "2025-08-26",
+            "end": "2026-06-11",
+            "days": 289,
+            "url": "https://hubca.miit.gov.cn/zwgk/zcwj/wjfb/art/2026/art_1a6880738cfc4235afeda815d6ae8ab4.html"
+          },
+          {
+            "title": "“人工智能+消费”实施意见(商务部等8部门)",
+            "start": "2025-08-26",
+            "end": "2026-06-18",
+            "days": 296,
+            "url": "https://scjss.mofcom.gov.cn/zlgh/zcfb/art/2026/art_e24c3760c5e3453199d2701febe7abbc.html"
+          },
+          {
+            "title": "“人工智能+交通运输”典型应用场景创新行动方案(交通运输部等)",
+            "start": "2025-08-26",
+            "end": "2026-06-25",
+            "days": 303,
+            "url": "https://xxgk.mot.gov.cn/jigou/kjs/202606/t20260624_4208160.html"
+          },
+          {
+            "title": "“人工智能＋人社”应用发展实施意见(人社部等四部门)",
+            "start": "2025-08-26",
+            "end": "2026-07-08",
+            "days": 316,
+            "url": "https://www.nda.gov.cn/sjj/zwgk/zcfb/0708/20260708133949899211227_pc.html"
+          }
+        ],
+        "note": "频率口径:2026-01-07 至 2026-07-08 共 7 份,月均约 1 份;用于 AI-002,不替代主基率"
+      },
+      {
+        "card_id": "AI-003",
+        "pattern": "draft_to_final/全国网络安全标准化技术委员会 网络安全标准实践指南(征求意见→发布)",
+        "n": 8,
+        "median_days": 74,
+        "p25": 43,
+        "p75": 95,
+        "max_days": 223,
+        "samples": [
+          {
+            "title": "网络数据标签标识技术规范/要求(征求 2025-12-19 见 list_12 → 发布 2026-02-04)",
+            "start": "2025-12-19",
+            "end": "2026-02-04",
+            "days": 47,
+            "url": "https://www.tc260.org.cn/tc260/tzgg/list_11.shtml"
+          },
+          {
+            "title": "数据库联网安全要求(征求 2025-10-17 见 list_13 → 发布 2025-12-18)",
+            "start": "2025-10-17",
+            "end": "2025-12-18",
+            "days": 62,
+            "url": "https://www.tc260.org.cn/tc260/tzgg/list_12.shtml"
+          },
+          {
+            "title": "个人信息保护合规审计要求(征求 2025-04-28 → 发布 2025-05-26,同页)",
+            "start": "2025-04-28",
+            "end": "2025-05-26",
+            "days": 28,
+            "url": "https://www.tc260.org.cn/tc260/tzgg/list_18.shtml"
+          },
+          {
+            "title": "工业企业数据安全能力成熟度模型(征求 2026-01-04 见 list_11 → 发布 2026-03-31)",
+            "start": "2026-01-04",
+            "end": "2026-03-31",
+            "days": 86,
+            "url": "https://www.tc260.org.cn/tc260/tzgg/list_9.shtml"
+          },
+          {
+            "title": "人工智能应用伦理安全指引1.0(征求 2026-04-17 见 list_9 → 发布 2026-05-19)",
+            "start": "2026-04-17",
+            "end": "2026-05-19",
+            "days": 32,
+            "url": "https://www.tc260.org.cn/tc260/tzgg/list_8.shtml"
+          },
+          {
+            "title": "智能体部署使用安全指引(征求稿名“OpenClaw类智能体部署使用安全指引”2026-03-31 见 list_9 → 发布 2026-07-01)",
+            "start": "2026-03-31",
+            "end": "2026-07-01",
+            "days": 92,
+            "url": "https://www.tc260.org.cn/tc260/tzgg/list_7.shtml"
+          },
+          {
+            "title": "网络安全标识消费类网联摄像头安全要求(征求 2026-03-03 见 list_10 → 发布 2026-06-15)",
+            "start": "2026-03-03",
+            "end": "2026-06-15",
+            "days": 104,
+            "url": "https://www.tc260.org.cn/tc260/tzgg/list_8.shtml"
+          },
+          {
+            "title": "个人用户使用人工智能服务安全指南(征求稿名“用户使用人工智能安全指南”2026-01-13 → 发布 2026-08-24)",
+            "start": "2026-01-13",
+            "end": "2026-08-24",
+            "days": 223,
+            "url": "https://www.tc260.org.cn/tc260/tzgg/202608/1586c71e2ebf4db28ed4a7651788ca87.shtml"
+          }
+        ],
+        "note": "“总则”自 2026-01-13 起至 T0 已 244 天,超过样本最大值 223 天→历史类比在 AI-003 记 COUNTER"
+      }
+    ]
+  },
+  "review": {
+    "status": "待复核",
+    "by": "S4-AI与工业组",
+    "at": "2026-09-14 23:30",
+    "note": "phase1 AI-001/AI-002 已按 T0=2026-09-14 重冻结:AI-001 的“工信部行业级场景动作”已被 F6/F18/F24 等窗内事实兑现,本版改写为 AI-002(新领域文件);AI-002 的“网信办/TC260 新指引”已被 F16/F25/F26/F28 兑现,本版改写为 AI-003(总则去向)。"
+  },
+  "meta": {
+    "produced_by_session": "S4-AI与工业组",
+    "produced_at": "2026-09-14;第二轮 2026-09-15(PROMPT-04,T0'=2026-09-15)",
+    "stance_rule": "只计 T0 前、非锚点节点;fact 贡献=推力符号(收紧 −1、放宽 +1)×20×级别权重(S1 1.0/S2 0.8/S3 0.5/S4 0.5)×层级权重(国家 1.0/省 0.7/市 0.4)×时效权重(距 T0 ≤90 天 1.0/≤180 天 0.7/≤365 天 0.4),context 节点再×0.5;temp=各项之和÷(有方向节点数+5)×8(D12),四舍五入后夹在[-100,100](D7 均值化,2026-09-14 用户裁定,替代原“求和后夹±100”);temp≤-30 收紧风险(risk);temp≥30 国家支持(support);收紧分与支持分绝对值各≥25 且 |temp|<30 为支持与收紧并存(mixed);其余观察中(watch);D10(2026-09-15 用户裁定 G1=b):温度只计监管动作。dn(放宽)只计放开或降低准入门槛、发放许可/准入资质、简化审批备案、取消或放松既有义务与限制、开放此前受限的空域/道路/场景、降低检查频次;规划/意见/行动方案/指导意见、补贴与税费优惠、资金与项目、试点与培育、设施资源开放、消费促进、目标上调等促进类文件记 0,其内容只进产业方向(direction),不进温度。分母仍按 D7 含 push=0 节点(用户裁定 G2=a)。;D11(2026-09-15 用户裁定):符号约定改为 收紧贡献为负、放宽贡献为正,temp≤-30 收紧风险(risk)、temp≥30 国家支持(support),页面负值向左(趋严)、正值向右(放宽);D12(2026-09-15 用户裁定 D,取代 D10):促进类文件(规划/意见/行动方案/补贴/试点/设施开放等)全额计宽松(dn);指引/标准(含强标)/程序性规则/征求意见稿/执行衔接件等软规则按 push_weight 0.5 计收紧;同线、多城上限外、共用件、法律双向、机关双向表态仍 0;temp=Σ贡献÷(有方向节点数+5)×8,不再以全部计入节点为分母;阈值 ≤-30 趋严、≥30 宽松不变;正向标签由“监管放宽”改为“监管宽松”;页面词汇(2026-09-15 用户裁定):国家支持 / 收紧风险 / 观察中 / 支持与收紧并存,不展示产业方向",
+    "s1_admission_rule": "市级政府/市级主管部门原文算 S1;窗内 role=fact 且 tier=S1 的节点≥3 条,其中至少 1 条国家或省级;多个城市的同类动作合并为 1 个独立簇",
+    "anchor_rule": "仍在生效的窗外上位文件可作锚点节点(out_of_window=true),只用于定阶段、措辞变化、历史类比;不计入 3 条、温度、信号",
+    "stops": [
+      "提示词第 8 节把国务院《关于深入实施“人工智能+”行动的意见》(2025-08-26)标为“窗内”,实际早于观察窗起点 2025-09-14,已按 D3 改作锚点 A3;不影响 3 条 S1 准入(窗内国家级 S1 fact 27 条)。",
+      "温度规则未区分约束性规章与非约束性指引:网安标委实践指南/治理框架(F1、F7、F16、F25、F26、F28)与部门规章同权计入“收紧”,使温度偏向 risk;是否给指引类降权请用户裁定,本版未手改。",
+      "2026-09-15 §2 重判后温度由 +9(并行)变为负值区间:按细则,TC260 指引/治理框架、立法计划、数据风险评估办法、修订草案(双向)均记 0,促进类领域文件按“规划/意见/行动方案”记支持,收紧只剩执法(F4、F27)与带罚则规章(F9、F10);AI 产业的监管强度读数因此偏向“监管放宽”,与“规则密度在增加”的直观感受相反——原因是 §2 把促进类文件计入监管强度轴的负向。是否把促进类文件从温度轴移出(只留 direction 轴)请用户裁定,本版严格按 §2 执行。",
+      "2026-09-15 判不准记 0 并登记:F13 智能体实施意见(促进+备案/检测/召回,双向)、F19 网络数据安全风险评估办法(执行衔接件,无罚则)、F22 互联网信息服务管理办法修订草案(行政法规,促进与义务并存);F33 国常会“规范有序”按布局要求记促进(dn)而非双向,若用户认为应记 0 请裁定。",
+      "2026-09-15 上一轮漏检:工信部政策文件库 2026-08-28~09-11 五件(F30–F34)与 09-11 国常会算力网部署均在 T0=2026-09-14 前公开,上一轮按主题搜索未覆盖工信部文件库分页,本轮补录并全量核对;T0' 只推进 1 天,2026-09-14 之后未见新件。",
+      "2026-09-15 用户裁定台(assessment/裁定-2026-09-15.json):G1=b 促进类文件不进温度(D10),G2=a 分母维持 D7;本行业 dn→0 节点见各节点 note",
+      "2026-09-15 AI-1「国务院常务会议部署算力网建设:算'支持'信号,还是不计入?」随 G1=b 归 0,不再单议",
+      "2026-09-15 用户裁定 D → D12:促进类回 dn、软规则 up×0.5、分母=有方向节点+5;本行业软规则节点 ['F1', 'F16', 'F19', 'F25', 'F26', 'F28', 'F7'];复核后仍 0:F22(法律双向)"
+    ],
+    "gaps": [
+      "国家能源局《关于促进人工智能与能源双向赋能的行动方案》原文页未定位,节点 URL 用国家数据局(共同发文机关)转载页,页面标“来源:国家能源局”",
+      "海南省行动方案用省营商环境建设厅栏目页,省政府门户原文页未另行定位",
+      "工信部“人工智能+制造”“人工智能+信息通信”正文为附件/全文页,节点摘录取印发通知或全文页,目标数字的全文页 URL 记在 sources/ai/F6.md",
+      "智能体实施意见(F13)页面无发文机关、文号、成文日期,机关按发布方记网信办",
+      "网信部门 2025-11-25 标识执法通报未给出处置数量",
+      "TC260 基率样本 URL 为通知公告列表页(list_N),分页会随新公告后移,复核时以标题+日期在相邻页查找",
+      "无历史判定,校准为空(phase1 AI-001/AI-002 验证日 2026-11-10/2027-02-10 尚未到,且 T0 已重冻结)",
+      "2026-09-15 已补:国家能源局《关于促进人工智能与能源双向赋能的行动方案》原文页已定位(nea.gov.cn/20260508/4dae97ca…),F14 URL 已替换为能源局原文并按原文重录 2027/2030 目标句;国家数据局转载页保留在 sources/ai/F14.md 备注(其 2030 年表述与原文不同)",
+      "2026-09-15 海南省政府门户原文页仍未定位,F29 继续用省营商环境建设厅栏目页(省政府部门官网,S1)",
+      "2026-09-15 PROMPT-04 §3 提到的 assessment/产业方向调研-2026-09-15.md 不存在,只见 assessment/产业方向草案-2026-09-15.json(S0 草案);本轮 direction 按草案依据独立复核",
+      "2026-09-15 《人工智能中小企业创业支持计划（2026-2028年）》(F34)工信部页面正文为附件,量化目标取自中国政府网转新华社稿(S2,附加摘录),未开 PDF"
+    ],
+    "direction_rule": "D8(2026-09-15):产业方向与监管温度分轴。产业方向由分析师依据国家级方向性文件(规划/意见/政府工作报告/法律)判定为 支持/中性/限制,须回链 ≥1 条 S1 国家级 fact(窗内或锚点);温度只量规则与执法的密度与方向(监管强度),不代表国家对产业的态度"
+  }
+}

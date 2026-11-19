@@ -1,0 +1,874 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>行业预判板</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* 与 heng 平台 tokens.css 对齐(白橙体系,单主题);不引入新配色 */
+:root{
+  --orange:#F97316;--orange-2:#EA580C;--orange-3:#FB923C;--orange-soft:#FFF7ED;--orange-soft-2:#FFEDD5;--orange-border:#FDBA74;
+  --bg:#F8FAFC;--bg-2:#F1F5F9;--white:#FFFFFF;
+  --ink:#0F172A;--ink-2:#334155;--ink-3:#64748B;--ink-4:#94A3B8;--ink-5:#CBD5E1;
+  --line:#E2E8F0;--line-2:#F1F5F9;
+  --blue:#3B82F6;--blue-soft:#EFF6FF;--green:#10B981;--green-2:#059669;--green-soft:#ECFDF5;
+  --red:#EF4444;--red-2:#DC2626;--red-soft:#FEF2F2;--purple:#8B5CF6;--purple-soft:#F5F3FF;
+  --amber:#F59E0B;--amber-2:#B45309;--amber-soft:#FFFBEB;--slate:#475569;--slate-soft:#F1F5F9;
+  --shadow:0 1px 3px 0 rgba(15,23,42,.05),0 1px 2px -1px rgba(15,23,42,.05);
+  --shadow-md:0 4px 12px -2px rgba(15,23,42,.06),0 2px 4px -2px rgba(15,23,42,.04);
+  --sans:'Inter','PingFang SC','Microsoft YaHei','Hiragino Sans GB',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:13px;line-height:1.55;-webkit-font-smoothing:antialiased;padding-inline:20px;padding-block:0 40px}
+button{font-family:inherit;cursor:pointer}
+a{color:inherit;text-decoration:none}
+a.ext{color:var(--orange-2);text-decoration:underline;text-decoration-color:var(--orange-border);text-underline-offset:2px}
+a.ext:hover{color:var(--orange)}
+:focus-visible{outline:2px solid rgba(249,115,22,.55);outline-offset:1px}
+.page{width:100%;max-width:none;margin:0;padding-top:22px}
+.num{font-variant-numeric:tabular-nums}
+.mono{font-family:var(--mono);font-size:.92em}
+.scroll{overflow-x:auto;max-width:100%}
+details>summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--ink-3)}
+details>summary::-webkit-details-marker{display:none}
+details>summary::before{content:"▸";font-size:10px;color:var(--ink-4)}
+details[open]>summary::before{content:"▾"}
+details>summary:hover{color:var(--orange-2)}
+
+/* 页头 */
+.page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.page-head h1{font-size:22px;font-weight:800;letter-spacing:-.3px;margin:0;display:flex;align-items:center;gap:8px;text-wrap:balance}
+.beta{padding:2px 7px;border:1px solid var(--orange-2);border-radius:999px;background:var(--orange-soft);color:var(--orange-2);font-size:11px;font-weight:700;letter-spacing:.5px}
+.page-head .sub{color:var(--ink-3);font-size:13px;margin-top:4px;max-width:78ch}
+.head-meta{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--ink-3);align-items:center}
+.head-meta b{color:var(--ink-2);font-weight:600}
+.policy-tab-bar{display:flex;gap:4px;margin-bottom:16px;border-bottom:1px solid var(--line);overflow-x:auto}
+.policy-tab{background:transparent;border:0;border-bottom:2px solid transparent;padding:10px 18px;font-size:13px;font-weight:500;color:var(--ink-4);margin-bottom:-1px;white-space:nowrap;border-radius:0;cursor:default}
+.policy-tab.active{color:var(--orange-2);border-bottom-color:var(--orange);font-weight:600}
+.page.embedded .policy-tab-bar{display:none}
+.page.embedded{padding-top:6px}
+body.embedded{padding-inline:0;padding-block:0 8px}
+.page.embedded .page-head>div:first-child{display:none}
+.page.embedded .page-head{margin-bottom:6px}
+.notice{margin:0 0 14px;padding:9px 12px;border:1px solid #FDE68A;border-radius:8px;background:var(--amber-soft);color:var(--amber-2);font-size:12px;line-height:1.65}
+
+/* KPI */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px}
+.kpi{background:var(--white);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+.kpi{text-align:left;color:var(--ink);transition:border-color .12s,background-color .12s}
+.kpi:hover{border-color:var(--orange-border);background:var(--orange-soft)}
+.kpi.active{border-color:var(--orange);box-shadow:inset 0 0 0 1px var(--orange);background:var(--orange-soft)}
+.kpi:active,.vtab:active{background:var(--orange-soft-2)}
+.filter-summary{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 12px;color:var(--ink-3);font-size:12px}
+#detail,#evidenceTabs{scroll-margin-top:88px}
+#detail:focus{outline:none}
+.kpi .v{font-size:22px;font-weight:800;line-height:1.2}
+.kpi .l{font-size:11px;color:var(--ink-4);margin-top:2px}
+.kpi.support .v{color:var(--green-2)}.kpi.risk .v{color:var(--red-2)}.kpi.watch .v{color:var(--amber-2)}
+
+/* 工具行 */
+.toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.toolbar .lbl{font-size:12px;color:var(--ink-3);font-weight:600}
+.vtab{padding:5px 12px;border-radius:6px;font-size:12px;border:1px solid var(--line);background:var(--white);color:var(--ink-3);white-space:nowrap;transition:border-color .12s,color .12s,background-color .12s}
+.vtab:hover{border-color:var(--orange);color:var(--orange)}
+.vtab.active{background:var(--orange-soft);border-color:var(--orange-border);color:#C2410C;font-weight:700}
+.legend{margin-left:auto;display:flex;gap:12px;flex-wrap:wrap;font-size:11.5px;color:var(--ink-3)}
+.legend span::before{content:"";display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.legend .s::before{background:var(--green)}.legend .r::before{background:var(--red)}.legend .w::before{background:var(--amber)}.legend .m::before{background:linear-gradient(90deg,var(--green) 50%,var(--red) 50%)}
+
+/* 行业方块 */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:12px;margin-bottom:18px}
+.tile{position:relative;background:var(--white);border:1px solid var(--line);border-radius:12px;padding:14px 14px 12px 18px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow);transition:transform .18s cubic-bezier(.16,1,.3,1),box-shadow .18s,border-color .12s;overflow:visible;color:var(--ink);font-size:13px}
+.tile::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--slate);border-radius:12px 0 0 12px}
+.tile.support::before{background:var(--green)}.tile.risk::before{background:var(--red)}.tile.watch::before{background:var(--amber)}.tile.mixed::before{background:linear-gradient(180deg,var(--green),var(--red))}
+.tile:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);border-color:var(--ink-5)}
+.tile:hover,.tile:focus-within{z-index:25}
+.tile.active{border-color:var(--orange);box-shadow:0 0 0 3px rgba(249,115,22,.18),var(--shadow-md)}
+.tile.pending{border-style:dashed;background:var(--bg-2);color:var(--ink-4);justify-content:center;align-items:center;cursor:default}
+.tile.pending::before{background:var(--ink-5)}
+.tile .t-head{display:flex;justify-content:space-between;align-items:flex-start;gap:6px}
+.tile .t-head>div{min-width:0}
+.tile .t-name{font-size:15px;font-weight:700;line-height:1.3}
+.tile .t-group{font-size:11px;color:var(--ink-4);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap;line-height:1.5}
+.pill.dir-s{background:var(--green-soft);color:var(--green-2)}.pill.dir-n{background:var(--slate-soft);color:var(--slate)}.pill.dir-r{background:var(--red-soft);color:var(--red-2)}
+.pill.support{background:var(--green-soft);color:var(--green-2)}.pill.risk{background:var(--red-soft);color:var(--red-2)}.pill.watch{background:var(--amber-soft);color:var(--amber-2)}.pill.mixed{background:var(--purple-soft);color:#6D28D9}
+.dirline{padding:8px 20px 0;font-size:12px;color:var(--ink-2);line-height:1.6}
+.dirline b{color:var(--ink);font-weight:700}
+.dirline .chip{margin:0 1px}
+.temp{display:flex;align-items:center;gap:8px;position:relative}
+.temp .tv{font-size:20px;font-weight:800;min-width:44px;line-height:1;cursor:help;border-bottom:1px dotted var(--ink-5)}
+.tipbox{max-width:calc(100vw - 48px)}
+.temp .tv.support{color:var(--green-2)}.temp .tv.risk{color:var(--red-2)}.temp .tv.watch{color:var(--amber-2)}.temp .tv.mixed{color:#6D28D9}
+.temp .st{font-size:10.5px;padding:1px 6px;border-radius:4px;font-weight:600;white-space:nowrap}
+.wc{font-size:10px;padding:1px 5px;border-radius:4px;font-weight:700;white-space:nowrap}.wc.core{background:var(--blue-soft);color:#1D4ED8;border:1px solid #BFDBFE}.wc.decisive{background:var(--red-soft);color:var(--red-2);border:1px solid #FECACA}
+.bipolar{flex:1;height:8px;background:var(--bg-2);border-radius:4px;position:relative}
+.bipolar::after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--ink-5)}
+.bipolar i{position:absolute;top:0;bottom:0;border-radius:4px}
+.bipolar i.neg{right:50%;background:var(--red)}.bipolar i.pos{left:50%;background:var(--green)}
+.tipbox{display:none;position:absolute;left:0;top:calc(100% + 6px);z-index:40;width:300px;background:var(--ink);color:#E2E8F0;border-radius:8px;padding:9px 11px;font-size:11px;line-height:1.5;box-shadow:var(--shadow-md);text-align:left;white-space:normal}
+.tipbox table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:10.5px}
+.tipbox td{padding:1px 0;color:#CBD5E1}
+.tipbox td:last-child{text-align:right;color:#FDBA74}
+.tipbox .sum{margin-top:5px;border-top:1px solid #334155;padding-top:5px;color:#F8FAFC}
+.temp:hover .tipbox,.tile:focus-visible .tipbox{display:block}
+.tile details.t-line{position:relative;margin:0;font-size:12px;color:var(--ink-2);line-height:1.55}
+.tile details.t-line>summary{font-size:11.5px}
+.tile details.t-line>div{position:absolute;left:-19px;right:-15px;top:calc(100% + 16px);z-index:30;background:var(--white);border:1px solid var(--orange-border);border-radius:10px;box-shadow:var(--shadow-md);padding:10px 12px}
+.tile:has(details.t-line[open]){z-index:31;border-color:var(--orange-border)}
+
+/* 详情面板 */
+.detail{background:var(--white);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
+.d-head{padding:16px 20px 0;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start}
+.d-head h2{margin:0;font-size:18px;font-weight:800;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.d-head .d-sub{color:var(--ink-3);font-size:12.5px;margin-top:4px;max-width:72ch}
+.d-meta{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--ink-3)}
+.d-meta b{color:var(--ink-2);font-weight:600}
+.d-scope{padding:8px 20px 0;font-size:12px;color:var(--ink-3)}
+.d-scope p{margin:6px 0 0;color:var(--ink-2);max-width:90ch;line-height:1.6}
+.tempbox{margin:10px 20px 0;border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:var(--bg)}
+.tbtn{border:1px solid var(--line);background:var(--white);color:var(--ink-2);border-radius:6px;padding:3px 9px;font-size:11.5px;font-weight:600}
+.tbtn:hover{border-color:var(--orange);color:var(--orange-2)}
+.tbtn.on{background:var(--orange-soft);border-color:var(--orange-border);color:#C2410C}
+.d-tabs{display:flex;gap:2px;padding:12px 20px 0;border-bottom:1px solid var(--line);overflow-x:auto}
+.d-tab{background:none;border:0;border-bottom:2px solid transparent;padding:8px 14px;font-size:13px;font-weight:500;color:var(--ink-3);margin-bottom:-1px;white-space:nowrap;border-radius:0;display:flex;gap:6px;align-items:center}
+.d-tab .cnt{font-size:10.5px;background:var(--bg-2);color:var(--ink-3);padding:1px 6px;border-radius:999px}
+.d-tab.active{color:var(--orange-2);border-bottom-color:var(--orange);font-weight:600}
+.d-tab.active .cnt{background:var(--orange-soft);color:var(--orange-2)}
+.panel{display:none;padding:18px 20px 20px}
+.panel.active{display:block}
+.sl{font-size:11px;font-weight:700;color:var(--ink-3);letter-spacing:.04em;margin:0 0 8px}
+.sl.mt{margin-top:18px}
+
+/* 结论卡 */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px}
+.pcard{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--bg);display:flex;flex-direction:column;gap:8px}
+.pcard .pc-head{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.pcard .pc-head .r{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.pcard .pc-id{font-family:var(--mono);font-size:11px;color:var(--ink-4)}
+.pcard h4{margin:0;font-size:13.5px;font-weight:700;line-height:1.45;text-wrap:balance}
+.lvl{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;line-height:1.5;white-space:nowrap}
+.lvl.lvl4{background:var(--orange-2);color:#fff}.lvl.lvl3{background:var(--orange-soft-2);color:#C2410C}.lvl.lvl2{background:var(--amber-soft);color:#D97706}.lvl.lvl1{background:var(--slate-soft);color:var(--slate)}
+.cap{font-size:11.5px;color:var(--amber-2);background:var(--amber-soft);border:1px solid #FDE68A;border-radius:6px;padding:4px 8px}
+.pc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:4px 12px;font-size:11.5px;color:var(--ink-2)}
+.pc-grid b{display:block;font-size:10.5px;color:var(--ink-4);font-weight:600;letter-spacing:.03em}
+.pcard .pc-foot{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--ink-4);border-top:1px dashed var(--line);padding-top:6px;align-items:center}
+.chip{display:inline-block;font-family:var(--mono);font-size:10.5px;padding:0 6px;border-radius:4px;background:var(--blue-soft);color:#2563EB;border:1px solid transparent;cursor:pointer;line-height:1.7}
+.chip:hover{border-color:#2563EB}
+.chip.miss{background:var(--red-soft);color:var(--red-2);cursor:default}
+.hyp{display:flex;flex-direction:column;gap:7px;font-size:12px;margin-top:6px}
+.hyp .hrow{display:grid;grid-template-columns:28px 1fr 46px;gap:3px 8px;align-items:center}
+.hyp .k{font-family:var(--mono);font-weight:500;color:var(--ink-4)}
+.hyp .t{color:var(--ink-2);line-height:1.4}
+.hyp .bar{grid-column:2/4;height:6px;background:var(--line-2);border-radius:3px;position:relative}
+.hyp .bar i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;background:var(--ink-5)}
+.hyp .bar.h1 i{background:var(--orange)}
+.hyp .p{font-family:var(--mono);font-size:11.5px;text-align:right;color:var(--ink-2)}
+.pc-more{font-size:12px;color:var(--ink-2);margin-top:6px;display:flex;flex-direction:column;gap:6px}
+.pc-more b{font-size:10.5px;color:var(--ink-4);font-weight:700;letter-spacing:.03em;display:block;margin-bottom:2px}
+.pc-more ul{margin:0;padding-left:16px;line-height:1.55}
+.tag{display:inline-block;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:600;line-height:1.5;white-space:nowrap}
+.tag-red{background:var(--red-soft);color:var(--red-2)}.tag-amber{background:var(--amber-soft);color:#D97706}.tag-green{background:var(--green-soft);color:#16A34A}.tag-blue{background:var(--blue-soft);color:#2563EB}.tag-purple{background:var(--purple-soft);color:#7C3AED}.tag-slate{background:var(--slate-soft);color:var(--slate)}.tag-orange{background:var(--orange-soft);color:var(--orange-2)}
+.tier{font-family:var(--mono);font-size:10.5px;padding:1px 5px;border-radius:3px;background:var(--blue-soft);color:#2563EB;font-weight:500}
+.tier.s3{background:var(--slate-soft);color:var(--slate)}.tier.s4{background:var(--amber-soft);color:#D97706}
+.lv{font-size:10.5px;padding:0 5px;border-radius:3px;border:1px solid var(--line);color:var(--ink-3);background:var(--white)}
+.lv.g{border-color:var(--ink-2);color:var(--ink);font-weight:700}
+.rolechip{font-size:10.5px;padding:0 5px;border-radius:3px;background:var(--slate-soft);color:var(--slate)}
+.rolechip.fact{background:var(--blue-soft);color:#2563EB}
+
+/* 证据链 */
+.tl-tools{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.tl-tools .lbl{font-size:12px;color:var(--ink-3);margin-right:4px}
+.kinds{display:flex;gap:10px;flex-wrap:wrap;font-size:11.5px;color:var(--ink-3);margin-left:auto}
+.kd{display:inline-flex;align-items:center;gap:4px}
+.kd i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.timeline{position:relative;padding-left:26px}
+.timeline::before{content:"";position:absolute;left:9px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.ev{position:relative;margin-bottom:10px;border:1px solid var(--line);border-radius:9px;background:var(--white);padding:9px 12px;display:grid;grid-template-columns:1fr auto;gap:4px 12px;scroll-margin-top:12px}
+.ev.hidden{display:none}
+.ev::before{content:"";position:absolute;left:-22px;top:13px;width:10px;height:10px;border-radius:50%;border:2px solid var(--kc,var(--orange));background:var(--white)}
+.ev.context{background:var(--bg);border-style:dashed}
+.ev.context::before{background:var(--kc)}
+.ev.hl{box-shadow:0 0 0 3px rgba(249,115,22,.35);border-color:var(--orange)}
+.ev.t0{border:0;background:transparent;padding:4px 0;grid-template-columns:1fr}
+.ev.t0::before{background:var(--orange-2);border-color:var(--orange-2);width:12px;height:12px;left:-23px;top:8px}
+.ev.t0 .t0txt{font-weight:800;color:var(--orange-2);font-size:12.5px}
+.ev .e-top{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:11px;color:var(--ink-4)}
+.ev .e-date{font-family:var(--mono);color:var(--ink-3)}
+.kchip{padding:1px 6px;border-radius:4px;font-weight:600;color:#fff;background:var(--kc)}
+.ev .e-title{font-size:13px;font-weight:600;color:var(--ink);line-height:1.45}
+.ev .e-meta{font-size:11px;color:var(--ink-3)}
+.ev .e-ev{font-size:12px;color:var(--ink-2);line-height:1.55;margin:0;padding-left:8px;border-left:2px solid var(--line)}
+.ev .e-src{font-size:11px;color:var(--ink-4)}
+.ev .e-dir{grid-column:2;grid-row:1/span 8;align-self:center;text-align:center;min-width:52px;font-size:11px;font-weight:700;padding:5px 6px;border-radius:6px}
+.dir-up{background:var(--red-soft);color:var(--red-2)}.dir-dn{background:var(--green-soft);color:var(--green-2)}.dir-0{background:var(--slate-soft);color:var(--slate)}
+.ev .e-link{font-size:11px;color:var(--ink-3);border-left:2px solid var(--kc);padding-left:6px;margin-top:2px}
+.ev .e-link .chip{margin:0 2px}
+
+/* 推理过程 */
+.steps{display:flex;flex-direction:column;gap:0}
+.step{display:grid;grid-template-columns:34px 1fr;gap:0 12px;position:relative}
+.step .no{width:26px;height:26px;border-radius:50%;background:var(--orange-soft);color:var(--orange-2);border:1px solid var(--orange-border);font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;margin-top:12px;z-index:1}
+.step:not(:last-child)::before{content:"";position:absolute;left:13px;top:38px;bottom:-12px;width:2px;background:var(--line)}
+.step .body{border:1px solid var(--line);border-radius:10px;padding:11px 14px;margin-bottom:12px;background:var(--white);min-width:0}
+.step .body h4{margin:0;font-size:13.5px;font-weight:700;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.step .io{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-top:8px}
+.io .box{background:var(--bg);border-radius:7px;padding:8px 10px;font-size:12px;line-height:1.55;min-width:0}
+.io .box b{display:block;font-size:10.5px;font-weight:700;color:var(--ink-4);margin-bottom:3px;letter-spacing:.04em}
+.io .box ul{margin:0;padding-left:16px}
+.io .box li{margin:1px 0;overflow-wrap:anywhere}
+.step .note{margin-top:8px;font-size:12px;color:var(--ink-2);border-left:3px solid var(--orange-border);padding-left:9px;line-height:1.55}
+
+/* 加工过程(五段) */
+.record{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:0 0 14px}
+.record div{background:var(--bg);border:1px solid var(--line-2);border-radius:7px;padding:7px 10px}
+.record dt{font-size:10.5px;color:var(--ink-4);font-weight:600;letter-spacing:.04em}
+.record dd{margin:2px 0 0;font-size:12px;font-family:var(--mono);color:var(--ink-2);word-break:break-all}
+.sections{display:grid;grid-template-columns:1fr;gap:12px}
+.section{border:1px solid var(--line);border-radius:10px;background:var(--white);overflow:hidden}
+.section .sec-head{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.section .sec-head .n{font-family:var(--mono);font-size:11px;color:var(--orange-2);font-weight:600;background:var(--orange-soft);padding:2px 7px;border-radius:4px}
+.section .sec-head h4{margin:0;font-size:13.5px;font-weight:700}
+.section .sec-head .sum{margin-left:auto;font-size:11.5px;color:var(--ink-3)}
+.section .sec-body{padding:12px 14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.section .sec-body.one{grid-template-columns:1fr}
+.mini{font-size:12px;min-width:0}
+.mini h5{margin:0 0 6px;font-size:11px;font-weight:700;color:var(--ink-3);letter-spacing:.04em}
+.mini table{width:100%;border-collapse:collapse;font-size:11.5px}
+.mini th,.mini td{padding:5px 6px;border-bottom:1px solid var(--line-2);text-align:left;vertical-align:top}
+.mini th{font-size:10.5px;color:var(--ink-4);font-weight:700;white-space:nowrap}
+.mini tr:last-child td{border-bottom:0}
+.mini ul{margin:0;padding-left:16px;line-height:1.6}
+.mini li{overflow-wrap:anywhere}
+.rej{border-left:3px solid var(--red);background:var(--red-soft);padding:6px 9px;border-radius:0 6px 6px 0;margin-bottom:5px;font-size:11.5px;line-height:1.5;overflow-wrap:anywhere}
+.rej b{color:var(--red-2);font-weight:700}
+.opline{display:grid;grid-template-columns:96px 1fr;gap:6px 10px;font-size:12px;align-items:start;margin-bottom:8px}
+.opline .on{font-size:11.5px;color:var(--ink-3);padding-top:2px;font-weight:600}
+.trace{background:var(--bg);border-left:3px solid var(--orange-border);color:var(--ink-2);font-size:12px;line-height:1.7;padding:10px 14px;border-radius:0 8px 8px 0;white-space:pre-wrap;word-break:break-word;max-height:360px;overflow:auto}
+.brier{display:flex;gap:14px;align-items:flex-end}
+.brier svg{width:100%;max-width:340px;height:90px}
+.calib{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.calib div{background:var(--bg);border-radius:7px;padding:8px 10px;text-align:center}
+.calib .v{font-size:18px;font-weight:800}.calib .l{font-size:10.5px;color:var(--ink-4)}
+.empty{border:1px dashed var(--ink-5);border-radius:8px;padding:14px;text-align:center;color:var(--ink-4);font-size:12px;background:var(--bg)}
+.empty b{display:block;font-size:13px;color:var(--ink-3);margin-bottom:3px}
+.review{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:8px;background:var(--amber-soft);border:1px solid #FDE68A;font-size:12px;color:#92400E;line-height:1.55}
+.review.ok{background:var(--green-soft);border-color:#A7F3D0;color:#065F46}
+.review .who{font-weight:700;white-space:nowrap}
+.foot-hint{font-size:11.5px;color:var(--ink-4);margin-top:16px;line-height:1.6}
+.rules{margin-top:14px;border-top:1px solid var(--line);padding-top:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px}
+.explanation{border:1px solid var(--line);border-radius:10px;background:var(--white);color:var(--ink-3)}
+.explanation>summary{display:flex;width:100%;padding:12px 14px;font-size:13px;color:var(--ink-2)}
+.explanation-body{padding:0 14px 14px;overflow-wrap:anywhere}
+.rules div{font-size:11.5px;color:var(--ink-3);line-height:1.6}
+.rules b{display:block;font-size:10.5px;color:var(--ink-4);letter-spacing:.04em;margin-bottom:2px}
+
+/* 按日期阅读政策发展脉络 */
+.journey{border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px;background:var(--bg)}
+.journey-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.journey-head h3{margin:0;font-size:16px;color:var(--ink)}
+.journey-head p{margin:4px 0 0;font-size:12px;color:var(--ink-3)}
+.journey-actions{display:flex;gap:6px;flex-wrap:wrap}
+.vtab:disabled{opacity:.45;cursor:default;background:var(--bg-2);border-color:var(--line);color:var(--ink-3)}
+.date-rail{display:flex;overflow-x:auto;gap:0;padding:12px 2px 8px;margin:8px 0 10px;scrollbar-width:thin;overscroll-behavior-x:contain}
+.date-stop{position:relative;flex:0 0 146px;min-width:0;border:0;background:transparent;padding:0 8px 8px;text-align:left;color:var(--ink-3);font-size:12px}
+.date-stop::before{content:"";position:absolute;left:0;right:0;top:28px;height:2px;background:var(--line)}
+.date-stop time,.date-stop .date-label{display:block;position:relative;white-space:nowrap}
+.date-stop time{font-variant-numeric:tabular-nums;font-weight:600}
+.date-dot{display:block;position:relative;width:12px;height:12px;border:2px solid var(--ink-4);border-radius:50%;background:var(--white);margin:7px 0}
+.date-label{font-size:11px;overflow:hidden;text-overflow:ellipsis}
+.date-stop.active{color:var(--orange-2);background:var(--orange-soft);border-radius:6px;font-weight:700}
+.date-stop.active .date-dot{border-color:var(--orange);background:var(--orange)}
+.date-stop:hover{color:var(--orange-2)}
+.date-stop:hover .date-dot{border-color:var(--orange)}
+.date-stop.future .date-dot{border-style:dashed}
+.date-summary{padding:12px 14px;border:1px solid var(--orange-border);border-radius:8px;background:var(--white)}
+.date-summary h4{margin:0 0 7px;font-size:14px}
+.date-summary p{margin:6px 0 0;font-size:12px;color:var(--ink-3)}
+.date-summary .change-counts{display:flex;gap:6px;flex-wrap:wrap}
+.timeline-empty{padding:18px;color:var(--ink-3);border:1px dashed var(--line);border-radius:8px}
+
+@media (max-width:720px){
+  .page-head h1{font-size:19px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+  .ev{grid-template-columns:1fr}.ev .e-dir{grid-column:1;grid-row:auto;justify-self:start}
+  .step{grid-template-columns:28px 1fr}
+  .calib{grid-template-columns:1fr 1fr}
+  .opline{grid-template-columns:1fr}
+  .tipbox{width:220px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="page">
+  <div class="page-head">
+    <div>
+      <h1>政策预测 <span class="beta">beta</span></h1>
+      <div class="sub">按行业陈列监管走向预判。点开一个行业,看预测卡、证据链(政策事实与社会要素同一条时间链)、推理过程,以及结论是怎么加工出来的。每条事实回链原文。</div>
+    </div>
+  </div>
+  <div class="policy-tab-bar" aria-label="平台导航(静态)">
+    <span class="policy-tab">政策分析</span>
+    <span class="policy-tab">主题与规则</span>
+    <span class="policy-tab">政策解读</span>
+    <span class="policy-tab">政策月刊分析</span>
+    <span class="policy-tab active">政策预测</span>
+  </div>
+
+  <div class="kpi-row" id="kpiRow"></div>
+
+  <div class="toolbar">
+    <span class="lbl">行业范围</span>
+    <button class="vtab active" data-scope="all" type="button" aria-pressed="true">全部行业</button>
+    <button class="vtab" data-business="didi" type="button" aria-pressed="false" title="网约车、加油、两轮车、自动驾驶、货运、充电、电力">我们关注的业务</button>
+  </div>
+  <div class="toolbar">
+    <span class="lbl">监管态度</span>
+    <button class="vtab" data-f="support" type="button">国家支持</button>
+    <button class="vtab" data-f="risk" type="button">收紧风险</button>
+    <button class="vtab" data-f="watch" type="button">观察中</button>
+    <button class="vtab" data-f="mixed" type="button">支持与收紧并存</button>
+    <span class="lbl" style="margin-left:10px">排序</span>
+    <button class="vtab active" data-s="temp" type="button">按监管温度</button>
+    <button class="vtab" data-s="recent" type="button">按最近事实</button>
+    <button class="vtab" data-s="list" type="button">按清单顺序</button>
+    <div class="legend"><span class="s">国家支持</span><span class="r">收紧风险</span><span class="w">观察</span><span class="m">并存</span></div>
+  </div>
+
+  <div class="filter-summary"><span id="filterSummary" role="status" aria-live="polite"></span><button class="vtab" id="clearFilters" type="button" hidden>清除筛选</button></div>
+  <div class="grid" id="grid"></div>
+
+  <section class="detail" id="detail" tabindex="-1" aria-label="行业预测与证据"></section>
+  <div class="foot-hint" id="footRules"></div>
+</div>
+
+<script src="data.js"></script>
+<script>
+/* ======================= 数据与常量 ======================= */
+const ORDER = [['ridehail','网约车'],['freight','货运'],['two_wheel','两轮车'],['fuel','加油'],['charging','充电'],['power','电力'],['autonomous','自动驾驶'],['delivery','外卖'],['tourism','旅游'],['generation','发电'],['space','商业航天'],['embodied','具身智能'],['low_altitude','低空经济'],['healthcare','医疗'],['elderly','养老'],['ai','AI 产业'],['ecommerce','电商'],['industry','工业'],['overseas','出海'],['water','水利与水务'],['telecom','通信与网络'],['logistics','物流与供应链'],['storage_vpp','储能与虚拟电厂'],['computing','算力基础设施']];
+const DATA = Array.isArray(window.INDUSTRY_DATA) ? window.INDUSTRY_DATA : [];
+const META = window.BOARD_META || {};
+const byId = Object.fromEntries(DATA.map(i=>[i.id,i]));
+const LIST = ORDER.map(([id,name])=> byId[id] || {id, name, missing:true});
+const READY = LIST.filter(i=>!i.missing);
+const KINDS = {
+  policy:  {label:'政策文件', color:'#F97316'},
+  enforce: {label:'监管动作', color:'#EF4444'},
+  speech:  {label:'会议讲话', color:'#8B5CF6'},
+  social:  {label:'社会事件', color:'#3B82F6'},
+  econ:    {label:'经济数据', color:'#475569'},
+  industry:{label:'行业数据', color:'#10B981'},
+  media:   {label:'媒体解读', color:'#F59E0B'},
+};
+const STANCE = {support:'国家支持', risk:'收紧风险', watch:'观察中', mixed:'支持与收紧并存'};
+const STANCE_TAG = {support:'tag-green', risk:'tag-red', watch:'tag-amber', mixed:'tag-purple'};
+const DIR = {'支持':['产业支持','dir-s'], '中性':['产业中性','dir-n'], '限制':['产业限制','dir-r']};
+const dirOf = i => (i.direction && DIR[i.direction.stance]) ? i.direction.stance : null;
+const dirCls = i => dirOf(i) ? DIR[dirOf(i)][1] : 'dir-n';
+const dirLabel = i => dirOf(i) ? DIR[dirOf(i)][0] : '方向未判';
+const PUSH = {up:'收紧', dn:'支持', '0':'中性'};
+const EFFECT = {trigger:'触发', amplify:'放大', suppress:'抑制', background:'背景'};
+const OPS = {HISTORICAL_ANALOGY:'历史类比', WORDING_CHANGE:'措辞变化', TARGET_REVERSE_INFERENCE:'目标反推', CROSS_SOURCE_COMBINATION:'多源组合'};
+const OPST = {SUPPORTED:['支持','tag-green'], COUNTER:['反对','tag-red'], NOT_APPLICABLE:['不适用','tag-slate'], EVIDENCE_MISSING:['证据缺失','tag-amber']};
+const LEVEL_CLS = {'高度可能':'lvl4','较大可能':'lvl3','可能':'lvl2','观察':'lvl1'};
+const CHECK = {pass:['通过','tag-green'], fail:['未通过','tag-red'], cleared:['已清空','tag-amber']};
+const IMPACT = {strategy:'战略', gr:'政府事务', compliance:'合规', business:'业务(能源线,引用战略画像)'};
+const ymd = t => t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');
+const TODAY = ymd(new Date());
+// 公开视图(门户嵌入 ?embed=1 或 ?public=1):加工过程用知识库口径,内部工作记录(停点/缺口/节点备注/采集工具细节)不展示;独立打开时全量可见
+const PUBLIC = /[?&](embed|public)=1/.test(location.search);  // 只认网址参数:门户 iframe 带 ?embed=1;Artifact 预览虽在 iframe 里但要看全量
+function pub(s){ s=String(s==null?'':s); if(!PUBLIC) return s;
+  s=s.replace(/[((][^()()]*?(?:WebFetch|WebSearch|curl|浏览器|python|urllib|抓取|面板|(?:HTTP\s*)?(?:200|403|404|412|521)\b)[^()()]*?[))]/g,'');
+  s=s.replace(/tools\/temp_calc\.py|temp_calc\.py|temp_calc|tools\/validate\.py|validate\.py/g,'温度计算模块').replace(/用 curl 复核|curl -k|curl|WebFetch|WebSearch|python urllib|python 抓取|python|urllib|浏览器面板|(?<![A-Za-z《])浏览器(?![》安])/g,'知识库回链');
+  s=s.replace(/抓取/g,'采集').replace(/session/gi,'批次').replace(/提示词/g,'范围定义');
+  s=s.replace(/按 §\s*[\d.()()]+/g,'按口径细则').replace(/§\s*[\d.()()]+/g,'口径细则').replace(/\bD(\d{1,2})\b/g,'规则$1').replace(/PROMPT-0\d[^,;。)]*/g,'工作指引');
+  return s.replace(/\s{2,}/g,' ').trim(); }
+// 退回原因:公开视图删掉含采集工具/可达性的分句,只留准入口径理由
+function pubReason(s){ s=String(s==null?'':s); if(!PUBLIC) return s;
+  const keep=s.split(/[;;。]/).map(x=>x.trim()).filter(x=>x&&!/WebFetch|WebSearch|curl|浏览器|python|urllib|抓|脚本|证书|不可达|http 协议|取得|重抓|面板/.test(x));
+  return keep.length?pub(keep.join(';')):'来源不可达或不合准入口径(明细见内部记录)'; }
+// 覆盖来源:公开视图只显示站点,内部件单列
+function pubSource(s){ s=String(s==null?'':s); if(!PUBLIC) return s;
+  if(/state\/|internal|内部/.test(s)) return '内部一手材料(S4,不外链)';
+  return s.replace(/[((][^()()]*[))]/g,'').trim(); }
+const LEVEL_RULE = '高度可能:独立簇≥3、权力层级≥2、算子「支持」≥3、主体与载体/期限明确、基率 n≥5;较大可能:簇≥2、「支持」≥2、n≥5;可能:满足较大可能条件但基率缺失(封顶),或簇≥1 且「支持」≥1 且有 S1 且 n≥5;其余观察;任一算子「反对」降一档。';
+const SIGNAL_RULE = '信号计数只计 T0 前 12 个月内、非锚点、非待判定的政策事实节点(role=fact),按推力分收紧/支持;社会要素不计信号,只按 ×0.5 计入温度。';
+
+/* ======================= 工具 ======================= */
+const $ = (s, r=document) => r.querySelector(s);
+const esc = s => String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const tierCls = t => t==='S3'?'tier s3':t==='S4'?'tier s4':'tier';
+const tempText = t => (t>0?'+':'')+t;
+const pct = p => (p==null?'—':Math.round(p*100)+'%');
+function shift(d, days){ const t=new Date(d+'T00:00:00'); t.setDate(t.getDate()+days); return ymd(t); }
+function daysBetween(a,b){ return Math.round((new Date(b+'T00:00:00')-new Date(a+'T00:00:00'))/864e5); }
+const isCounted = (n,i) => !n.after_t0 && !n.out_of_window && !n.pending && n.date<=i.t0;
+const winFrom = i => shift(i.t0,-365);
+function signals(i){ const s={up:0,dn:0}; i.timeline.forEach(n=>{ if(n.role==='fact'&&isCounted(n,i)&&s[n.push]!==undefined) s[n.push]++; }); return s; }
+function lastFact(i){ return i.timeline.filter(n=>n.role==='fact'&&isCounted(n,i)).map(n=>n.date).sort().pop()||''; }
+function openCards(i){ return i.cards.filter(c=>c.status!=='驳回' && c.verify_date>TODAY); }
+function judgedCards(i){ return (i.process.calibration&&i.process.calibration.judged_cards)||0; }
+function nextVerify(i){ const v=i.cards.map(c=>c.verify_date).sort(); return v.find(d=>d>=TODAY)||v[v.length-1]; }
+function nodeOf(i,id){ return i.timeline.find(n=>n.id===id); }
+function nodeLink(i,id){ const n=nodeOf(i,id); return n?`<button type="button" class="chip" data-node="${esc(id)}" title="${esc(n.date+' '+n.title)}">${esc(id)}</button>`:`<span class="chip miss" title="时间链里没有这个节点">${esc(id)}?</span>`; }
+const linkable = n => /^https?:\/\/[^\/\s]+/i.test(n.url||'') && !/internal\.local/.test(n.url||'');
+function srcLine(n){ return linkable(n) ? `来源:${esc(n.source_name)} · 收录 <span class="mono">${esc(n.fetched_at)}</span> · <a class="ext" href="${esc(n.url)}" target="_blank" rel="noopener">原文 ↗</a>` : `来源:${esc(n.source_name)} · 收录 <span class="mono">${esc(n.fetched_at)}</span> · 内部件,不提供外链`; }
+const basisOf = i => (i.meta && i.meta.temp_basis) || {mode:'mean'};
+const decisiveNode = i => { const b=basisOf(i); return b.mode==='decisive' ? nodeOf(i,b.node_id) : null; };
+const coreNodes = i => i.timeline.filter(n=>n.weight_class==='core' && isCounted(n,i));
+function wcTag(n){ if(n.weight_class==='core') return '<span class="wc core" title="核心内部信息:按满额 ±100 计入温度,不打级别、层级、时效折扣">核心信息 · 满额计入</span>'; if(n.weight_class==='decisive') return `<span class="wc decisive" title="决定性事件:有绝对权重,行业温度直接取其给定值">决定性事件 · 温度 ${tempText(n.decisive_temp)}</span>`; return ''; }
+function tempSums(i){ const rows=i.temp_calc||[]; let up=0,dn=0,nd=0; rows.forEach(r=>{ if(r.contribution>0) up+=r.contribution; else dn+=r.contribution; if(r.contribution!==0) nd++; }); return {up, dn, n:rows.length, nd, sum:up+dn}; }
+const pwTag = r => (r.push_weight!=null && r.push_weight!==1) ? ` ×${r.push_weight}` : '';
+function fmtSigned(x){ return (x>0?'+':'')+x.toFixed(2); }
+function levelBadge(l){ return l?`<span class="lv ${l==='国家'?'g':''}">${esc(l)}</span>`:''; }
+function s1Stats(i){ const s=i.timeline.filter(n=>n.role==='fact'&&n.tier==='S1'&&isCounted(n,i)&&n.date>=winFrom(i)); const c={国家:0,省:0,市:0}; s.forEach(n=>{ if(c[n.issuer_level]!==undefined) c[n.issuer_level]++; }); return {n:s.length, ...c}; }
+
+/* ======================= 页头 / KPI ======================= */
+function renderKpi(){
+  const c = {support:0,risk:0,watch:0,mixed:0};
+  const dc = {'支持':0,'中性':0,'限制':0};
+  const scope = READY.filter(matchesBusiness);
+  scope.forEach(i=>{ c[i.stance]++; if(dirOf(i)) dc[dirOf(i)]++; });
+  const items = [
+    ['all', '', scope.length, '行业方向(已采集 / 清单)'],
+    ['support', 'support', c.support, '国家支持'],
+    ['risk', 'risk', c.risk, '收紧风险'],
+    ['watchMixed', 'watch', c.watch+c.mixed, `观察 ${c.watch} / 并存 ${c.mixed}`],
+  ];
+  $('#kpiRow').innerHTML = items.map(([key, cls, value, label])=>`<button type="button" class="kpi ${cls} ${filter===key?'active':''}" data-f="${key}" aria-pressed="${filter===key}" title="${esc(key==='all'?'清除筛选，显示全部行业':'筛选'+FILTER_LABELS[key]+'的行业')}"><div class="v num">${value}${key==='all'?`<span style="font-size:12px;color:var(--ink-4);font-weight:600"> / ${businessOnly?DIDI_BUSINESSES.size:LIST.length}</span>`:''}</div><div class="l">${esc(label)}</div></button>`).join('');
+}
+
+/* ======================= 方块 ======================= */
+const DIDI_BUSINESSES = new Set(['ridehail','fuel','two_wheel','autonomous','freight','charging','power']);
+const FILTER_LABELS = {...STANCE, all:'全部行业', watchMixed:'观察与并存', open:'有开放预测卡', judged:'有已判定卡', signals:'有计入信号'};
+let filter='all', filterDir='all', businessOnly=false, sort='temp', selected=(READY[0]||{}).id;
+function matchesBusiness(i){ return !businessOnly || DIDI_BUSINESSES.has(i.id); }
+function matchesFilter(i){
+  if(i.missing) return filter==='all';
+  if(filter==='watchMixed') return i.stance==='watch'||i.stance==='mixed';
+  if(filter==='open') return openCards(i).length>0;
+  if(filter==='judged') return judgedCards(i)>0;
+  if(filter==='signals'){ const s=signals(i); return s.up+s.dn>0; }
+  return filter==='all'||i.stance===filter;
+}
+function filteredIndustries(){ return LIST.filter(i=>matchesBusiness(i)&&matchesFilter(i)&&(filterDir==='all'||dirOf(i)===filterDir)); }
+function syncFilters(){
+  document.querySelectorAll('[data-f]').forEach(b=>{ const active=b.dataset.f===filter; b.classList.toggle('active',active); b.setAttribute('aria-pressed',active); });
+  const business=$('[data-business]'); business.classList.toggle('active',businessOnly); business.setAttribute('aria-pressed',businessOnly);
+  const allScope=$('[data-scope="all"]'); allScope.classList.toggle('active',!businessOnly); allScope.setAttribute('aria-pressed',!businessOnly);
+  document.querySelectorAll('[data-fd]').forEach(b=>{const active=b.dataset.fd===filterDir;b.classList.toggle('active',active);b.setAttribute('aria-pressed',active);});
+  $('#clearFilters').hidden=filter==='all'&&!businessOnly&&filterDir==='all';
+  $('#filterSummary').textContent=`${businessOnly?'我们关注的业务':'全部行业'}${filter==='all'?'':' · '+FILTER_LABELS[filter]} · ${filteredIndustries().length} 个行业`;
+}
+function applyFilters(){
+  const focusedKpi=document.activeElement.closest('.kpi[data-f]');
+  const focusKey=focusedKpi&&focusedKpi.dataset.f;
+  renderKpi(); renderGrid(); syncFilters(); renderDetail();
+  if(focusKey) $('#kpiRow [data-f="'+focusKey+'"]').focus({preventScroll:true});
+}
+function jumpToForecast(){
+  reportEmbedHeight();
+  requestAnimationFrame(()=>{
+    const target=$('#detail'); if(!target) return;
+    target.focus({preventScroll:true});
+    if(window.parent!==window){ window.parent.postMessage({type:'policy-embed:industry-board-detail'}, location.origin); }
+    else target.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
+  });
+}
+function tipHtml(i){
+  const t=tempSums(i); const top=(i.temp_calc||[]).slice().sort((a,b)=>Math.abs(b.contribution)-Math.abs(a.contribution)).slice(0,5);
+  const dn0=decisiveNode(i), cn=coreNodes(i);
+  return `<div class="tipbox" role="tooltip">${dn0?`<div style="color:#FCA5A5;margin-bottom:5px"><b>决定性事件</b> ${esc(dn0.id)} ${esc(dn0.title.slice(0,40))}${dn0.title.length>40?'…':''} → 温度直接取 <b>${tempText(dn0.decisive_temp)}</b>(绝对权重);其余节点均值 ${tempText(basisOf(i).mean_temp)} 只作参考</div>`:''}${cn.length?`<div style="color:#93C5FD;margin-bottom:5px">核心内部信息 ${cn.map(n=>esc(n.id)).join('、')} 按满额 ±100 计入</div>`:''}<div>监管温度 = Σ贡献 ÷(有方向节点 + 5)× 8;负 = 收紧、正 = 支持</div><table>${top.map(r=>`<tr><td>${esc(r.node_id)} ${PUSH[r.push]}${pwTag(r)} · ${r.weight_class?(r.weight_class==='core'?'核心信息满额':'决定性事件满额'):`${r.tier_weight}×${r.level_weight}×${r.recency_weight}×${r.role_factor}`}</td><td>${fmtSigned(r.contribution)}</td></tr>`).join('')}${t.n>5?`<tr><td>…另 ${t.n-5} 个节点</td><td></td></tr>`:''}</table><div class="sum">支持 ${t.up.toFixed(1)} − 收紧 ${(-t.dn).toFixed(1)} = ${t.sum.toFixed(1)};÷(${t.nd}+5)×8 → <b>${tempText(basisOf(i).mode==='decisive'?basisOf(i).mean_temp:i.temp)}</b>${dn0?`;决定性事件覆盖 → <b>${tempText(i.temp)}</b>`:''}。点开详情看全表。</div></div>`;
+}
+function renderGrid(){
+  let list = filteredIndustries();
+  if(sort==='temp') list = list.slice().sort((a,b)=>(b.missing?-1e3:Math.abs(b.temp))-(a.missing?-1e3:Math.abs(a.temp)));
+  else if(sort==='recent') list = list.slice().sort((a,b)=>(b.missing?'':lastFact(b)) > (a.missing?'':lastFact(a)) ? 1 : -1);
+  if(!list.some(i=>!i.missing&&i.id===selected)) selected=(list.find(i=>!i.missing)||{}).id;
+  $('#grid').innerHTML = list.map(i=>{
+    if(i.missing) return `<div class="tile pending" aria-disabled="true"><div class="t-name">${esc(i.name)}</div><div class="t-group">待采集 · 该行业组尚未交付</div></div>`;
+    const w = Math.min(50, Math.abs(i.temp)/2);
+    const bar = i.temp<0 ? `<i class="neg" style="width:${w}%"></i>` : `<i class="pos" style="width:${w}%"></i>`;
+    return `<div role="button" tabindex="0" class="tile ${i.stance} ${i.id===selected?'active':''}" data-id="${i.id}" aria-pressed="${i.id===selected}" aria-describedby="tip-${i.id}">
+      <div class="t-head"><div><div class="t-name">${esc(i.name)}</div><div class="t-group" title="${esc(i.group)} · ${esc(i.stage)}阶段">${esc(i.group)} · ${esc(i.stage)}阶段</div></div><span class="pill ${i.stance}">${STANCE[i.stance]}</span></div>
+      <div class="temp"><span class="tv num ${i.stance}">${tempText(i.temp)}</span><div class="bipolar" aria-label="监管温度 ${i.temp}">${bar}</div><span id="tip-${i.id}">${tipHtml(i)}</span></div>
+      <details class="t-line"><summary>要点</summary><div>${esc(i.line)}</div></details>
+    </div>`;
+  }).join('') || '<div style="color:var(--ink-4);padding:20px">该筛选下没有行业。</div>';
+}
+
+/* ======================= 详情 ======================= */
+let dtab='evidence', tlFilter='all', showTemp=false, hlNode=null;
+let tlView='time', tlDate=null, tlIndustry=null;
+function renderDetail(){
+  const i = byId[selected];
+  const previousRules=$('#footRules details');
+  const rulesOpen=previousRules&&previousRules.dataset.industry===selected&&previousRules.open;
+  $('#detail').hidden=!i;
+  if(!i){ $('#detail').innerHTML='<div class="panel active"><div class="empty"><b>没有可显示的行业</b>data.js 为空或未加载。</div></div>'; $('#footRules').innerHTML=''; return; }
+  const ctxN = i.timeline.filter(n=>n.role==='context').length;
+  const anchorN = i.timeline.filter(n=>n.out_of_window).length;
+  const nextNode = nodeOf(i, i.next.source_node_id);
+  const kindLabel = i.process.kind==='service_run' ? '服务运行' : '分析过程记录';
+  $('#detail').innerHTML = `
+    <div class="d-head">
+      <div>
+        <h2>${esc(i.name)} <span class="pill ${i.stance}">${STANCE[i.stance]}</span> <button type="button" class="tbtn ${showTemp?'on':''}" id="tempToggle" aria-expanded="${showTemp}">监管温度 ${tempText(i.temp)} · 怎么算</button></h2>
+        <div class="d-sub">${esc(i.line)}</div>
+      </div>
+      <div class="d-meta">
+        <span>证据冻结 T0 <b class="mono">${esc(i.t0)}</b></span>
+        <span>观察窗 <b class="mono">${esc(winFrom(i))} → ${esc(i.t0)}</b></span>
+        <span>当前阶段 <b>${esc(i.stage)}</b></span>
+        <span>下一节点 <b class="mono">${esc(i.next.date)}</b> ${esc(i.next.text)} ${nextNode?nodeLink(i,i.next.source_node_id):''}</span>
+        <span>复核 <b>${esc(i.review.status)}</b></span>
+        <span>${kindLabel} <b>${esc(pub(i.meta.produced_by_session))} · ${esc(pub(i.meta.produced_at))}</b></span>
+      </div>
+    </div>
+    <div class="d-scope"><details><summary>本行业范围定义</summary><p>${esc(i.scope)}</p></details></div>
+    ${showTemp?renderTempTable(i):''}
+    <div class="sl" style="padding:14px 20px 0">${esc(i.name)}预测 · ${i.cards.length} 张预测卡</div>
+    <div class="cards" style="padding:0 20px">${i.cards.map(c=>renderCard(i,c)).join('')}</div>
+    <div class="d-tabs" id="evidenceTabs" role="tablist" tabindex="-1" aria-label="${esc(i.name)}证据链与分析">
+      <button type="button" role="tab" aria-selected="${dtab==='evidence'}" class="d-tab ${dtab==='evidence'?'active':''}" data-t="evidence">证据链 <span class="cnt">${i.timeline.length} 节点 · ${ctxN} 社会要素 · ${anchorN} 锚点</span></button>
+      <button type="button" role="tab" aria-selected="${dtab==='reason'}" class="d-tab ${dtab==='reason'?'active':''}" data-t="reason">推理过程 <span class="cnt">8 步</span></button>
+      <button type="button" role="tab" aria-selected="${dtab==='process'}" class="d-tab ${dtab==='process'?'active':''}" data-t="process">加工过程 <span class="cnt">5 段</span></button>
+    </div>
+    <div class="panel ${dtab==='evidence'?'active':''}" id="p-evidence">${renderTimeline(i)}</div>
+    <div class="panel ${dtab==='reason'?'active':''}" id="p-reason">${renderReasoning(i)}</div>
+    <div class="panel ${dtab==='process'?'active':''}" id="p-process">${renderProcess(i)}</div>`;
+  $('#footRules').innerHTML = `<details class="explanation" data-industry="${esc(i.id)}" ${rulesOpen?'open':''}><summary>说明</summary><div class="explanation-body"><div class="foot-hint" style="margin-top:8px">实线框为政策事实(role=fact),可被断言引用;虚线框为社会要素(role=context),不构成政策事实,只解释政策事实为什么在这个时点出现,并标明挂到哪条事实、是触发/放大/抑制/背景。窗外锚点:仍在生效的上位文件,只用于定阶段、措辞变化与历史类比。右侧标签是该节点对行业监管方向的推力;S4 内部件只作修正,不能单独支撑断言。徽章:S1 官方原文 · S2 官方表态/权威转载 · S3 行业媒体 · S4 内部一手情报;国家/省/市为发文机关层级。</div>监管温度范围 −100(收紧风险)到 +100(国家支持),负值向左、正值向右。${esc(SIGNAL_RULE)}
+    <div class="rules">
+      <div><b>名词解释:观察窗 / 窗内 / 窗外 / T0 后</b>观察窗 = 证据冻结日 T0 往前 365 天(本行业 ${esc(winFrom(i))} → ${esc(i.t0)})。<b style="display:inline;font-size:inherit;color:inherit;letter-spacing:0">窗内</b>:公开日落在观察窗里的政策文件与监管动作,是本轮温度、信号、"至少 3 条 S1"和预测卡依据的全部来源。<b style="display:inline;font-size:inherit;color:inherit;letter-spacing:0">窗外</b>:公开日早于观察窗起点、但仍在生效的上位文件,可以作"锚点"进链,只用来定阶段、看措辞变化和做历史类比,不计温度、不计信号、不算 3 条。<b style="display:inline;font-size:inherit;color:inherit;letter-spacing:0">T0 后</b>:公开日晚于 T0 的材料,标"T0 后",本轮不参与推理,下一轮滚动观察窗后再计。</div>
+      <div><b>温度与标签规则</b>${esc(i.meta.stance_rule||'—')}</div>
+      <div><b>S1 准入规则</b>${esc(i.meta.s1_admission_rule||'—')}</div>
+      <div><b>锚点规则</b>${esc(i.meta.anchor_rule||'—')}</div>
+      <div><b>档位规则</b>${esc(LEVEL_RULE)}</div>
+    </div></div></details>`;
+  requestAnimationFrame(alignTimelineDate);
+  if(hlNode){ const el=document.getElementById('node-'+hlNode); if(el){ el.classList.add('hl'); el.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'center'}); } hlNode=null; }
+}
+
+function renderTempTable(i){
+  const t=tempSums(i);
+  const rows=(i.temp_calc||[]).slice().sort((a,b)=>Math.abs(b.contribution)-Math.abs(a.contribution));
+  const mean = t.sum/(t.nd+5)*8;
+  const dn0=decisiveNode(i), cn=coreNodes(i);
+  return `<div class="tempbox">${dn0?`<div class="cap" style="margin-bottom:8px"><b>决定性事件覆盖</b>:${nodeLink(i,dn0.id)} ${esc(dn0.title)}(${esc(dn0.date)})属重大利${dn0.push==='up'?'空':'好'},有绝对权重,本行业温度直接取 <b>${tempText(dn0.decisive_temp)}</b>(${STANCE[i.stance]});下表均值 ${tempText(basisOf(i).mean_temp)} 只作参考。</div>`:''}${cn.length?`<div class="cap" style="margin-bottom:8px;background:var(--blue-soft);border-color:#BFDBFE;color:#1D4ED8"><b>核心内部信息</b>:${cn.map(n=>nodeLink(i,n.id)+' '+esc(n.title.slice(0,50))).join(';')} — 内部了解到的确定事实,按满额 ±100 计入,不打级别、层级、时效折扣。</div>`:''}<div class="sl">监管温度逐节点贡献(D2 权重 × D7 均值化 × D12 软规则半额 × D14 核心信息满额/决定性事件绝对权重);收紧为负、支持为正</div>
+    <div class="scroll"><table class="mini-t" style="width:100%;border-collapse:collapse;font-size:11.5px"><thead><tr><th style="text-align:left">节点</th><th style="text-align:left">推力</th><th>级别</th><th>层级</th><th>时效</th><th>角色</th><th style="text-align:right">贡献</th></tr></thead><tbody>
+    ${rows.map(r=>{ const n=nodeOf(i,r.node_id)||{}; return `<tr><td style="padding:3px 6px">${nodeLink(i,r.node_id)} <span style="color:var(--ink-3)">${esc((n.title||'').slice(0,34))}${(n.title||'').length>34?'…':''}</span></td><td style="padding:3px 6px">${PUSH[r.push]}${pwTag(r)?`<span style="color:var(--ink-4)">${pwTag(r)} 软规则</span>`:''}</td><td class="num" style="text-align:center">${r.tier_weight}</td><td class="num" style="text-align:center">${r.level_weight}</td><td class="num" style="text-align:center">${r.recency_weight}</td><td class="num" style="text-align:center">${r.role_factor}</td><td class="num" style="text-align:right;padding:3px 6px;font-family:var(--mono)">${fmtSigned(r.contribution)}</td></tr>`; }).join('')}
+    </tbody></table></div>
+    <div class="foot-hint" style="margin-top:8px">贡献 = 推力符号(收紧 −1、放宽 +1)× 20 × 级别(S1 1.0/S2 0.8/S3 0.5/S4 0.5)× 层级(国家 1.0/省 0.7/市 0.4)× 时效(≤90 天 1.0/≤180 天 0.7/≤365 天 0.4)× 角色(事实 1.0/社会要素 0.5)× 软规则权重(指引/标准/程序性规则/征求意见稿 0.5,其余 1)。支持分 ${t.up.toFixed(1)} − 收紧分 ${(-t.dn).toFixed(1)} = ${t.sum.toFixed(1)};÷(有方向节点 ${t.nd} + 5)× 8 = ${mean.toFixed(1)} → 取整并夹在 ±100 = <b>${tempText(basisOf(i).mode==='decisive'?basisOf(i).mean_temp:i.temp)}</b>${dn0?`;决定性事件 ${esc(dn0.id)} 覆盖为 <b>${tempText(i.temp)}</b>(${STANCE[i.stance]})`:`(${STANCE[i.stance]})`}。分母只数有方向的节点,+5 是防单条饱和的先验(D12);窗外锚点、T0 后与待判定节点不计。</div></div>`;
+}
+
+function renderCard(i,c){
+  const br=i.process.base_rate;
+  const sec=(i.process.base_rate_secondary||[]).find(s=>s.card_id===c.id);
+  const use = sec||br;
+  const capped = !!use.missing || (use.n||0)<5;
+  const lv = LEVEL_CLS[c.level]||'lvl1';
+  const imp = c.impact||{};
+  const impKeys = Object.keys(IMPACT).filter(k=>imp[k]);
+  return `<article class="pcard" id="card-${esc(c.id)}">
+    <div class="pc-head"><span class="pc-id">${esc(c.id)}</span><span class="r"><span class="lvl ${lv}">${esc(c.level)}</span>${br.proxy&&!sec?'<span class="tag tag-slate" title="'+esc(pub(br.proxy_note||''))+'">代理基率</span>':''}${c.status&&!/AI\s*初稿.*待复核/i.test(c.status)?`<span class="tag tag-amber">${esc(c.status)}</span>`:''}</span></div>
+    ${capped?`<div class="cap">基率样本不足(${sec?'本卡基率':'本行业基率'} n=${use.n||0}),档位封顶「可能」${br.proxy&&!sec?';代理基率只作说明,不解除封顶':''}</div>`:''}
+    <h4>${esc(c.title)}</h4>
+    <div class="pc-grid"><span><b>主体</b>${esc(c.actor)}</span><span><b>动作</b>${esc(c.action)}</span><span><b>对象</b>${esc(c.object)}</span><span><b>载体</b>${esc(c.carrier)}</span></div>
+    <div class="pc-foot"><span>时间窗 <span class="mono">${esc(c.window.from)} → ${esc(c.window.to)}</span></span><span>验证日 <span class="mono">${esc(c.verify_date)}</span></span><span>依据 ${c.basis_fact_ids.map(f=>nodeLink(i,f)).join(' ')}</span></div>
+    <details><summary>假设组与分析师主观概率 · 未校准</summary>
+      <div class="hyp">${c.hypotheses.map(h=>`<div class="hrow"><span class="k">${esc(h.key)}</span><span class="t">${esc(h.text)}</span><span class="p num">${pct(h.p)}</span><div class="bar ${h.key.toLowerCase()}"><i style="width:${Math.round((h.p||0)*100)}%"></i></div></div>`).join('')}</div>
+      <div class="foot-hint" style="margin-top:6px">三者之和为 1;到验证日按 H1/H2/H0 结算并回流基率。</div>
+    </details>
+    <details><summary>失效条件 · 反证 · 影响</summary>
+      <div class="pc-more">
+        <div><b>失效条件</b><ul>${c.failure_conditions.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+        <div><b>反证</b><ul>${c.counter_evidence.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+        ${impKeys.length?`<div><b>影响</b><ul>${impKeys.map(k=>`<li><span style="color:var(--ink-3)">${IMPACT[k]}:</span>${esc(imp[k])}</li>`).join('')}</ul></div>`:'<div><b>影响</b><span style="color:var(--ink-4)">未填</span></div>'}
+      </div>
+    </details>
+  </article>`;
+}
+
+function matchesEvidenceType(n){ return tlFilter==='all'||(tlFilter==='context'?n.role==='context':n.role!=='context'); }
+function timelineDates(i){ return [...new Set(i.timeline.map(n=>n.date))].sort(); }
+function alignTimelineDate(){
+  const rail=$('#dateRail'), active=$('#dateRail .active');
+  if(rail && active) rail.scrollLeft=Math.max(0,active.offsetLeft-rail.offsetLeft-(rail.clientWidth-active.clientWidth)/2);
+}
+function updateTimeline(focusSelector, revealDate=false){
+  const i=byId[selected]; if(!i) return;
+  const panel=$('#p-evidence'), rail=$('#dateRail');
+  const fresh=document.createElement('div'); fresh.innerHTML=renderTimeline(i);
+  const nextRail=fresh.querySelector('#dateRail');
+  if(rail&&nextRail){
+    // Keep the clicked controls in place; only the evidence below them changes.
+    const left=rail.scrollLeft, journey=rail.closest('.journey');
+    rail.querySelectorAll('[data-date]').forEach(button=>{
+      const active=button.dataset.date===tlDate;
+      button.classList.toggle('active',active);button.setAttribute('aria-pressed',active);
+    });
+    journey.querySelector('.date-summary').replaceWith(fresh.querySelector('.date-summary'));
+    const navigation=journey.querySelector('#dateNavigation'), nextNavigation=fresh.querySelector('#dateNavigation');
+    navigation.querySelector('span').textContent=nextNavigation.querySelector('span').textContent;
+    navigation.querySelectorAll('[data-date-step]').forEach(button=>{
+      button.disabled=nextNavigation.querySelector('[data-date-step="'+button.dataset.dateStep+'"]').disabled;
+    });
+    fresh.querySelector('.journey').remove();
+    [...panel.childNodes].forEach(child=>{if(child!==journey) child.remove();});
+    panel.append(...fresh.childNodes);
+    rail.scrollLeft=left;
+    if(revealDate){
+      const active=rail.querySelector('.active'), bounds=rail.getBoundingClientRect(), item=active.getBoundingClientRect();
+      if(item.left<bounds.left) rail.scrollLeft+=item.left-bounds.left;
+      else if(item.right>bounds.right) rail.scrollLeft+=item.right-bounds.right;
+    }
+  }else{
+    panel.replaceChildren(...fresh.childNodes);
+    alignTimelineDate();
+  }
+  if(focusSelector){ const button=$(focusSelector); if(button) button.focus({preventScroll:true}); }
+  reportEmbedHeight();
+}
+function renderTimeline(i){
+  const dates=timelineDates(i);
+  if(tlIndustry!==i.id){ tlIndustry=i.id; tlDate=null; tlFilter='all'; tlView='time'; }
+  if(!dates.includes(tlDate)) tlDate=i.timeline.filter(n=>!n.pending&&!n.after_t0&&n.date<=i.t0).map(n=>n.date).sort().pop()||dates[0]||null;
+  const viewButtons=`<div class="journey-actions"><button class="vtab ${tlView==='time'?'active':''}" data-tv="time" aria-pressed="${tlView==='time'}" type="button">时间脉络</button><button class="vtab ${tlView==='list'?'active':''}" data-tv="list" aria-pressed="${tlView==='list'}" type="button">完整证据</button></div>`;
+  const intro=`<div class="journey-head"><div><h3>政策发展脉络</h3><p>点击日期查看当时发生的变化。上方预测卡为当前研判。</p></div>${viewButtons}</div>`;
+  if(!dates.length) return `<div class="journey">${intro}</div><div class="timeline-empty">该行业尚无时间证据。</div>`;
+  if(tlView==='list') return `<div class="journey">${intro}</div>${renderEvidenceList(i)}`;
+  const index=dates.indexOf(tlDate), prior=dates[index-1];
+  const day=i.timeline.filter(n=>n.date===tlDate&&matchesEvidenceType(n));
+  const confirmed=day.filter(n=>!n.pending);
+  const counts={up:0,dn:0,'0':0};confirmed.forEach(n=>{if(n.push in counts) counts[n.push]++;});
+  const stages=[...new Set(confirmed.filter(n=>n.role==='fact'&&n.stage).map(n=>n.stage))];
+  const stops=dates.map(date=>{
+    const nodes=i.timeline.filter(n=>n.date===date), isFuture=date>i.t0||nodes.every(n=>n.pending);
+    const stage=nodes.find(n=>n.role==='fact'&&n.stage);
+    const label=isFuture?'后续观察':stage?stage.stage:(KINDS[nodes[0].kind]||{}).label||'事件';
+    return `<button class="date-stop ${date===tlDate?'active':''} ${isFuture?'future':''}" type="button" data-date="${esc(date)}" aria-pressed="${date===tlDate}" aria-label="${esc(date)}，${esc(label)}，${nodes.length} 条事件"><time datetime="${esc(date)}">${esc(date)}</time><span class="date-dot" aria-hidden="true"></span><span class="date-label">${esc(label)} · ${nodes.length} 条</span></button>`;
+  }).join('');
+  return `<div class="journey">${intro}<div class="date-rail" id="dateRail" role="group" aria-label="政策事件日期">${stops}</div>
+    <div class="journey-head" id="dateNavigation" style="margin-bottom:12px"><span class="foot-hint" style="margin:0">${index+1} / ${dates.length} 个时间节点</span><div class="journey-actions"><button class="vtab" type="button" data-date-step="-1" ${index===0?'disabled':''}>上一节点</button><button class="vtab" type="button" data-date-step="1" ${index===dates.length-1?'disabled':''}>下一节点</button></div></div>
+    <div class="date-summary" hidden><h4>${esc(i.name)} · ${esc(tlDate)}${tlDate>i.t0?' · 后续观察':''}</h4>
+      <div class="change-counts"><span class="tag tag-slate">政策事实 ${confirmed.filter(n=>n.role==='fact').length}</span><span class="tag tag-slate">社会要素 ${confirmed.filter(n=>n.role==='context').length}</span>${counts.up?`<span class="tag tag-red">收紧 ${counts.up}</span>`:''}${counts.dn?`<span class="tag tag-green">支持 ${counts.dn}</span>`:''}${counts['0']?`<span class="tag tag-slate">中性 ${counts['0']}</span>`:''}${day.some(n=>n.pending)?`<span class="tag tag-amber">待核验 ${day.filter(n=>n.pending).length}</span>`:''}</div>
+      <p>${prior?`较上一节点 ${esc(prior)}，本日新增 ${confirmed.length} 条已记录事件。`:`本证据链的首个日期，记录 ${confirmed.length} 条事件。`}${stages.length?`材料阶段：${esc(stages.join('、'))}。`:''}${tlDate>i.t0?'本轮截止日之后的记录，不参与当前预测。':''}</p>
+    </div></div>${renderEvidenceList(i,tlDate)}`;
+}
+
+function renderEvidenceList(i, date=null){
+  const items = i.timeline.slice().sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:(a.id<b.id?-1:1));
+  let out=[], t0Inserted=false;
+  items.forEach(n=>{
+    if(date && n.date!==date) return;
+    if(!date && !t0Inserted && n.date>i.t0){ out.push(`<div class="ev t0"><div class="t0txt">证据冻结点 T0 = ${i.t0}。此线以下为预测窗口内的观察项与 T0 后新增事实,不参与本轮推理。</div></div>`); t0Inserted=true; }
+    const k = KINDS[n.kind]||{label:n.kind,color:'#94A3B8'};
+    const isCtx = n.role==='context';
+    const show = tlFilter==='all' || (tlFilter==='context' && isCtx) || (tlFilter==='fact' && !isCtx);
+    const cls = ['ev', n.role, n.out_of_window?'anchor':'', n.after_t0?'after':'', n.pending?'pending':'', show?'':'hidden'].join(' ');
+    const rel = isCtx && n.relation ? `<div class="e-link">挂到事实 ${nodeLink(i,n.relation.to_fact_id)} · ${EFFECT[n.relation.effect]||esc(n.relation.effect)}${nodeOf(i,n.relation.to_fact_id)?' · '+esc(nodeOf(i,n.relation.to_fact_id).title.slice(0,30)):''}</div>` : '';
+    const tags = [
+      n.after_t0?'<span class="tag tag-green">T0 后</span>':'',
+      n.pending?'<span class="tag tag-slate">待判定</span>':'',
+      n.tier==='S4'?'<span class="tag tag-amber" title="S4 一手情报只作修正,不能单独支撑断言">内部 · 未见公开渠道</span>':'',
+      wcTag(n),
+    ].join('');
+    const meta = [n.issuer?esc(n.issuer):'', n.docno?'<span class="mono">'+esc(n.docno)+'</span>':'', n.issued_on&&n.issued_on!==n.date?'成文 <span class="mono">'+esc(n.issued_on)+'</span>':'', n.stage&&!isCtx?'阶段:'+esc(n.stage):''].filter(Boolean).join(' · ');
+    out.push(`<div class="${cls}" id="node-${esc(n.id)}" style="--kc:${k.color}">
+      <div class="e-top"><span class="mono" style="color:var(--ink-4)">${esc(n.id)}</span><span class="e-date">${esc(n.date)}</span><span class="kchip">${esc(k.label)}</span><span class="${tierCls(n.tier)}">${esc(n.tier)}</span>${levelBadge(n.issuer_level)}<span class="rolechip ${n.role}">${isCtx?'社会要素':'政策事实'}</span>${tags}</div>
+      <div class="e-title">${esc(n.title)}</div>
+      ${meta?`<div class="e-meta">${meta}</div>`:''}
+      ${n.pending&&!n.excerpt?'':`<blockquote class="e-ev">${esc(n.excerpt)}</blockquote>`}
+      <div class="e-src">${n.pending&&(!linkable(n)||!n.source_name)?`待判定项,验证日后补来源${linkable(n)?` · <a class="ext" href="${esc(n.url)}" target="_blank" rel="noopener">监测栏目 ↗</a>`:''}`:srcLine(n)}</div>
+      ${rel}
+      ${n.use?`<div class="e-link"><b>${date?'变化与影响':'在推理中的作用'}：</b>${esc(pub(n.use))}</div>`:''}
+      ${n.note&&!PUBLIC?`<div class="e-link">备注:${esc(pub(n.note))}</div>`:''}
+      <div class="e-dir dir-${n.push}">${PUSH[n.push]||esc(n.push)}${n.push_weight!=null&&n.push_weight!==1?'<br><span style="font-weight:500;font-size:10px">软规则 ×'+n.push_weight+'</span>':''}${n.tier==='S4'?'<br><span style="font-weight:500;font-size:10px">仅修正</span>':''}</div>
+    </div>`);
+  });
+  if(!date && !t0Inserted) out.push(`<div class="ev t0"><div class="t0txt">证据冻结点 T0 = ${i.t0}</div></div>`);
+  return `<div class="tl-tools"><span class="lbl">显示</span>
+      <button type="button" class="vtab ${tlFilter==='all'?'active':''}" data-tl="all">全部</button>
+      <button type="button" class="vtab ${tlFilter==='fact'?'active':''}" data-tl="fact">只看政策事实</button>
+      <button type="button" class="vtab ${tlFilter==='context'?'active':''}" data-tl="context">只看社会要素</button>
+      <div class="kinds">${Object.entries(KINDS).map(([k,v])=>`<span class="kd"><i style="background:${v.color}"></i>${v.label}</span>`).join('')}</div>
+    </div>
+    <div class="timeline">${out.join('')}</div>
+    ${items.some(n=>(!date||n.date===date)&&matchesEvidenceType(n))?'':'<div class="timeline-empty">当前日期和类型下没有证据，可切换日期或选择「全部」。</div>'}
+`;
+}
+
+function renderReasoning(i){
+  const r=i.process.retrieval, br=i.process.base_rate;
+  const facts = i.timeline.filter(n=>n.role==='fact'&&isCounted(n,i));
+  const ctxs = i.timeline.filter(n=>n.role==='context'&&isCounted(n,i));
+  const anchors = i.timeline.filter(n=>n.out_of_window);
+  const tiers = ['S1','S2','S3','S4'].map(t=>[t,facts.filter(n=>n.tier===t).length]).filter(x=>x[1]);
+  const s1 = s1Stats(i);
+  const latest = facts.slice().sort((a,b)=>a.date<b.date?1:-1)[0];
+  const ops = i.process.operators;
+  const opN = ops.filter(o=>o.status==='SUPPORTED').length;
+  const anchorNode = br.anchor_node_id ? nodeOf(i, br.anchor_node_id) : null;
+  const landing = anchorNode && br.median_days!=null ? shift(anchorNode.date, br.median_days) : null;
+  const checks = i.process.review_checks||[];
+  const cN = {pass:0,fail:0,cleared:0}; checks.forEach(c=>cN[c.result]=(cN[c.result]||0)+1);
+  const cal = i.process.calibration;
+  const nv = nextVerify(i);
+  const steps = [
+    {t:'证据冻结与知识库检索', tag:`命中 ${r.fetched} · 准入 ${r.admitted} · 退回 ${r.rejected.length}`, cls:'tag-slate',
+      in:[`观察窗 <span class="mono">${esc(r.window_from)} → ${esc(r.window_to)}</span>,T0 = <span class="mono">${esc(i.t0)}</span>`, `检索主题 ${r.queries.length} 条、覆盖来源 ${(r.sources_checked||[]).length} 个(见加工过程 01)`],
+      out:[`命中 ${r.fetched} 条,准入 ${r.admitted} 个节点,退回 ${r.rejected.length} 类(带原因)`, PUBLIC?'每个准入节点都附官方原文链接':(r.log_path?`检索与准入日志:<span class="mono">${esc(r.log_path)}</span>`:'未登记日志路径')],
+      note:'政策知识库只收录能回链到官方原文或权威来源的材料;S5 不进链;T0 之后的材料一律标「T0 后」,不参与本轮推理。'},
+    {t:'事实抽取与阶段判定', tag:`阶段:${i.stage}`, cls:'tag-orange',
+      in:[`政策事实 ${facts.length} 条(${tiers.map(([t,n])=>t+' '+n).join(' · ')||'—'})`, `窗内 S1 ${s1.n} 条:国家 ${s1.国家} / 省 ${s1.省} / 市 ${s1.市}(D1 准入:≥3 且含国家或省级)`, anchors.length?`窗外锚点 ${anchors.length} 条:${anchors.map(a=>nodeLink(i,a.id)).join(' ')}`:'无窗外锚点'],
+      out:[`当前阶段:<b>${esc(i.stage)}</b>`, latest?`T0 前最新政策事实:<span class="mono">${esc(latest.date)}</span> ${nodeLink(i,latest.id)} ${esc(latest.title)}`:'无窗内政策事实'],
+      note:'阶段由 T0 前最新一条政策事实决定;锚点只用于定阶段、措辞变化与历史类比,不计入 3 条、温度与信号。'},
+    {t:'社会要素配对', tag:`${ctxs.length} 条`, cls:'tag-slate',
+      in:[ctxs.length?`${ctxs.length} 条社会事件、经济与行业数据(role=context)`:'本行业未采到带来源的社会要素'],
+      out:ctxs.length?ctxs.map(n=>`<span class="mono">${esc(n.date)}</span> ${nodeLink(i,n.id)} ${esc(n.title.slice(0,30))}${n.title.length>30?'…':''} → 挂到 ${n.relation?nodeLink(i,n.relation.to_fact_id):'—'} · ${n.relation?(EFFECT[n.relation.effect]||esc(n.relation.effect)):'—'}`):['无配对;温度与断言只用政策事实'],
+      note:'社会要素只解释政策事实为什么在这个时点出现,不作为断言依据;每条都要挂到一条事实并标明触发/放大/抑制/背景。'},
+    {t:'四个分析算子', tag:`支持 ${opN} / 4`, cls: ops.some(o=>o.status==='COUNTER')?'tag-red':'tag-green',
+      in:['关键事实 + 社会要素 + 历史样本'],
+      out:ops.map(o=>`<span class="tag ${OPST[o.status][1]}">${OPS[o.name]||o.name} · ${OPST[o.status][0]}</span> ${esc(pub(o.summary))} ${(o.fact_ids||[]).map(f=>nodeLink(i,f)).join(' ')}`),
+      note:'任一算子「反对」使档位降一档;「证据缺失」不加分。'},
+    {t:'基率锚定', tag: br.missing?'样本不足':`n=${br.n}`, cls: br.missing?'tag-amber':'tag-green',
+      in:[`模式 <span class="mono">${esc(pub(br.pattern))}</span>`, br.proxy?`代理基率:${esc(pub(br.proxy_note||''))}`:''].filter(Boolean),
+      out:[ br.missing?`样本 n=${br.n} < 5:基率未注入,档位封顶「可能」`:`样本 n=${br.n},中位 ${br.median_days} 天,四分位 ${br.p25}–${br.p75} 天`,
+            anchorNode?`锚点事实 ${nodeLink(i,anchorNode.id)} <span class="mono">${esc(anchorNode.date)}</span>${landing?`,中位落点 <span class="mono">${landing}</span>`:''}`:'未指定锚点事实',
+            ...(i.process.base_rate_secondary||[]).map(s=>`卡 <span class="mono">${esc(s.card_id)}</span> 另用基率:${esc(pub(s.pattern))} n=${s.n}${s.missing?'(样本不足,封顶「可能」)':''}${s.median_days!=null?`,中位 ${s.median_days} 天`:''}${s.p25!=null&&s.p75!=null?`,四分位 ${s.p25}–${s.p75} 天`:''}${s.max_days!=null?`,最长 ${s.max_days} 天`:''}`)],
+      note:'基率是「没有任何本轮信号时应该相信什么」;本轮信号只在此基础上加减。样本少于 5 时不注入,档位封顶「可能」;代理基率只作说明,不解除封顶。'},
+    {t:'假设组与概率', tag:`${i.cards.length} 张卡`, cls:'tag-slate',
+      in:['阶段 + 算子 + 基率 + 社会推力'],
+      out:i.cards.map(c=>`<span class="mono">${esc(c.id)}</span> <span class="lvl ${LEVEL_CLS[c.level]||'lvl1'}">${esc(c.level)}</span> ${c.hypotheses.map(h=>`${esc(h.key)} ${pct(h.p)}`).join(' / ')}(未校准)`),
+      note:'主显示档位;概率是分析师主观概率,页面折叠并标「未校准」。'},
+    {t:'批判审阅与失败关闭', tag:`通过 ${cN.pass} · 未通过 ${cN.fail} · 已清空 ${cN.cleared}`, cls: cN.fail?'tag-red':'tag-green',
+      in:['每张卡的主体、动作、对象、载体、时间窗能否回链 basis_fact_ids'],
+      out:checks.length?checks.map(c=>`<span class="tag ${CHECK[c.result][1]}">${CHECK[c.result][0]}</span> ${esc(pub(c.check))}${c.note?` <span style="color:var(--ink-3)">— ${esc(pub(c.note))}</span>`:''}`):['未登记审阅项'],
+      note:'审阅只做一件事:每个字段能不能回链到事实编号。回不了链的字段清空,而不是改写。'},
+    {t:'校准与人工复核', tag:esc(i.review.status), cls: i.review.status==='通过'?'tag-green':'tag-amber',
+      in:[cal?`已判定卡 ${cal.judged_cards},Brier ${(cal.brier_history||[]).map(b=>b.toFixed(2)).join(' / ')||'—'}${cal.bucket?`,H1 概率桶 ${esc(cal.bucket)}`:''}`:`无历史判定;最近判定日 <span class="mono">${esc(nv)}</span>(距今 ${daysBetween(TODAY,nv)} 天)`],
+      out:[`复核状态:${esc(i.review.status)}(${esc(i.review.by)},${esc(i.review.at)})`, i.review.note?esc(pub(i.review.note)):'无附注'],
+      note:'预测卡状态为「AI 初稿·待复核」;通过前不进入业务视图。判定日到期后按 H1/H2/H0 结算,Brier 回流校准。'},
+  ];
+  return `<div class="steps">${steps.map((s,idx)=>`<div class="step"><div class="no">${idx+1}</div><div class="body">
+      <h4>${esc(s.t)} <span class="tag ${s.cls}">${s.tag}</span></h4>
+      <div class="io"><div class="box"><b>输入</b><ul>${s.in.map(x=>`<li>${x}</li>`).join('')}</ul></div><div class="box"><b>输出</b><ul>${s.out.map(x=>`<li>${x}</li>`).join('')}</ul></div></div>
+      ${s.note?`<div class="note">${esc(pub(s.note))}</div>`:''}
+    </div></div>`).join('')}</div>`;
+}
+
+function renderProcess(i){
+  const p=i.process, r=p.retrieval, br=p.base_rate;
+  const grading=p.grading||[];
+  const tierN=['S1','S2','S3','S4'].map(t=>`${t} ${grading.filter(g=>g.tier===t).length}`).join(' · ');
+  const cal=p.calibration; const nv=nextVerify(i);
+  const record = p.kind==='service_run' && p.run ? `
+      <div><dt>记录类型</dt><dd>服务运行</dd></div><div><dt>运行编号</dt><dd>${esc(p.run.run_id)}</dd></div><div><dt>证据冻结 T0</dt><dd>${esc(i.t0)}</dd></div>
+      <div><dt>模型</dt><dd>${esc(p.run.model||'—')}</dd></div><div><dt>提示词版本</dt><dd>${esc(p.run.prompt_version||'—')}</dd></div><div><dt>画像版本 / 严格度</dt><dd>${esc(p.run.profile_version||'—')} · ${esc(p.run.strictness||'—')}</dd></div>
+      <div><dt>复核状态</dt><dd>${esc(i.review.status)}</dd></div>` : `
+      <div><dt>记录类型</dt><dd>分析过程记录</dd></div><div><dt>证据来源</dt><dd>政策知识库 · 官方原文收录,逐条可溯</dd></div><div><dt>产出批次</dt><dd>${esc(pub(i.meta.produced_by_session))}</dd></div><div><dt>产出日期</dt><dd>${esc(pub(i.meta.produced_at))}</dd></div>
+      <div><dt>证据冻结 T0</dt><dd>${esc(i.t0)}</dd></div><div><dt>观察窗</dt><dd>${esc(r.window_from)} → ${esc(r.window_to)}</dd></div><div><dt>时间链节点</dt><dd>${i.timeline.length}(准入 ${r.admitted})</dd></div>
+      <div><dt>复核状态</dt><dd>${esc(i.review.status)}</dd></div>`;
+  const rejected = (r.rejected||[]).map(x=>`<div class="rej"><b>退回</b> ${esc(pub(x.title))}${x.url&&/^https?:/.test(x.url)?` <a class="ext" href="${esc(x.url)}" target="_blank" rel="noopener">链接 ↗</a>`:''}<br><span style="color:var(--ink-3)">${esc(pubReason(x.reason))}</span></div>`).join('') || '<div style="color:var(--ink-4)">未登记退回项。</div>';
+  const samples = (br.samples||[]).map(s=>`<tr><td>${esc(s.title)}</td><td class="mono num">${esc(s.start)}</td><td class="mono num">${esc(s.end)}</td><td class="num" style="text-align:right">${s.days}</td><td>${/^https?:/.test(s.url||'')?`<a class="ext" href="${esc(s.url)}" target="_blank" rel="noopener">原文 ↗</a>`:'—'}</td></tr>`).join('');
+  const secondary = (p.base_rate_secondary||[]).map(s=>`<h5 style="margin-top:10px">卡 ${esc(s.card_id)} 另用基率:${esc(pub(s.pattern))} · n=${s.n}${s.missing?' · 样本不足,封顶「可能」':''}${s.median_days!=null?` · 中位 ${s.median_days} 天`:''}${s.p25!=null&&s.p75!=null?` / ${s.p25}–${s.p75} 天`:''}${s.max_days!=null?` · 最长 ${s.max_days} 天`:''}${s.note?` · ${esc(pub(s.note))}`:''}</h5>${(s.samples||[]).length?`<div class="scroll"><table><thead><tr><th>样本</th><th>起</th><th>止</th><th style="text-align:right">天</th><th>来源</th></tr></thead><tbody>${s.samples.map(x=>`<tr><td>${esc(x.title)}</td><td class="mono num">${esc(x.start)}</td><td class="mono num">${esc(x.end)}</td><td class="num" style="text-align:right">${x.days}</td><td>${/^https?:/.test(x.url||'')?`<a class="ext" href="${esc(x.url)}" target="_blank" rel="noopener">原文 ↗</a>`:'—'}</td></tr>`).join('')}</tbody></table></div>`:''}`).join('');
+  const checks=(p.review_checks||[]);
+  let calibHtml;
+  if(!cal){
+    calibHtml = `<div class="empty"><b>无历史判定</b>本行业还没有到期结算的预测卡,没有 Brier 走势与概率桶命中率。最近判定日 <span class="mono">${esc(nv)}</span>,距今 ${daysBetween(TODAY,nv)} 天。</div>`;
+  } else {
+    const bh = cal.brier_history||[];
+    calibHtml = `<div class="calib"><div><div class="v num">${cal.judged_cards}</div><div class="l">已判定卡</div></div><div><div class="v num">${bh.length?bh[bh.length-1].toFixed(2):'—'}</div><div class="l">最近一次 Brier(瞎猜三选一 ≈ 0.667)</div></div><div><div class="v num">${cal.judged_cards>=10&&cal.bucket_hit_rate!=null?Math.round(cal.bucket_hit_rate*100)+'%':'—'}</div><div class="l">${esc(cal.bucket||'H1 概率桶')} 命中率${cal.judged_cards<10?'(同桶样本 '+cal.judged_cards+' < 10,不显示)':''}</div></div></div>
+      ${bh.length>=2?`<div class="brier" style="margin-top:8px">${sparkline(bh)}</div>`:`<div class="foot-hint" style="margin-top:6px">判定样本 ${bh.length} 个,不足 2 个不画走势。</div>`}`;
+  }
+  const stops=(i.meta.stops||[]), gaps=(i.meta.gaps||[]);
+  return `
+    <dl class="record">${record}</dl>
+    <div class="sections">
+      <section class="section"><div class="sec-head"><span class="n">01</span><h4>知识库检索与准入</h4><span class="sum">命中 ${r.fetched} 条,准入 ${r.admitted} 个节点,退回 ${r.rejected.length} 类</span></div>
+        <div class="sec-body">
+          <div class="mini"><h5>检索主题</h5><ul>${r.queries.map(q=>pub(q)).filter(Boolean).map(q=>`<li><span class="mono">${esc(q)}</span></li>`).join('')||'<li>未登记</li>'}</ul>
+            <h5 style="margin-top:10px">覆盖的来源</h5><ul>${[...new Set((r.sources_checked||[]).map(q=>pubSource(q)).filter(Boolean))].map(q=>`<li>${esc(q)}</li>`).join('')||'<li>未登记</li>'}</ul>
+            ${r.log_path&&!PUBLIC?`<div class="foot-hint" style="margin-top:8px">逐条记录:<span class="mono">${esc(r.log_path)}</span></div>`:''}</div>
+          <div class="mini"><h5>被退回的材料(为什么不用)</h5>${rejected}</div>
+        </div></section>
+      <section class="section"><div class="sec-head"><span class="n">02</span><h4>证据分级</h4><span class="sum">${tierN}</span></div>
+        <div class="sec-body one"><div class="mini"><div class="scroll"><table><thead><tr><th>节点</th><th>材料</th><th>类型</th><th>级别</th><th>层级</th><th>角色</th><th style="text-align:right">可推导权重</th><th>备注</th></tr></thead><tbody>${grading.map(g=>{ const n=nodeOf(i,g.node_id)||{}; const k=KINDS[n.kind]||{label:n.kind||'—'}; return `<tr><td>${nodeLink(i,g.node_id)}</td><td>${esc(n.title||'(时间链无此节点)')}</td><td>${esc(k.label)}</td><td><span class="${tierCls(g.tier)}">${esc(g.tier)}</span></td><td>${levelBadge(n.issuer_level)}</td><td>${g.role==='context'?'社会要素(解释)':'事实(可断言)'}${n.out_of_window?' · 锚点':''}</td><td class="num" style="text-align:right">${g.weight}</td><td style="color:var(--ink-3)">${esc(pub(g.note||''))}</td></tr>`; }).join('')||'<tr><td colspan="8">未登记分级表</td></tr>'}</tbody></table></div>
+          <div class="foot-hint" style="margin-top:8px">S1 官方原文 · S2 官方表态/权威转载 · S3 行业媒体 · S4 内部一手情报(只作修正,不可单独断言)· S5 不可核验,不进链。权重来自各组登记的 grading,与温度公式中的级别权重可不同。</div></div></div></section>
+      <section class="section"><div class="sec-head"><span class="n">03</span><h4>算子与基率</h4><span class="sum">4 个算子 · 基率样本 n=${br.n}${br.missing?'(样本不足)':''}${br.proxy?' · 代理基率':''}</span></div>
+        <div class="sec-body">
+          <div class="mini"><h5>算子结果</h5>${p.operators.map(o=>`<div class="opline"><span class="on">${OPS[o.name]||esc(o.name)}</span><span><span class="tag ${OPST[o.status][1]}">${OPST[o.status][0]}</span> ${esc(pub(o.summary))}<br><span style="color:var(--ink-4)">依据 ${(o.fact_ids||[]).map(f=>nodeLink(i,f)).join(' ')||'—'}</span></span></div>`).join('')}</div>
+          <div class="mini"><h5>基率</h5><table><tr><td>模式</td><td class="mono">${esc(pub(br.pattern))}</td></tr><tr><td>样本</td><td class="num">n=${br.n}${br.missing?' · <span class="tag tag-amber">样本不足,未注入,档位封顶「可能」</span>':''}</td></tr>${br.median_days!=null?`<tr><td>中位 / 四分位</td><td class="num">${br.median_days} 天 / ${br.p25}–${br.p75} 天</td></tr>`:''}${br.anchor_node_id?`<tr><td>锚点事实</td><td>${nodeLink(i,br.anchor_node_id)} <span class="mono">${esc((nodeOf(i,br.anchor_node_id)||{}).date||'')}</span></td></tr>`:''}${br.proxy?`<tr><td>代理基率</td><td>${esc(pub(br.proxy_note||''))}</td></tr>`:''}</table>
+            ${samples?`<h5 style="margin-top:10px">样本清单</h5><div class="scroll"><table><thead><tr><th>样本</th><th>起</th><th>止</th><th style="text-align:right">天</th><th>来源</th></tr></thead><tbody>${samples}</tbody></table></div>`:'<div class="foot-hint" style="margin-top:6px">无样本清单。</div>'}
+            ${secondary}</div>
+        </div></section>
+      <section class="section"><div class="sec-head"><span class="n">04</span><h4>推理与审阅</h4><span class="sum">审阅 ${checks.length} 项 · 通过 ${checks.filter(c=>c.result==='pass').length}</span></div>
+        <div class="sec-body one"><div class="mini"><h5>推理摘要(分析师记录,不含未回链数字)</h5><div class="trace">${esc(pub(p.reasoning_trace||'未登记推理摘要'))}</div>
+          <h5 style="margin-top:10px">审阅结论</h5><ul>${checks.map(c=>`<li><span class="tag ${CHECK[c.result][1]}">${CHECK[c.result][0]}</span> ${esc(pub(c.check))}${c.note?` <span style="color:var(--ink-3)">— ${esc(pub(c.note))}</span>`:''}</li>`).join('')||'<li>未登记审阅项</li>'}</ul></div></div></section>
+      <section class="section"><div class="sec-head"><span class="n">05</span><h4>校准与复核</h4><span class="sum">${cal?`已判定 ${cal.judged_cards} 张`:'无历史判定'}</span></div>
+        <div class="sec-body">
+          <div class="mini"><h5>校准</h5>${calibHtml}</div>
+          <div class="mini"><h5>人工复核</h5><div class="review ${i.review.status==='通过'?'ok':''}"><span class="who">${esc(i.review.status)}</span><span>${esc(i.review.by)} · <span class="mono">${esc(i.review.at)}</span>${i.review.note?`<br>${esc(pub(i.review.note))}`:''}</span></div>
+            <div class="foot-hint" style="margin-top:8px">复核只有三种处置:通过、需补充、驳回。通过前预测卡不进入业务视图;判定日到期后按 H1/H2/H0 结算并回流基率。</div></div>
+        </div></section>
+      ${PUBLIC?`<div class="foot-hint" style="margin-top:8px">内部工作记录(停点 ${stops.length} 条、已知缺口 ${gaps.length} 条)未在此视图展示。</div>`:''}
+      <section class="section"${PUBLIC?' hidden':''}><div class="sec-head"><span class="n">附</span><h4>停点与已知缺口</h4><span class="sum">停点 ${stops.length} · 缺口 ${gaps.length}</span></div>
+        <div class="sec-body">
+          <div class="mini"><h5>触发过的停点与裁定</h5><ul>${stops.map(s=>`<li>${esc(s)}</li>`).join('')||'<li>无</li>'}</ul></div>
+          <div class="mini"><h5>已知缺口(不补、不编)</h5><ul>${gaps.map(s=>`<li>${esc(s)}</li>`).join('')||'<li>无</li>'}</ul></div>
+        </div></section>
+    </div>`;
+}
+
+function sparkline(arr){
+  const w=340,h=90,pl=28,pr=8,pt=8,pb=18; const ys=arr; const mn=0, mx=Math.max(0.4, ...ys);
+  const x=i=>pl+i*(w-pl-pr)/Math.max(arr.length-1,1), y=v=>pt+(h-pt-pb)*(1-(v-mn)/(mx-mn));
+  const pts=ys.map((v,i)=>`${x(i)},${y(v)}`).join(' ');
+  const area=`M${x(0)},${h-pb} L${pts.replace(/ /g,' L')} L${x(arr.length-1)},${h-pb} Z`;
+  const grid=[0.1,0.2,0.3,0.4].filter(g=>g<=mx);
+  return `<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Brier 走势">
+    ${grid.map(g=>`<line x1="${pl}" x2="${w-pr}" y1="${y(g)}" y2="${y(g)}" stroke="#E2E8F0" stroke-width="1"/><text x="${pl-6}" y="${y(g)+3}" font-size="9" fill="#94A3B8" text-anchor="end">${g.toFixed(1)}</text>`).join('')}
+    <path d="${area}" fill="rgba(249,115,22,.12)"/>
+    <polyline points="${pts}" fill="none" stroke="#F97316" stroke-width="2" stroke-linejoin="round"/>
+    ${ys.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="${i===ys.length-1?4:2.5}" fill="${i===ys.length-1?'#EA580C':'#fff'}" stroke="#F97316" stroke-width="1.5"/>`).join('')}
+    ${ys.map((v,i)=>`<text x="${x(i)}" y="${h-4}" font-size="9" fill="#94A3B8" text-anchor="middle">第 ${i+1} 次</text>`).join('')}
+  </svg>`;
+}
+
+/* ======================= 事件 ======================= */
+document.addEventListener('click', e=>{
+  const tile = e.target.closest('.tile[data-id]');
+  if(tile && e.target.closest('details')) return;
+  if(tile){ selected=tile.dataset.id; dtab='evidence'; tlFilter='all'; tlIndustry=null; showTemp=false; renderGrid(); renderDetail(); jumpToForecast(); return; }
+  const nb = e.target.closest('[data-node]');
+  if(nb){ hlNode=nb.dataset.node; dtab='evidence'; tlFilter='all'; tlView='time'; tlIndustry=selected; const node=nodeOf(byId[selected],hlNode); if(node) tlDate=node.date; renderDetail(); return; }
+  if(e.target.closest('#tempToggle')){ showTemp=!showTemp; renderDetail(); return; }
+  const fd = e.target.closest('[data-fd]'); if(fd){ filterDir=fd.dataset.fd; document.querySelectorAll('[data-fd]').forEach(b=>{b.classList.toggle('active',b===fd);b.setAttribute('aria-pressed',b===fd);}); renderGrid(); return; }
+  if(e.target.closest('[data-business]')){ businessOnly=true; filter='all'; filterDir='all'; applyFilters(); return; }
+  if(e.target.closest('#clearFilters,[data-scope="all"]')){ businessOnly=false; filter='all'; filterDir='all'; applyFilters(); return; }
+  const f = e.target.closest('[data-f]'); if(f){ filter=f.dataset.f; if(filter==='all'){businessOnly=false;filterDir='all';} applyFilters(); return; }
+  const s = e.target.closest('[data-s]'); if(s){ sort=s.dataset.s; document.querySelectorAll('[data-s]').forEach(b=>{b.classList.toggle('active',b===s);b.setAttribute('aria-pressed',b===s);}); renderGrid(); return; }
+  const t = e.target.closest('.d-tab'); if(t){ dtab=t.dataset.t; renderDetail(); return; }
+  const tv = e.target.closest('[data-tv]'); if(tv){ tlView=tv.dataset.tv; updateTimeline('[data-tv="'+tlView+'"]'); return; }
+  const date = e.target.closest('[data-date]'); if(date){ tlDate=date.dataset.date; updateTimeline('[data-date="'+tlDate+'"]'); return; }
+  const step = e.target.closest('[data-date-step]'); if(step){ const dates=timelineDates(byId[selected]); const next=dates.indexOf(tlDate)+Number(step.dataset.dateStep); if(dates[next]){tlDate=dates[next];updateTimeline('[data-date="'+tlDate+'"]',true);} return; }
+  const tl = e.target.closest('[data-tl]'); if(tl){ tlFilter=tl.dataset.tl; updateTimeline('[data-tl="'+tlFilter+'"]'); return; }
+});
+document.addEventListener('toggle', e=>{ const d=e.target; if(d.matches && d.matches('details.t-line') && d.open){ document.querySelectorAll('details.t-line[open]').forEach(o=>{ if(o!==d) o.open=false; }); } }, true);
+document.addEventListener('keydown', e=>{
+  const date=e.target.closest('[data-date]');
+  if(date && ['ArrowLeft','ArrowRight','Home','End'].includes(e.key)){
+    e.preventDefault();const dates=timelineDates(byId[selected]), index=dates.indexOf(tlDate);
+    const next=e.key==='Home'?0:e.key==='End'?dates.length-1:index+(e.key==='ArrowLeft'?-1:1);
+    if(dates[next]){tlDate=dates[next];updateTimeline('[data-date="'+tlDate+'"]',true);}return;
+  }
+});
+document.addEventListener('keydown', e=>{ const t=e.target; if((e.key==='Enter'||e.key===' ') && t.classList && t.classList.contains('tile') && t.dataset.id){ e.preventDefault(); t.click(); } });
+/* 嵌入 portal(policy-predict.html 的 iframe)时:隐藏自带页签条、去掉外边距、把内容高度上报给父页 */
+const EMBED = window.self!==window.top || new URLSearchParams(location.search).get('embed')==='1';
+/* 量 .page 底边而不是 documentElement.scrollHeight:后者被 iframe 视口撑着,只会涨不会缩 */
+function reportEmbedHeight(){ if(!EMBED||window.parent===window) return; try{ const r=document.querySelector('.page').getBoundingClientRect(); window.parent.postMessage({type:'policy-embed:industry-board-height', height: Math.ceil(r.bottom+window.scrollY+12)}, '*'); }catch(e){} }
+if(EMBED){ document.querySelector('.page').classList.add('embedded'); document.body.classList.add('embedded'); }
+renderKpi(); renderGrid(); syncFilters(); renderDetail();
+if(EMBED){ reportEmbedHeight(); window.addEventListener('load', reportEmbedHeight); if(window.ResizeObserver){ new ResizeObserver(reportEmbedHeight).observe(document.querySelector('.page')); } setInterval(reportEmbedHeight, 1500); }
+</script>
