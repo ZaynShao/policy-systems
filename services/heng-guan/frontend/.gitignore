@@ -1,0 +1,5 @@
+node_modules/
+dist/
+# 测试跑到一半失败时留下的临时替身文件
+.qa-client-stub-*.mjs
+.monthly-content-*.mjs

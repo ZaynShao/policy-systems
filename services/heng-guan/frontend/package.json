@@ -1,0 +1,30 @@
+{
+  "name": "heng-guan-frontend-standalone",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "公共事务平台里我写的几页（政策解读问答、月刊新版渲染、L1 审核、消息铃铛、拜访语音录入）脱离原平台的独立构建",
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "typecheck": "vue-tsc --noEmit -p tsconfig.json",
+    "offline": "node build-offline.mjs"
+  },
+  "dependencies": {
+    "axios": "1.20.0",
+    "echarts": "6.1.0",
+    "pinia": "2.3.1",
+    "vue": "3.5.43",
+    "vue-router": "4.6.4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "5.2.4",
+    "@vue/compiler-sfc": "3.5.43",
+    "jsdom": "26.1.0",
+    "typescript": "5.9.3",
+    "vite": "5.4.21",
+    "vue-tsc": "2.2.12"
+  },
+  "overrides": {
+    "rollup": "4.60.4"
+  }
+}
