@@ -421,6 +421,39 @@ Canonical 注册在 `_meta/entities/registry.yaml`(或 vault 内等价位置,以
 
 ---
 
+## 7. L3 消费层(月刊)——只读契约
+
+L3 是 vault 的**纯消费方**:读料装包写稿,**不写 vault 任何路径**。
+
+### 7.1 L3 读什么
+
+| 料 | 路径 | 用法 | 信任级别 |
+|---|---|---|---|
+| RAW 正文 | `0_raw/policies/*.md` 的 `## 政策原文` 段 | 唯一事实源,引用须逐字回指 | **事实** |
+| 评论 | `0_raw/commentaries/*.md` | 校准;官方答记者问与官方数据类引用须标"据XX口径" | 官方口径=事实,其余=信号 |
+| 业务派生 | `_meta/business_view/{pid}.yaml` | 召回信号 | **仅信号**(评分实证失准,不作排序定论) |
+| 关系边 | `1_extracted/relations/relations_canonical.jsonl` | 承接血缘;`evidence` 须回 RAW 验证才可写成承接句 | **仅信号** |
+| 战略画像 | `_meta/framework/business_strategy.yaml` | 业务相关性判据的**唯一来源** | 配置(`status: active` 全库唯一件) |
+| 上下文叠加 | `<state>/analysis_layer/nightly/analysis_context.jsonl`(**不在 vault**) | 关系+信号叠加,含 `audit_refs` | **仅信号** |
+
+frontmatter 的 `date` / `region.name` / `official_number` / `id` 前缀对 L3 **全不可信**——发文机关与发文日一律以 RAW 落款为准。该约束与 §F Drift Register 登记的脏数据一致。
+
+### 7.2 L3 写哪里(全在 vault 之外)
+
+| 产物 | 落点 | 进 git |
+|---|---|---|
+| 中间产物(candidates / shortlist / gap_report / slate / pack / draft / audit / final.md) | `<state>/monthly_<YYYY-MM>/` | ✗ gitignored |
+| 公文 docx | 运行时目录 | ✗ |
+| 成稿结构化内容 | heng-pg `Monthly.content`(`schema: monthly.v2`) | ✗ DB |
+
+**L3 不在 vault 内创建任何工作中间产物。**
+
+### 7.3 `2_crystallized/_reports/` 的现状(建设期遗留,已停用)
+
+§1 目录契约把 `2_crystallized/_reports/` 记为"月报渲染产物"。核实(2026-09-07):该路径下**只有 `2026-04/2026-04月刊-v1.md` 一份**,写入时间即建库时间,此后 2026-05 / 06 两期成品均未写入——**事实上已停用**。
+
+新 L3 产线**不复用该路径**:成稿的消费方是 heng 前端与 docx,不是 vault 读者;把成稿写回 vault 会制造第二份真相源。该目录的清理另作任务,本节只登记现状、不改动数据。
+
 ## C. Raw 不可变的边界例外(白名单)
 
 `0_raw/` immutable 原则有合法例外。**仅以下字段**允许 pipeline 后置回填到 raw frontmatter:
@@ -527,6 +560,13 @@ vault 当前内含一些字段,与"理想 schema"有出入,但是真实存在的
 ---
 
 ## Changelog
+
+### v1.3 — 2026-09-07(L3 消费层只读契约)
+
+- 新增 §7:L3(月刊)是 vault 纯消费方,读六样料、**不写 vault 任何路径**;中间产物落 `<state>/monthly_<YYYY-MM>/`,成稿落 heng-pg
+- §7.1 登记 L3 侧的信任分级(RAW=事实;business_view / 关系边 / analysis_context=仅信号;frontmatter 全不可信)
+- §7.3 登记 `2_crystallized/_reports/` 的实际状态:仅存 2026-04 一份、已停用,新产线不复用
+- driver:`docs/WORKFLOW-policy-monthly-agent-v1.0.md`(政策月刊 agent 产线 PM1)
 
 ### v1.2 — 2026-06-04(derived signals 契约)
 
