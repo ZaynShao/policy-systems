@@ -20,7 +20,7 @@ from .channel_catalog import Channel, ChannelStatus
 
 UA = "Mozilla/5.0 (compatible; ZCE-Scan/0.1)"
 TIMEOUT = 20
-MAX_PAGES = 5
+MAX_PAGES = 10
 NEW_RATIO_THRESHOLD = 0.10
 CST = timezone(timedelta(hours=8))
 
