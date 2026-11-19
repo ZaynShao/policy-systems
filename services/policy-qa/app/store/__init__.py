@@ -11,7 +11,7 @@ from typing import Any, Iterable, Literal, Protocol
 from pydantic import BaseModel, Field
 
 Importance = Literal["INFO", "GENERAL", "MAJOR", "STRATEGIC"]
-BusinessLine = Literal["加油", "充电", "电力", "乡村"]
+BusinessLine = Literal["加油", "充电", "电力"]
 Order = Literal["date_desc", "importance_desc"]
 
 # --- 检索常量 ---------------------------------------------------------------
@@ -23,12 +23,29 @@ IMPORTANCE_ORDER: dict[str, int] = {
     "STRATEGIC": 3,
 }
 
-#: 业务线 → business_view 影响分析的 JSON 键(SCHEMA §4)
+#: 业务线 → business_view 影响分析的 JSON 键(SCHEMA §4)。
+#:
+#: **这是本服务唯一的业务线枚举**:BusinessLine 字面量、planner 的白名单、
+#: 注入规划提示词的口径,全部从这里派生(见 tests/test_business_lines.py 的一致性断言)。
+#:
+#: 键集必须与 pipeline 侧 ``l2_themescore/program_gate.py`` 的 IMPACT_KEYS 逐一对应。
+#: L2 只写这三个键;多出来的键会被 program_gate 判废、被 business_view_isolation 清理。
+#: 在这里多列一个键,后果不是报错而是**静默的空结果**——planner 会选中它,
+#: impact 里查无此键,``impact_match`` 返回 False,检索返回 0 条,
+#: 而模型会把空结果读成"库里没有这类政策"。2026-08-31 查实的「乡村」正是如此:
+#: 框架 5/31 就判它退役,提示词里反复写"不作专门考量点",但只要枚举里还留着,
+#: 模型照选不误——**否定句降低不了概率,删掉枚举才行**。
 BUSINESS_LINE_TO_IMPACT_KEY: dict[str, str] = {
     "加油": "加油",
     "充电": "充电",
     "电力": "电力_储能_V2G_交易",
-    "乡村": "乡村",
+}
+
+#: 业务线口径,注入规划提示词。改这里等于改模型看到的业务定义。
+BUSINESS_LINE_SCOPE: dict[str, str] = {
+    "加油": "汽油为主",
+    "充电": "乘用车为主",
+    "电力": "储能/V2G/电力交易",
 }
 
 RELATION_TYPES: tuple[str, ...] = (

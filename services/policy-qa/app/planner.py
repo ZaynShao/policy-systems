@@ -18,7 +18,7 @@ from typing import Any, Literal
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent
 
-from .store import ThemeInfo
+from .store import BUSINESS_LINE_SCOPE, BUSINESS_LINE_TO_IMPACT_KEY, ThemeInfo
 
 logger = logging.getLogger("policy-qa")
 
@@ -43,7 +43,11 @@ class RetrievalPlan(BaseModel):
     )
     business_lines: list[str] = Field(
         default_factory=list,
-        description="要扫的业务线,只能取 加油/充电/电力/乡村。选不出就留空",
+        description=(
+            "要扫的业务线,只能取 "
+            + "/".join(BUSINESS_LINE_TO_IMPACT_KEY)
+            + "。选不出就留空"
+        ),
     )
     date_from: str | None = Field(
         default=None, description="时间窗起点 YYYY-MM-DD。盘点类必填,解读单篇可留空"
@@ -72,7 +76,7 @@ PLANNER_PROMPT = """你在给一个政策库问答助手做**检索规划**。�
 可选的主题(只能从这里选 id):
 {themes}
 
-业务线口径:加油(汽油为主)、充电(乘用车为主)、电力(储能/V2G/电力交易)、乡村(一笔带过即可)。
+业务线口径:{business_lines}。
 
 规划要点:
 - **优先用主题**。主题是库里已有的分类,比关键词准。一个问题通常一到两个主题就够。
@@ -120,6 +124,7 @@ async def make_plan(
         today=day.isoformat(),
         recent_from=(day - datetime.timedelta(days=recent_days)).isoformat(),
         themes=_themes_block(themes),
+        business_lines="、".join(f"{k}({v})" for k, v in BUSINESS_LINE_SCOPE.items()),
         question=question[:PLAN_MAX_CHARS],
     )
     try:
@@ -138,7 +143,7 @@ def _sanitize(plan: RetrievalPlan, themes: list[ThemeInfo]) -> RetrievalPlan:
     theme_id,下游拿去查就是空结果,而空结果看起来像"库里没有",比报错更糟。
     """
     known = {t.id for t in themes}
-    valid_lines = {"加油", "充电", "电力", "乡村"}
+    valid_lines = set(BUSINESS_LINE_TO_IMPACT_KEY)
     return plan.model_copy(
         update={
             "theme_ids": [t for t in plan.theme_ids if t in known][:3],
