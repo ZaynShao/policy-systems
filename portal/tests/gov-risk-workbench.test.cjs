@@ -78,29 +78,23 @@ test('改名:页面与导航都叫政诉预判', () => {
     }
 });
 
-test('左侧导航的每一项都有路由,复制模块与公共事务原版同路径', () => {
+// 独立版:从公共事务复制的政策模块不在本仓,路由只留总览、政诉预判;导航照旧列出复制模块,点进去落到兜底页
+test('左侧导航的每一项都有去处:我自己的两页有路由,复制模块落到"不在独立版里"', () => {
     const nav = read('src/shell/nav.ts');
     const router = read('src/router.ts');
     const routes = new Set([...router.matchAll(/path: '([^']+)'/g)].map((m) => m[1]));
     const targets = [...nav.matchAll(/to: '([^']+)'/g)].map((m) => m[1]);
     assert.deepEqual(targets, ['/overview', '/gov-risk', '/dashboard/policy', '/policy/interpretation', '/policy/knowledge',
         '/policy/graph', '/monthlies', '/policy/import', '/quality/l1-review']);
-    for (const to of targets) assert.ok(routes.has(to), `导航 ${to} 没有路由`);
-
-    const heng = fs.readFileSync(path.resolve(__dirname, '..', '..', 'services/heng-guan/frontend/src/router/index.ts'), 'utf8');
-    const hengRoutes = new Set([...heng.matchAll(/path: '([^']+)'/g)].map((m) => m[1]));
-    for (const copied of targets.slice(2).concat('/monthlies/:id')) {
-        assert.ok(hengRoutes.has(copied), `${copied} 与公共事务原版路由不一致,原代码里的 router.push 会失效`);
-    }
-    // 没复制的公共事务页面跳回原版,不留空白页;用 replace,后退不会被反复弹走
-    assert.match(router, /path: '\/:pathMatch\(\.\*\)\*'.*HengFallback/);
-    assert.match(read('src/shell/HengFallback.vue'), /location\.replace\(target\.value\)/);
+    for (const to of targets.slice(0, 2)) assert.ok(routes.has(to), `导航 ${to} 没有路由`);
+    for (const to of targets.slice(2)) assert.ok(!routes.has(to), `${to} 是复制模块,独立版里不该有路由`);
+    assert.match(router, /path: '\/:pathMatch\(\.\*\)\*'.*NotInStandalone/);
+    assert.match(read('src/shell/NotInStandalone.vue'), /不在独立版里/);
 });
 
-test('只走平台同源接口:复制模块的前缀固定为 /heng', () => {
+// 独立版:复制来的 geojson.ts、MonthlyDetail.vue 不在本仓,那两条断言去掉;接口客户端(独立版外壳)前缀不变
+test('只走平台同源接口:接口客户端的前缀固定为 /heng', () => {
     assert.match(read('src/api/client.ts'), /export const apiBase = '\/heng\/api\/v1';/);
-    assert.match(read('src/utils/geojson.ts'), /const BASE_URL = '\/heng';/);
-    assert.match(read('src/views/monthly/MonthlyDetail.vue'), /:endpoint="`\$\{apiBase\}\/monthlies\/\$\{detail\.id\}\/chat`"/);
     for (const file of walk('src').filter((f) => /\.(vue|ts|mjs)$/.test(f))) {
         assert.doesNotMatch(read(file), /fetch\(\s*['"`]https?:/, file);
     }
@@ -129,7 +123,37 @@ test('不引外部 CDN,资源都在平台或本目录;构建产物齐全', () =>
 
 test('新写的门户代码不落浏览器存储', () => {
     for (const file of ['src/App.vue', 'src/main.ts', 'src/router.ts', 'src/shell/Sidebar.vue', 'src/shell/nav.ts',
-        'src/shell/HengFallback.vue', 'src/views/home/Overview.vue', 'src/views/gov-risk/GovRisk.vue']) {
+        'src/shell/HengFallback.vue', 'src/views/home/Overview.vue', 'src/views/gov-risk/GovRisk.vue',
+        // 独立版补的:兜底页和离线演示入口(写操作只记在页面内存里)
+        'src/shell/NotInStandalone.vue', 'src/standalone/main.ts', 'src/standalone/setup.ts', 'src/standalone/mock.ts']) {
         assert.doesNotMatch(read(file), /localStorage|sessionStorage|indexedDB/, file);
+    }
+});
+
+// 独立版:离线演示页面用的是编的样例工单(用户定的红线),页面上要写明;内置数据不能出现个人信息样式
+test('离线演示:页面写明演示数据是编的,内置样例工单不含个人信息样式', () => {
+    assert.match(read('src/standalone/setup.ts'), /演示数据是编的样例,不是真实工单/);
+    assert.match(read('demo/data/README.md'), /工单是编的/);
+    const pii = [
+        ['手机号', /(?<!\d)1[3-9]\d{9}(?!\d)|(?<!\d)1[3-9]\d[*xX]{4}\d{4}(?!\d)/],
+        ['证件号', /(?<!\d)\d{17}[\dXx](?!\d)/],
+        ['车牌', /[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼][A-HJ-NP-Z][\s·]?[A-HJ-NP-Z0-9]{4,5}/],
+        ['长编号', /(?<![A-Za-z0-9])\d{8,}(?![A-Za-z0-9])/],
+        ['邮箱', /[\w.+-]+@[\w-]+\.[\w.-]+/],
+        ['链接', /https?:\/\/\S+|www\.\S+/],
+        ['称呼', /[\u4e00-\u9fa5](先生|女士|小姐|师傅)/],
+    ];
+    const { cases } = JSON.parse(read('demo/data/cases.json'));
+    assert.ok(cases.length >= 500, '演示工单数量级要像真的(约 560 条)');
+    const result = JSON.parse(read('demo/data/result.json'));
+    const texts = cases.flatMap((c) => Object.values(c.text || {}))
+        .concat(result.package.reference_cases.flatMap((r) => [r.title, r.summary]));
+    for (const t of texts) {
+        for (const [kind, rx] of pii) assert.doesNotMatch(t, rx, `演示数据里出现${kind}样式:${t.slice(0, 20)}…`);
+    }
+    for (const c of cases) {
+        assert.match(c.case_id, /^GT-[A-Z2-7]{8}$/);
+        assert.ok(c.station_code === null || /^ST-[A-Z2-7]{6}$/.test(c.station_code), c.case_id);
+        assert.equal('user_key' in c, false, '下钻工单不带 user_key');
     }
 });

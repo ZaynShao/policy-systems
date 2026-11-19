@@ -1,9 +1,9 @@
 /* 政诉预判(原"工单系统性原因研判"):本地服务上传脱敏工单,平台研判;本页展示结果、下钻脱敏工单,并记录你对每个候选的跟进。
- * 数据只走公共事务 /heng/api/v1/gov-risk/*(平台登录会话 + 所有者校验),不落浏览器存储。
+ * 数据只走 guardian 的 /guardian/api/gov-risk/*(平台登录会话 + 所有者校验),不落浏览器存储。
  * 页面上所有文本都用 textContent 写入,不拼 innerHTML。
  * 门户里切到别的子模块时这块 DOM 会被卸掉:mountGovRisk 返回 dispose,停轮询、清内存;卸载后迟到的请求不再续轮询。 */
 export function mountGovRisk(root) {
-  var API = '/heng/api/v1/gov-risk';
+  var API = '/guardian/api/gov-risk';
   var POLL_MS = 4000;
   var PAGE = 20;
   var STATUS = {

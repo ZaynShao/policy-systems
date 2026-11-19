@@ -2,7 +2,10 @@ import { createRouter, createWebHashHistory } from 'vue-router';
 import { navLabel } from './shell/nav';
 
 // 个人目录由 nginx 直接静态托管(try_files $uri,没有 SPA 回退),所以用 hash 路由。
-// 复制模块的路径与公共事务原版一致,原代码里的 router.push 原样可用。
+//
+// 独立版:只留我自己的两页(总览、政诉预判)。原来门户里还有从公共事务复制的政策模块(政策大盘、解读、知识库、
+// 图谱、月刊、数据源、源质量审核),以及"没复制的公共事务页面跳回原版"(shell/HengFallback.vue),都依赖原平台,
+// 不在本仓;左侧导航仍照 shell/nav.ts 列出它们,点进去统一显示"这个页面不在独立版里"。
 export const router = createRouter({
   history: createWebHashHistory(),
   routes: [
@@ -10,18 +13,8 @@ export const router = createRouter({
     { path: '/overview', name: 'overview', component: () => import('@/views/home/Overview.vue') },
     { path: '/gov-risk', name: 'gov-risk', component: () => import('@/views/gov-risk/GovRisk.vue') },
 
-    // ↓ 从公共事务复制的模块(services/heng-guan/frontend/src/router/index.ts 同名路由)
-    { path: '/dashboard/policy', name: 'policy-dashboard', component: () => import('@/views/dashboard/PolicyDashboard.vue') },
-    { path: '/policy/interpretation', name: 'policy-interpretation', component: () => import('@/views/policy/PolicyInterpretation.vue') },
-    { path: '/policy/knowledge', name: 'policy-knowledge', component: () => import('@/views/policy/PolicyKnowledgeBase.vue') },
-    { path: '/policy/graph', name: 'policy-graph', component: () => import('@/views/policy/PolicyGraph.vue') },
-    { path: '/monthlies', name: 'monthly-list', component: () => import('@/views/monthly/MonthlyList.vue') },
-    { path: '/monthlies/:id', name: 'monthly-detail', component: () => import('@/views/monthly/MonthlyDetail.vue') },
-    { path: '/policy/import', name: 'policy-import', component: () => import('@/views/policy/ImportSettings.vue') },
-    { path: '/quality/l1-review', name: 'l1-review', component: () => import('@/views/quality/L1ReviewQueue.vue') },
-
-    // 没复制的公共事务页面(如政策分析 /policy)跳回原版
-    { path: '/:pathMatch(.*)*', name: 'heng-fallback', component: () => import('@/shell/HengFallback.vue') },
+    // 独立版外壳:其余路径(含导航里的复制模块)
+    { path: '/:pathMatch(.*)*', name: 'not-in-standalone', component: () => import('@/shell/NotInStandalone.vue') },
   ],
 });
 

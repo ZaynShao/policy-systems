@@ -1,0 +1,4875 @@
+{
+ "package": {
+  "schema": "gov-risk/v2",
+  "generated_at": "2026-11-19T10:16:53.538Z",
+  "data_window": {
+   "from": "2026-05",
+   "to": "2026-11"
+  },
+  "sources": [
+   {
+    "channel": "政诉",
+    "n": 556
+   },
+   {
+    "channel": "舆情",
+    "n": 6
+   }
+  ],
+  "dataset": {
+   "uploaded_at": "2026-11-19T10:16:53.528Z",
+   "case_count": 562
+  },
+  "run": {
+   "id": 1,
+   "trigger": "upload"
+  },
+  "method": {
+   "judge_prompt": "judge-v2",
+   "review_prompt": "review-v2",
+   "model": null,
+   "models": [],
+   "judged_by_model": 0,
+   "judged_new": 0,
+   "judged_cached": 0,
+   "judged_by_rules": 562,
+   "judge_deferred": 562,
+   "reviewed": 0,
+   "review_failed": 0,
+   "breaker": "ai_not_configured",
+   "errors": []
+  },
+  "kpi": {
+   "cases": 562,
+   "candidates_high": 21,
+   "candidates_medium": 14,
+   "recurring_after_close_high": 21,
+   "recurred_after_fix": 0,
+   "open_cases_in_high": 26
+  },
+  "candidates": [
+   {
+    "id": "SC-2AP54U",
+    "level": "symptom",
+    "object_type": null,
+    "object_code": null,
+    "object_label": null,
+    "symptom": "S_ENERGY_HIGH",
+    "symptom_label": "电量/度数偏高",
+    "score": 100,
+    "band": "高",
+    "score_breakdown": {
+     "persistence": 25,
+     "volume": 14,
+     "spread": 10,
+     "sensitivity": 20,
+     "systemic": 7.5,
+     "escalation": 10,
+     "regulator": 2.6,
+     "closed_but_recurring": 5,
+     "reference_case": 10
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 33,
+     "n_90d": 16,
+     "n_prev_90d": 17,
+     "months": {
+      "2026-05": 2,
+      "2026-06": 5,
+      "2026-07": 6,
+      "2026-08": 7,
+      "2026-09": 5,
+      "2026-10": 5,
+      "2026-11": 3
+     },
+     "active_months_6": 6,
+     "first_month": "2026-05",
+     "last_month": "2026-11",
+     "resolved": 29,
+     "open": 2,
+     "after_first_close": 32,
+     "recurring_after_close": true,
+     "channels": {
+      "政诉": 31,
+      "舆情": 2
+     },
+     "depts": {
+      "市场监管": 17,
+      "12345热线": 5,
+      "其他": 5,
+      "消协": 4,
+      "媒体": 2
+     },
+     "cities": 16,
+     "stations": 19,
+     "template_l2_l4": 20,
+     "platform_l1_l4": 0,
+     "repeat_users": 0,
+     "demands": {
+      "退款": 16,
+      "要求查处": 4,
+      "曝光": 3,
+      "欺诈主张": 1
+     },
+     "systemic": {
+      "中": 33
+     },
+     "mechanisms": [],
+     "clues": [
+      {
+       "code": "C_MISMATCH_VEHICLE",
+       "n": 22
+      },
+      {
+       "code": "C_EXCEEDS_BATTERY",
+       "n": 7
+      },
+      {
+       "code": "C_SAME_PILE_REPEAT",
+       "n": 7
+      }
+     ]
+    },
+    "mechanisms": [],
+    "clues": [
+     {
+      "code": "C_MISMATCH_VEHICLE",
+      "label": "与车辆仪表或车机显示不符",
+      "n": 22,
+      "points_to": [
+       "设备计量异常(硬件老化、校准、电表故障)",
+       "数据串单(流水号重复、订单与设备会话错配)"
+      ]
+     },
+     {
+      "code": "C_EXCEEDS_BATTERY",
+      "label": "充电量超过车辆电池容量",
+      "n": 7,
+      "points_to": [
+       "数据串单(流水号重复、订单与设备会话错配)",
+       "设备计量异常(硬件老化、校准、电表故障)"
+      ]
+     },
+     {
+      "code": "C_SAME_PILE_REPEAT",
+      "label": "同一桩或场站多次出现",
+      "n": 7,
+      "points_to": [
+       "设备计量异常(硬件老化、校准、电表故障)",
+       "设备故障(启停、枪锁、通信)"
+      ]
+     }
+    ],
+    "verify_steps": [],
+    "review": null,
+    "review_key": "0b315e42432d850e0056741225a75b8606ae09eb0983ac0df3af418c38964929",
+    "reference_matches": [
+     {
+      "case_id": "RC-DEMO-01",
+      "title": "充电度数过高引发舆情",
+      "why": "现象相同:电量/度数偏高"
+     },
+     {
+      "case_id": "RC-DEMO-02",
+      "title": "设备流水号重复导致串单",
+      "why": "现象相同:电量/度数偏高"
+     }
+    ],
+    "case_ids": [
+     "GT-CM6KF6UR",
+     "GT-MOKYCYMV",
+     "GT-YEG6IJSC",
+     "GT-M3W3QLV6",
+     "GT-A2LIIKV4",
+     "GT-UE3LFWMF",
+     "GT-KYJZU34U",
+     "GT-7FQBGXKM",
+     "GT-S3IC42ZK",
+     "GT-POCQHMDG",
+     "GT-XPYASUKF",
+     "GT-72QY5JER",
+     "GT-TLBWY6QG",
+     "GT-H2MSYEOT",
+     "GT-LOKMARU3",
+     "GT-UFUKCNKT",
+     "GT-JO64JNXA",
+     "GT-WJ43JCOO",
+     "GT-CNK7N7BK",
+     "GT-GXECRP53",
+     "GT-C54AUWW3",
+     "GT-TSIFEOAB",
+     "GT-OZB7NZVJ",
+     "GT-JQR3PVEU",
+     "GT-75FVX6IO",
+     "GT-622NXXVF",
+     "GT-4OAHJIWY",
+     "GT-MZIZDUNJ",
+     "GT-LXQ5MAAX",
+     "GT-VLOBV24F",
+     "GT-W5TFZKWD",
+     "GT-LHAYQ6OQ",
+     "GT-NXGC5E6O"
+    ]
+   },
+   {
+    "id": "SC-YPMWDY",
+    "level": "symptom",
+    "object_type": null,
+    "object_code": null,
+    "object_label": null,
+    "symptom": "S_OCCUPANCY_PARKING",
+    "symptom_label": "占位费或停车费争议",
+    "score": 94,
+    "band": "高",
+    "score_breakdown": {
+     "persistence": 25,
+     "volume": 15,
+     "spread": 10,
+     "sensitivity": 10,
+     "systemic": 7.5,
+     "escalation": 9.1,
+     "regulator": 2.5,
+     "closed_but_recurring": 5,
+     "reference_case": 10
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 75,
+     "n_90d": 36,
+     "n_prev_90d": 35,
+     "months": {
+      "2026-05": 6,
+      "2026-06": 13,
+      "2026-07": 14,
+      "2026-08": 13,
+      "2026-09": 11,
+      "2026-10": 12,
+      "2026-11": 6
+     },
+     "active_months_6": 6,
+     "first_month": "2026-05",
+     "last_month": "2026-11",
+     "resolved": 47,
+     "open": 3,
+     "after_first_close": 72,
+     "recurring_after_close": true,
+     "channels": {
+      "政诉": 74,
+      "舆情": 1
+     },
+     "depts": {
+      "市场监管": 34,
+      "12345热线": 23,
+      "其他": 8,
+      "未知": 4,
+      "媒体": 3,
+      "交通运输": 2,
+      "网信": 1
+     },
+     "cities": 25,
+     "stations": 37,
+     "template_l2_l4": 28,
+     "platform_l1_l4": 5,
+     "repeat_users": 1,
+     "demands": {
+      "退款": 44,
+      "要求查处": 7
+     },
+     "systemic": {
+      "中": 75
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": "c309e8ffe9961d0767d28c62cfbc5a4eb9dc33e95dfd6a12f4de2036983f7799",
+    "reference_matches": [
+     {
+      "case_id": "RC-DEMO-03",
+      "title": "停车费减免规则告知不清被集中投诉",
+      "why": "现象相同:占位费或停车费争议"
+     }
+    ],
+    "case_ids": [
+     "GT-PU5WJ72F",
+     "GT-YOQEFY3U",
+     "GT-D5T4QEUE",
+     "GT-ICUEI4IB",
+     "GT-RBZKGSWB",
+     "GT-EX7CAP65",
+     "GT-UXWNUVB2",
+     "GT-ZCOQXWC3",
+     "GT-AK7W7HWY",
+     "GT-3KKV5MBX",
+     "GT-TOBQMZYD",
+     "GT-MGINPE2L",
+     "GT-RHAROO7J",
+     "GT-2F36ELPC",
+     "GT-45OQ6S4G",
+     "GT-LSFEP76S",
+     "GT-Q2HVDV7Z",
+     "GT-ZGZB6P5H",
+     "GT-W2XDPQVT",
+     "GT-KLDUVMEI",
+     "GT-OQCRGDYF",
+     "GT-XSTORZ73",
+     "GT-XRDNQTBY",
+     "GT-EKW5AVKS",
+     "GT-TXRSBHKR",
+     "GT-4OH6MNYP",
+     "GT-PDTSCPSY",
+     "GT-RRPSJ3T7",
+     "GT-XITNAXIX",
+     "GT-QTOXZQOZ",
+     "GT-B3COECF3",
+     "GT-EOGXK4NS",
+     "GT-IJ7HE5BD",
+     "GT-NYQDWO34",
+     "GT-M5IAL7AH",
+     "GT-YYZAUU54",
+     "GT-JLFQ2EP3",
+     "GT-E37YUCWX",
+     "GT-RKAB2VOG",
+     "GT-6MUFXYIL",
+     "GT-U7DQ6FNY",
+     "GT-5353CGGE",
+     "GT-YCA7SU6N",
+     "GT-SOVI26HO",
+     "GT-HBXF7AKS",
+     "GT-HGW4FQD4",
+     "GT-4Y5S3WTA",
+     "GT-IPJ7SWAJ",
+     "GT-3PF7K2EP",
+     "GT-TNHNNGGJ",
+     "GT-STE5J7EH",
+     "GT-SXLSV3XY",
+     "GT-MDUSLRCK",
+     "GT-PISSVLU4",
+     "GT-72HKLQ2F",
+     "GT-3ZCZ3UCN",
+     "GT-EGYQM4T4",
+     "GT-73X5XXKX",
+     "GT-KFEAGIEE",
+     "GT-BNAKYIUI",
+     "GT-Y6JTOW7Q",
+     "GT-DLXP5Q7M",
+     "GT-H6I62UGF",
+     "GT-MN2LOPJF",
+     "GT-KMRUSERV",
+     "GT-TE7FXVZU",
+     "GT-KXFRQY2S",
+     "GT-R3PAL5U2",
+     "GT-6ZHRVAJH",
+     "GT-JZOAIYGQ",
+     "GT-6G7Z3333",
+     "GT-PAWD44XH",
+     "GT-UK4CDA3N",
+     "GT-2566NKEF",
+     "GT-DHMQAPPP"
+    ]
+   },
+   {
+    "id": "SC-EQVESJ",
+    "level": "object",
+    "object_type": "场站",
+    "object_code": "ST-3YBDB3",
+    "object_label": null,
+    "symptom": "S_ENERGY_HIGH",
+    "symptom_label": "电量/度数偏高",
+    "score": 91,
+    "band": "高",
+    "score_breakdown": {
+     "persistence": 20.8,
+     "volume": 8.8,
+     "spread": 10,
+     "sensitivity": 20,
+     "systemic": 7.5,
+     "escalation": 6.7,
+     "regulator": 1.7,
+     "closed_but_recurring": 5,
+     "reference_case": 10
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 9,
+     "n_90d": 5,
+     "n_prev_90d": 4,
+     "months": {
+      "2026-05": 1,
+      "2026-07": 1,
+      "2026-08": 4,
+      "2026-09": 1,
+      "2026-10": 1,
+      "2026-11": 1
+     },
+     "active_months_6": 5,
+     "first_month": "2026-05",
+     "last_month": "2026-11",
+     "resolved": 6,
+     "open": 1,
+     "after_first_close": 8,
+     "recurring_after_close": true,
+     "channels": {
+      "政诉": 7,
+      "舆情": 2
+     },
+     "depts": {
+      "市场监管": 3,
+      "12345热线": 2,
+      "其他": 2,
+      "媒体": 2
+     },
+     "cities": 1,
+     "stations": 1,
+     "template_l2_l4": 3,
+     "platform_l1_l4": 0,
+     "repeat_users": 0,
+     "demands": {
+      "退款": 6
+     },
+     "systemic": {
+      "中": 9
+     },
+     "mechanisms": [],
+     "clues": [
+      {
+       "code": "C_MISMATCH_VEHICLE",
+       "n": 4
+      },
+      {
+       "code": "C_EXCEEDS_BATTERY",
+       "n": 3
+      },
+      {
+       "code": "C_SAME_PILE_REPEAT",
+       "n": 3
+      }
+     ]
+    },
+    "mechanisms": [],
+    "clues": [
+     {
+      "code": "C_MISMATCH_VEHICLE",
+      "label": "与车辆仪表或车机显示不符",
+      "n": 4,
+      "points_to": [
+       "设备计量异常(硬件老化、校准、电表故障)",
+       "数据串单(流水号重复、订单与设备会话错配)"
+      ]
+     },
+     {
+      "code": "C_EXCEEDS_BATTERY",
+      "label": "充电量超过车辆电池容量",
+      "n": 3,
+      "points_to": [
+       "数据串单(流水号重复、订单与设备会话错配)",
+       "设备计量异常(硬件老化、校准、电表故障)"
+      ]
+     },
+     {
+      "code": "C_SAME_PILE_REPEAT",
+      "label": "同一桩或场站多次出现",
+      "n": 3,
+      "points_to": [
+       "设备计量异常(硬件老化、校准、电表故障)",
+       "设备故障(启停、枪锁、通信)"
+      ]
+     }
+    ],
+    "verify_steps": [],
+    "review": null,
+    "review_key": "b69e48cba64365a709fcc731c26a5294b44f29e42734398f503302a1abee083a",
+    "reference_matches": [
+     {
+      "case_id": "RC-DEMO-01",
+      "title": "充电度数过高引发舆情",
+      "why": "现象相同:电量/度数偏高"
+     },
+     {
+      "case_id": "RC-DEMO-02",
+      "title": "设备流水号重复导致串单",
+      "why": "现象相同:电量/度数偏高"
+     }
+    ],
+    "case_ids": [
+     "GT-YEG6IJSC",
+     "GT-7FQBGXKM",
+     "GT-TLBWY6QG",
+     "GT-LOKMARU3",
+     "GT-UFUKCNKT",
+     "GT-JO64JNXA",
+     "GT-CNK7N7BK",
+     "GT-JQR3PVEU",
+     "GT-LHAYQ6OQ"
+    ]
+   },
+   {
+    "id": "SC-M6426C",
+    "level": "symptom",
+    "object_type": null,
+    "object_code": null,
+    "object_label": null,
+    "symptom": "S_AMOUNT_HIGH",
+    "symptom_label": "金额高于实际或预期",
+    "score": 91,
+    "band": "高",
+    "score_breakdown": {
+     "persistence": 25,
+     "volume": 15,
+     "spread": 10,
+     "sensitivity": 16,
+     "systemic": 7.5,
+     "escalation": 10,
+     "regulator": 2.9,
+     "closed_but_recurring": 5
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 68,
+     "n_90d": 30,
+     "n_prev_90d": 38,
+     "months": {
+      "2026-05": 2,
+      "2026-06": 9,
+      "2026-07": 20,
+      "2026-08": 10,
+      "2026-09": 12,
+      "2026-10": 7,
+      "2026-11": 8
+     },
+     "active_months_6": 6,
+     "first_month": "2026-05",
+     "last_month": "2026-11",
+     "resolved": 42,
+     "open": 6,
+     "after_first_close": 62,
+     "recurring_after_close": true,
+     "channels": {
+      "政诉": 68
+     },
+     "depts": {
+      "市场监管": 37,
+      "12345热线": 14,
+      "消协": 9,
+      "其他": 3,
+      "交通运输": 2,
+      "媒体": 2,
+      "未知": 1
+     },
+     "cities": 27,
+     "stations": 30,
+     "template_l2_l4": 32,
+     "platform_l1_l4": 2,
+     "repeat_users": 1,
+     "demands": {
+      "退款": 49,
+      "要求查处": 4,
+      "欺诈主张": 3
+     },
+     "systemic": {
+      "中": 68
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": "edd4375548397d22774190e06f39d4917863eb64edffc2c7d265f21eb9ff57d5",
+    "reference_matches": [],
+    "case_ids": [
+     "GT-EPPRGXOK",
+     "GT-BEDNEI6G",
+     "GT-VLQTZ3EU",
+     "GT-7F72U4XN",
+     "GT-4NURCFIC",
+     "GT-DZYOLD3X",
+     "GT-ZS6AT6CW",
+     "GT-UGR27UMD",
+     "GT-FD25WYHB",
+     "GT-OZS436X2",
+     "GT-5ZMA25UC",
+     "GT-PYJLJKXN",
+     "GT-RYH6RGC3",
+     "GT-VMEZXWIE",
+     "GT-M27O55U2",
+     "GT-VO36SLOD",
+     "GT-2NDLAON6",
+     "GT-GUW35ZPJ",
+     "GT-GPJZY6MC",
+     "GT-2TFAOREV",
+     "GT-MBRC3TLH",
+     "GT-DSLZRTMT",
+     "GT-7CPS5P3V",
+     "GT-M2KKBWWR",
+     "GT-YZPZYCLO",
+     "GT-LID7SE3Q",
+     "GT-O6SIOBYO",
+     "GT-3JRPZTRL",
+     "GT-IDEBCB6H",
+     "GT-YSDGEQLD",
+     "GT-NLAZM3KN",
+     "GT-OREOYGD4",
+     "GT-MGS4YLSZ",
+     "GT-JBYE5VWH",
+     "GT-OF4JOZQ3",
+     "GT-R422R3KY",
+     "GT-DHF3HAQG",
+     "GT-QKWRXX6S",
+     "GT-5PYINR67",
+     "GT-74NBFJQ5",
+     "GT-6VLVFONX",
+     "GT-6HHBA6SO",
+     "GT-EUIZOSUM",
+     "GT-W4K64QS3",
+     "GT-7GWOLIOD",
+     "GT-C5JAVGLF",
+     "GT-4DVFZWBD",
+     "GT-2EU3M54Q",
+     "GT-6WLISRWJ",
+     "GT-2VCIZO7F",
+     "GT-JDB7T75Q",
+     "GT-QJYYRYKJ",
+     "GT-DTM3SHOW",
+     "GT-VBYF6GVF",
+     "GT-2D5GSBCF",
+     "GT-E3KYI5P2",
+     "GT-VQWRUFD6",
+     "GT-L5HD2BMW",
+     "GT-ZIPWRQLV",
+     "GT-XCLHRESQ",
+     "GT-CVBL7UH5",
+     "GT-A2SZMX2Q",
+     "GT-HRO4FA6O",
+     "GT-B4CR54SV",
+     "GT-H2NJKZCI",
+     "GT-W4WPKDYC",
+     "GT-KMFBVPAP",
+     "GT-NO6UIFRQ"
+    ]
+   },
+   {
+    "id": "SC-QNDP23",
+    "level": "symptom",
+    "object_type": null,
+    "object_code": null,
+    "object_label": null,
+    "symptom": "S_PRICE_MISMATCH",
+    "symptom_label": "价格标示与实收不一致",
+    "score": 90,
+    "band": "高",
+    "score_breakdown": {
+     "persistence": 25,
+     "volume": 15,
+     "spread": 10,
+     "sensitivity": 16,
+     "systemic": 7.5,
+     "escalation": 9.6,
+     "regulator": 2.3,
+     "closed_but_recurring": 5
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 50,
+     "n_90d": 27,
+     "n_prev_90d": 20,
+     "months": {
+      "2026-05": 5,
+      "2026-06": 8,
+      "2026-07": 8,
+      "2026-08": 8,
+      "2026-09": 9,
+      "2026-10": 11,
+      "2026-11": 1
+     },
+     "active_months_6": 6,
+     "first_month": "2026-05",
+     "last_month": "2026-11",
+     "resolved": 27,
+     "open": 1,
+     "after_first_close": 48,
+     "recurring_after_close": true,
+     "channels": {
+      "政诉": 49,
+      "舆情": 1
+     },
+     "depts": {
+      "市场监管": 22,
+      "12345热线": 15,
+      "其他": 7,
+      "消协": 3,
+      "未知": 1,
+      "交通运输": 1,
+      "媒体": 1
+     },
+     "cities": 22,
+     "stations": 35,
+     "template_l2_l4": 18,
+     "platform_l1_l4": 3,
+     "repeat_users": 0,
+     "demands": {
+      "退款": 24,
+      "要求查处": 10
+     },
+     "systemic": {
+      "中": 50
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": "27bbd20c68705b8ab465adbd12e9b4b6b8ff64e86df7b523104f8c905a564dd5",
+    "reference_matches": [],
+    "case_ids": [
+     "GT-YTNPXXXL",
+     "GT-Z2EA2ZFG",
+     "GT-KHIZOQQU",
+     "GT-3IOGIUZ2",
+     "GT-SHD4WS2U",
+     "GT-QULRGMIP",
+     "GT-3BOK5BD3",
+     "GT-CSAL6UZM",
+     "GT-GUJDU7KM",
+     "GT-J7OAGOXS",
+     "GT-WHWHYJ4M",
+     "GT-AWGYBV42",
+     "GT-E563XSXY",
+     "GT-EKFFZ6O6",
+     "GT-U4XNNZ67",
+     "GT-52UFRXE5",
+     "GT-VL2VUPI2",
+     "GT-RNZWJU2P",
+     "GT-IVLI4PQC",
+     "GT-Z7W3HGHV",
+     "GT-WTDZQA6D",
+     "GT-273TTC5V",
+     "GT-YIJVP4IQ",
+     "GT-TJHVENAO",
+     "GT-HKMMPYVC",
+     "GT-2LWS62Z3",
+     "GT-QOUK2NVT",
+     "GT-OYPR52S6",
+     "GT-XQCSPBMZ",
+     "GT-XJYWZYST",
+     "GT-SYNB4H5O",
+     "GT-6KMUOKSH",
+     "GT-3FEQ74JM",
+     "GT-LAHABEM4",
+     "GT-EVDUQ6JT",
+     "GT-FN7MTCWC",
+     "GT-UKXSXBMW",
+     "GT-YEAOQHU5",
+     "GT-2OSL3I65",
+     "GT-PQKDXPSL",
+     "GT-SFXVGLYB",
+     "GT-PE52BQ2S",
+     "GT-D3454AXR",
+     "GT-DCPKFEPW",
+     "GT-FZCFAHX2",
+     "GT-7RBMHZ2V",
+     "GT-GA4CSWJK",
+     "GT-NABRCWLW",
+     "GT-NS7ZS272",
+     "GT-SGYXVGHT"
+    ]
+   },
+   {
+    "id": "SC-RGP6JD",
+    "level": "symptom",
+    "object_type": null,
+    "object_code": null,
+    "object_label": null,
+    "symptom": "S_VEHICLE_DAMAGE",
+    "symptom_label": "车辆受损或安全隐患",
+    "score": 89,
+    "band": "高",
+    "score_breakdown": {
+     "persistence": 20.8,
+     "volume": 12.2,
+     "spread": 10,
+     "sensitivity": 20,
+     "systemic": 7.5,
+     "escalation": 10,
+     "regulator": 3.3,
+     "closed_but_recurring": 5
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 23,
+     "n_90d": 11,
+     "n_prev_90d": 11,
+     "months": {
+      "2026-05": 3,
+      "2026-06": 6,
+      "2026-07": 2,
+      "2026-08": 2,
+      "2026-09": 8,
+      "2026-10": 2
+     },
+     "active_months_6": 5,
+     "first_month": "2026-05",
+     "last_month": "2026-10",
+     "resolved": 15,
+     "open": 0,
+     "after_first_close": 19,
+     "recurring_after_close": true,
+     "channels": {
+      "政诉": 22,
+      "舆情": 1
+     },
+     "depts": {
+      "市场监管": 14,
+      "12345热线": 4,
+      "其他": 2,
+      "媒体": 1,
+      "公安": 1,
+      "消协": 1
+     },
+     "cities": 16,
+     "stations": 12,
+     "template_l2_l4": 14,
+     "platform_l1_l4": 1,
+     "repeat_users": 0,
+     "demands": {
+      "赔偿": 12,
+      "诉讼": 5,
+      "要求查处": 4
+     },
+     "systemic": {
+      "中": 23
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": "d0eb5cc5a6e70cea8b2f1692bc6b3df786739e34d138f366f8d68783bd8fc978",
+    "reference_matches": [],
+    "case_ids": [
+     "GT-OITSVNKV",
+     "GT-7COD2JLJ",
+     "GT-Y4VLPY73",
+     "GT-AMICI7YP",
+     "GT-KVUICQRW",
+     "GT-6S6LFYUQ",
+     "GT-GGTZLLJZ",
+     "GT-GLACDFGW",
+     "GT-RCDWXZF4",
+     "GT-7NPC56X3",
+     "GT-RAUAP3Y3",
+     "GT-BY2UIKMH",
+     "GT-FZI6VHGT",
+     "GT-U42ODTSU",
+     "GT-QIQYJVQB",
+     "GT-QI6AB2VH",
+     "GT-66FKPGTK",
+     "GT-BJFTFZF2",
+     "GT-E4ISXGHW",
+     "GT-YMDTLX6T",
+     "GT-BCDXG6T5",
+     "GT-WWPMEDAW",
+     "GT-UXXEX2U5"
+    ]
+   },
+   {
+    "id": "SC-7MVG7M",
+    "level": "symptom",
+    "object_type": null,
+    "object_code": null,
+    "object_label": null,
+    "symptom": "S_PROMO",
+    "symptom_label": "优惠、会员或活动未兑现",
+    "score": 87,
+    "band": "高",
+    "score_breakdown": {
+     "persistence": 25,
+     "volume": 15,
+     "spread": 10,
+     "sensitivity": 12,
+     "systemic": 7.5,
+     "escalation": 10,
+     "regulator": 2.2,
+     "closed_but_recurring": 5
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 50,
+     "n_90d": 27,
+     "n_prev_90d": 21,
+     "months": {
+      "2026-05": 3,
+      "2026-06": 10,
+      "2026-07": 9,
+      "2026-08": 6,
+      "2026-09": 7,
+      "2026-10": 11,
+      "2026-11": 4
+     },
+     "active_months_6": 6,
+     "first_month": "2026-05",
+     "last_month": "2026-11",
+     "resolved": 30,
+     "open": 3,
+     "after_first_close": 48,
+     "recurring_after_close": true,
+     "channels": {
+      "政诉": 50
+     },
+     "depts": {
+      "市场监管": 21,
+      "12345热线": 19,
+      "消协": 4,
+      "其他": 3,
+      "交通运输": 1,
+      "媒体": 1,
+      "未知": 1
+     },
+     "cities": 21,
+     "stations": 10,
+     "template_l2_l4": 24,
+     "platform_l1_l4": 1,
+     "repeat_users": 0,
+     "demands": {
+      "要求查处": 7,
+      "退款": 7
+     },
+     "systemic": {
+      "中": 50
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": "225a71d8b3a6e276874c8900acfed5048eb47219f5d5ea2040a1a8116aca3188",
+    "reference_matches": [],
+    "case_ids": [
+     "GT-4AMGT72C",
+     "GT-2BZFADXX",
+     "GT-APWE63JH",
+     "GT-WFUJ6OPW",
+     "GT-FT5OO7PC",
+     "GT-HGLFLVA6",
+     "GT-FOR2KTRJ",
+     "GT-DIFUDGBJ",
+     "GT-5XZL2L5Z",
+     "GT-44BWGP42",
+     "GT-SR6Y7KRK",
+     "GT-F2XH6ZEA",
+     "GT-XCMGL7EL",
+     "GT-3MIEA24V",
+     "GT-XBRTX2J3",
+     "GT-DVPZB3WQ",
+     "GT-DTKH4Q3P",
+     "GT-3Y2XUW3L",
+     "GT-KE2FWDJJ",
+     "GT-JRHSTYVX",
+     "GT-I4EC4BNH",
+     "GT-FINFCESL",
+     "GT-OQ76ABVG",
+     "GT-D6OLXK3N",
+     "GT-DFIMYULA",
+     "GT-IMHYCZBK",
+     "GT-44BAP477",
+     "GT-VYRDK37P",
+     "GT-DSEPCXI2",
+     "GT-JGVVIL5M",
+     "GT-Y7FOKF7O",
+     "GT-MFTALBE6",
+     "GT-A7JCVXU2",
+     "GT-D2HLWMBC",
+     "GT-263FSDCQ",
+     "GT-FFOCGF7S",
+     "GT-5FWKLL64",
+     "GT-4IJCORNU",
+     "GT-U34JRDWD",
+     "GT-FHNOQT3X",
+     "GT-GFEDBBDT",
+     "GT-IJIEURED",
+     "GT-NERWZWLE",
+     "GT-PGTTDDBS",
+     "GT-LAIOIP7V",
+     "GT-MEJCOENS",
+     "GT-ZOBNW22K",
+     "GT-F6PAFH6K",
+     "GT-KXATEQVP",
+     "GT-TWHZUISQ"
+    ]
+   },
+   {
+    "id": "SC-LOFPVN",
+    "level": "symptom",
+    "object_type": null,
+    "object_code": null,
+    "object_label": null,
+    "symptom": "S_REFUND",
+    "symptom_label": "退款、余额或预付款问题",
+    "score": 87,
+    "band": "高",
+    "score_breakdown": {
+     "persistence": 25,
+     "volume": 15,
+     "spread": 10,
+     "sensitivity": 12,
+     "systemic": 7.5,
+     "escalation": 10,
+     "regulator": 2.4,
+     "closed_but_recurring": 5
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 56,
+     "n_90d": 30,
+     "n_prev_90d": 25,
+     "months": {
+      "2026-05": 3,
+      "2026-06": 8,
+      "2026-07": 7,
+      "2026-08": 11,
+      "2026-09": 15,
+      "2026-10": 8,
+      "2026-11": 4
+     },
+     "active_months_6": 6,
+     "first_month": "2026-05",
+     "last_month": "2026-11",
+     "resolved": 33,
+     "open": 1,
+     "after_first_close": 53,
+     "recurring_after_close": true,
+     "channels": {
+      "政诉": 55,
+      "舆情": 1
+     },
+     "depts": {
+      "市场监管": 26,
+      "12345热线": 17,
+      "其他": 5,
+      "消协": 3,
+      "媒体": 3,
+      "未知": 1,
+      "交通运输": 1
+     },
+     "cities": 27,
+     "stations": 13,
+     "template_l2_l4": 29,
+     "platform_l1_l4": 1,
+     "repeat_users": 0,
+     "demands": {
+      "退款": 50,
+      "赔偿": 46,
+      "曝光": 1
+     },
+     "systemic": {
+      "中": 56
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": "65ba8584e14a2bc46481f17c41e5d623e6b509739b7ecfff9713937a1aff865e",
+    "reference_matches": [],
+    "case_ids": [
+     "GT-X3ESQYZ5",
+     "GT-L5XNOCNA",
+     "GT-W67IE5LG",
+     "GT-3RV2Y33W",
+     "GT-OSUZSLQ6",
+     "GT-53PSCFXQ",
+     "GT-VLQZRBIP",
+     "GT-M2OZ7QZK",
+     "GT-JCSJTPNG",
+     "GT-BXRQ4Y3P",
+     "GT-V2X47AC7",
+     "GT-CNWMLCM2",
+     "GT-TFT4DRDJ",
+     "GT-TE5IHK5T",
+     "GT-U2MX4G4U",
+     "GT-HQES5VZ5",
+     "GT-ZPES7X6I",
+     "GT-IWKPFOTD",
+     "GT-PVT4GFIS",
+     "GT-MDRIQVGN",
+     "GT-VBAN64U6",
+     "GT-HEUGYQHD",
+     "GT-HCVQUF66",
+     "GT-NSRAANXS",
+     "GT-SKNF25OZ",
+     "GT-UWNMADC3",
+     "GT-DPTSD3HL",
+     "GT-JYUJYDPS",
+     "GT-CTFZKOUW",
+     "GT-2YFY3NTL",
+     "GT-CHRYOIN3",
+     "GT-SHEDS7QT",
+     "GT-VNRLZK3E",
+     "GT-XKUUIUCO",
+     "GT-JBP5RQY6",
+     "GT-MJNMCUJ7",
+     "GT-DKACLCJP",
+     "GT-BDMC5BBR",
+     "GT-GF5DKB55",
+     "GT-FXVJPN2K",
+     "GT-QHXPQDM4",
+     "GT-LJFOJ4WB",
+     "GT-XGGGXQP4",
+     "GT-BHLP34ZP",
+     "GT-LLIKQKMW",
+     "GT-G55O3YW2",
+     "GT-EBZUCBTI",
+     "GT-YX5WAEVI",
+     "GT-SQBFWYR5",
+     "GT-K3EPLPCE",
+     "GT-6GEY6LOC",
+     "GT-4BZSNUL7",
+     "GT-WLSO4NJH",
+     "GT-PUR6FDIY",
+     "GT-26X5QIF4",
+     "GT-GJF76VRD"
+    ]
+   },
+   {
+    "id": "SC-7QJSON",
+    "level": "symptom",
+    "object_type": null,
+    "object_code": null,
+    "object_label": null,
+    "symptom": "S_OTHERS_DATA",
+    "symptom_label": "出现他人数据或非本人订单",
+    "score": 87,
+    "band": "高",
+    "score_breakdown": {
+     "persistence": 20.8,
+     "volume": 9.6,
+     "spread": 10,
+     "sensitivity": 20,
+     "systemic": 7.5,
+     "escalation": 10,
+     "regulator": 4.4,
+     "closed_but_recurring": 5
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 9,
+     "n_90d": 6,
+     "n_prev_90d": 3,
+     "months": {
+      "2026-07": 1,
+      "2026-08": 2,
+      "2026-09": 2,
+      "2026-10": 2,
+      "2026-11": 2
+     },
+     "active_months_6": 5,
+     "first_month": "2026-07",
+     "last_month": "2026-11",
+     "resolved": 7,
+     "open": 1,
+     "after_first_close": 7,
+     "recurring_after_close": true,
+     "channels": {
+      "政诉": 9
+     },
+     "depts": {
+      "市场监管": 4,
+      "网信": 2,
+      "个人信息保护": 2,
+      "12345热线": 1
+     },
+     "cities": 5,
+     "stations": 6,
+     "template_l2_l4": 5,
+     "platform_l1_l4": 0,
+     "repeat_users": 0,
+     "demands": {
+      "要求查处": 5,
+      "退款": 4
+     },
+     "systemic": {
+      "中": 9
+     },
+     "mechanisms": [],
+     "clues": [
+      {
+       "code": "C_NOT_MY_SESSION",
+       "n": 8
+      },
+      {
+       "code": "C_TIME_MISMATCH",
+       "n": 3
+      }
+     ]
+    },
+    "mechanisms": [],
+    "clues": [
+     {
+      "code": "C_NOT_MY_SESSION",
+      "label": "用户称记录不是本人这次的",
+      "n": 8,
+      "points_to": [
+       "数据串单(流水号重复、订单与设备会话错配)"
+      ]
+     },
+     {
+      "code": "C_TIME_MISMATCH",
+      "label": "订单时间或时长与实际不符",
+      "n": 3,
+      "points_to": [
+       "数据串单(流水号重复、订单与设备会话错配)"
+      ]
+     }
+    ],
+    "verify_steps": [],
+    "review": null,
+    "review_key": "41c31d0ed8f16d127fb7569e023ec6348facb3080e850ee7d354415750e5cf86",
+    "reference_matches": [],
+    "case_ids": [
+     "GT-XCR4I7ZB",
+     "GT-RCO2LSII",
+     "GT-FNFPIFTT",
+     "GT-T5PHF34T",
+     "GT-PX6X3AKL",
+     "GT-IQBZK6L2",
+     "GT-NFEMBUDV",
+     "GT-TQ2GKXZN",
+     "GT-CRPAX4NQ"
+    ]
+   },
+   {
+    "id": "SC-XAWM3P",
+    "level": "object",
+    "object_type": "场站",
+    "object_code": "ST-2FMUAQ",
+    "object_label": null,
+    "symptom": "S_OCCUPANCY_PARKING",
+    "symptom_label": "占位费或停车费争议",
+    "score": 83,
+    "band": "高",
+    "score_breakdown": {
+     "persistence": 25,
+     "volume": 10.2,
+     "spread": 10,
+     "sensitivity": 10,
+     "systemic": 7.5,
+     "escalation": 3.6,
+     "regulator": 1.8,
+     "closed_but_recurring": 5,
+     "reference_case": 10
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 11,
+     "n_90d": 7,
+     "n_prev_90d": 4,
+     "months": {
+      "2026-06": 1,
+      "2026-07": 2,
+      "2026-08": 2,
+      "2026-09": 3,
+      "2026-10": 2,
+      "2026-11": 1
+     },
+     "active_months_6": 6,
+     "first_month": "2026-06",
+     "last_month": "2026-11",
+     "resolved": 6,
+     "open": 1,
+     "after_first_close": 9,
+     "recurring_after_close": true,
+     "channels": {
+      "政诉": 10,
+      "舆情": 1
+     },
+     "depts": {
+      "市场监管": 4,
+      "媒体": 3,
+      "12345热线": 2,
+      "其他": 2
+     },
+     "cities": 1,
+     "stations": 1,
+     "template_l2_l4": 2,
+     "platform_l1_l4": 1,
+     "repeat_users": 0,
+     "demands": {
+      "退款": 6
+     },
+     "systemic": {
+      "中": 11
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": "1e41af43235029ce4407328fb45fa5388ae1ba5cc10718fae8fa8d86aa4ff9ef",
+    "reference_matches": [
+     {
+      "case_id": "RC-DEMO-03",
+      "title": "停车费减免规则告知不清被集中投诉",
+      "why": "现象相同:占位费或停车费争议"
+     }
+    ],
+    "case_ids": [
+     "GT-YOQEFY3U",
+     "GT-ZCOQXWC3",
+     "GT-AK7W7HWY",
+     "GT-XSTORZ73",
+     "GT-TXRSBHKR",
+     "GT-4OH6MNYP",
+     "GT-NYQDWO34",
+     "GT-E37YUCWX",
+     "GT-SXLSV3XY",
+     "GT-PISSVLU4",
+     "GT-KFEAGIEE"
+    ]
+   },
+   {
+    "id": "SC-MRDA2S",
+    "level": "symptom",
+    "object_type": null,
+    "object_code": null,
+    "object_label": null,
+    "symptom": "S_CHARGE_FAIL",
+    "symptom_label": "无法启动或中途断电",
+    "score": 83,
+    "band": "高",
+    "score_breakdown": {
+     "persistence": 25,
+     "volume": 15,
+     "spread": 10,
+     "sensitivity": 10,
+     "systemic": 7.5,
+     "escalation": 7.3,
+     "regulator": 2.9,
+     "closed_but_recurring": 5
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 60,
+     "n_90d": 27,
+     "n_prev_90d": 29,
+     "months": {
+      "2026-05": 6,
+      "2026-06": 11,
+      "2026-07": 6,
+      "2026-08": 10,
+      "2026-09": 9,
+      "2026-10": 9,
+      "2026-11": 9
+     },
+     "active_months_6": 6,
+     "first_month": "2026-05",
+     "last_month": "2026-11",
+     "resolved": 38,
+     "open": 5,
+     "after_first_close": 59,
+     "recurring_after_close": true,
+     "channels": {
+      "政诉": 60
+     },
+     "depts": {
+      "市场监管": 30,
+      "12345热线": 14,
+      "消协": 5,
+      "其他": 4,
+      "未知": 2,
+      "网信": 2,
+      "公安": 2,
+      "交通运输": 1
+     },
+     "cities": 19,
+     "stations": 34,
+     "template_l2_l4": 22,
+     "platform_l1_l4": 1,
+     "repeat_users": 1,
+     "demands": {
+      "退款": 28,
+      "赔偿": 7
+     },
+     "systemic": {
+      "中": 60
+     },
+     "mechanisms": [],
+     "clues": [
+      {
+       "code": "C_SAME_PILE_REPEAT",
+       "n": 4
+      }
+     ]
+    },
+    "mechanisms": [],
+    "clues": [
+     {
+      "code": "C_SAME_PILE_REPEAT",
+      "label": "同一桩或场站多次出现",
+      "n": 4,
+      "points_to": [
+       "设备计量异常(硬件老化、校准、电表故障)",
+       "设备故障(启停、枪锁、通信)"
+      ]
+     }
+    ],
+    "verify_steps": [],
+    "review": null,
+    "review_key": "aa68dd350c180c49a2335d231b66ffd4c74bfa3bf7db6fe7fd2cab108a23a7db",
+    "reference_matches": [],
+    "case_ids": [
+     "GT-YWCFQQ4O",
+     "GT-PZEGFXMS",
+     "GT-R5ISQDIO",
+     "GT-BLS5LJBT",
+     "GT-2FFYHQJE",
+     "GT-7XUNL44T",
+     "GT-3AB6QD7V",
+     "GT-NLAOV3XS",
+     "GT-W7RDX2PI",
+     "GT-HP2BODCZ",
+     "GT-A4F6BJQY",
+     "GT-A36CQKE3",
+     "GT-CDJ5NTL7",
+     "GT-AQCKEVWC",
+     "GT-YND4QUGX",
+     "GT-PJWJAJCC",
+     "GT-UETZWSKV",
+     "GT-56AYI3OW",
+     "GT-XRDRZTPF",
+     "GT-HL7VWYEC",
+     "GT-NHEB6U6B",
+     "GT-27U75LDA",
+     "GT-4UW3DJG2",
+     "GT-OQTNJYHJ",
+     "GT-ZJZQP72L",
+     "GT-ADDKSU6L",
+     "GT-NJXB6BBN",
+     "GT-HIKII32M",
+     "GT-QPK57YUT",
+     "GT-J6K6IXTH",
+     "GT-GQE77JLI",
+     "GT-SREOAKII",
+     "GT-OLGMHPDH",
+     "GT-YFKAD4GS",
+     "GT-HUEQE7RQ",
+     "GT-JVOAT447",
+     "GT-PRFTNNKU",
+     "GT-HO4VMS7L",
+     "GT-LA7NUX3U",
+     "GT-IVVM2QTY",
+     "GT-MJFW7GGB",
+     "GT-FYUJY5BU",
+     "GT-UMSQWORT",
+     "GT-4G2N7AOW",
+     "GT-UONMGD5K",
+     "GT-25TYJDXU",
+     "GT-LWC5ZZET",
+     "GT-XJ6LMY47",
+     "GT-46YXOXUU",
+     "GT-NZUTOKIS",
+     "GT-EELMQBVF",
+     "GT-GJNCH4S7",
+     "GT-CNNTBYAV",
+     "GT-ZY2BLGQW",
+     "GT-SLETHXWX",
+     "GT-WN55FVTS",
+     "GT-MVNB4TJS",
+     "GT-JUAFAVDP",
+     "GT-32TA6EH2",
+     "GT-XAM4E7JL"
+    ]
+   },
+   {
+    "id": "SC-WP2IEU",
+    "level": "object",
+    "object_type": "场站",
+    "object_code": "ST-JUSHO2",
+    "object_label": null,
+    "symptom": "S_ENERGY_HIGH",
+    "symptom_label": "电量/度数偏高",
+    "score": 83,
+    "band": "高",
+    "score_breakdown": {
+     "persistence": 12.5,
+     "volume": 5.4,
+     "spread": 10,
+     "sensitivity": 20,
+     "systemic": 7.5,
+     "escalation": 10,
+     "regulator": 2.5,
+     "closed_but_recurring": 5,
+     "reference_case": 10
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 4,
+     "n_90d": 2,
+     "n_prev_90d": 2,
+     "months": {
+      "2026-06": 2,
+      "2026-08": 1,
+      "2026-10": 1
+     },
+     "active_months_6": 3,
+     "first_month": "2026-06",
+     "last_month": "2026-10",
+     "resolved": 4,
+     "open": 0,
+     "after_first_close": 2,
+     "recurring_after_close": true,
+     "channels": {
+      "政诉": 4
+     },
+     "depts": {
+      "消协": 2,
+      "市场监管": 2
+     },
+     "cities": 1,
+     "stations": 1,
+     "template_l2_l4": 3,
+     "platform_l1_l4": 0,
+     "repeat_users": 0,
+     "demands": {
+      "退款": 2,
+      "要求查处": 1
+     },
+     "systemic": {
+      "中": 4
+     },
+     "mechanisms": [],
+     "clues": [
+      {
+       "code": "C_MISMATCH_VEHICLE",
+       "n": 3
+      },
+      {
+       "code": "C_EXCEEDS_BATTERY",
+       "n": 1
+      }
+     ]
+    },
+    "mechanisms": [],
+    "clues": [
+     {
+      "code": "C_MISMATCH_VEHICLE",
+      "label": "与车辆仪表或车机显示不符",
+      "n": 3,
+      "points_to": [
+       "设备计量异常(硬件老化、校准、电表故障)",
+       "数据串单(流水号重复、订单与设备会话错配)"
+      ]
+     },
+     {
+      "code": "C_EXCEEDS_BATTERY",
+      "label": "充电量超过车辆电池容量",
+      "n": 1,
+      "points_to": [
+       "数据串单(流水号重复、订单与设备会话错配)",
+       "设备计量异常(硬件老化、校准、电表故障)"
+      ]
+     }
+    ],
+    "verify_steps": [],
+    "review": null,
+    "review_key": "26365dba0cd5f2d3c2afb8b7636608992e0033af233e94aa07b9c0294beb7f5a",
+    "reference_matches": [
+     {
+      "case_id": "RC-DEMO-01",
+      "title": "充电度数过高引发舆情",
+      "why": "现象相同:电量/度数偏高"
+     },
+     {
+      "case_id": "RC-DEMO-02",
+      "title": "设备流水号重复导致串单",
+      "why": "现象相同:电量/度数偏高"
+     }
+    ],
+    "case_ids": [
+     "GT-UE3LFWMF",
+     "GT-H2MSYEOT",
+     "GT-4OAHJIWY",
+     "GT-MZIZDUNJ"
+    ]
+   },
+   {
+    "id": "SC-6A3OLZ",
+    "level": "symptom",
+    "object_type": null,
+    "object_code": null,
+    "object_label": null,
+    "symptom": "S_UNPLUG",
+    "symptom_label": "无法拔枪或无法结束",
+    "score": 82,
+    "band": "高",
+    "score_breakdown": {
+     "persistence": 25,
+     "volume": 10.2,
+     "spread": 10,
+     "sensitivity": 10,
+     "systemic": 7.5,
+     "escalation": 10,
+     "regulator": 3.8,
+     "closed_but_recurring": 5
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 16,
+     "n_90d": 7,
+     "n_prev_90d": 8,
+     "months": {
+      "2026-05": 2,
+      "2026-06": 2,
+      "2026-07": 3,
+      "2026-08": 2,
+      "2026-09": 2,
+      "2026-10": 3,
+      "2026-11": 2
+     },
+     "active_months_6": 6,
+     "first_month": "2026-05",
+     "last_month": "2026-11",
+     "resolved": 10,
+     "open": 0,
+     "after_first_close": 14,
+     "recurring_after_close": true,
+     "channels": {
+      "政诉": 16
+     },
+     "depts": {
+      "市场监管": 12,
+      "12345热线": 3,
+      "其他": 1
+     },
+     "cities": 11,
+     "stations": 12,
+     "template_l2_l4": 8,
+     "platform_l1_l4": 1,
+     "repeat_users": 0,
+     "demands": {
+      "退款": 7,
+      "赔偿": 7
+     },
+     "systemic": {
+      "中": 16
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [],
+    "case_ids": [
+     "GT-NGY37HDV",
+     "GT-WLPJHWML",
+     "GT-H2EWSIXV",
+     "GT-44SH5FRC",
+     "GT-XST3OYNT",
+     "GT-EXIP4OZQ",
+     "GT-4BTPFGKM",
+     "GT-OVPMF75T",
+     "GT-CBWK5C5T",
+     "GT-CVWKLIRD",
+     "GT-4NJSV37S",
+     "GT-GS6Z3TLB",
+     "GT-SUK6XJAM",
+     "GT-RGP543NN",
+     "GT-LHHQKBYL",
+     "GT-7GJ6IYSO"
+    ]
+   },
+   {
+    "id": "SC-NJFQM3",
+    "level": "symptom",
+    "object_type": null,
+    "object_code": null,
+    "object_label": null,
+    "symptom": "S_SERVICE",
+    "symptom_label": "客服推诿或处置不力",
+    "score": 82,
+    "band": "高",
+    "score_breakdown": {
+     "persistence": 25,
+     "volume": 13,
+     "spread": 10,
+     "sensitivity": 8,
+     "systemic": 7.5,
+     "escalation": 10,
+     "regulator": 3,
+     "closed_but_recurring": 5
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 22,
+     "n_90d": 13,
+     "n_prev_90d": 9,
+     "months": {
+      "2026-06": 3,
+      "2026-07": 4,
+      "2026-08": 3,
+      "2026-09": 3,
+      "2026-10": 5,
+      "2026-11": 4
+     },
+     "active_months_6": 6,
+     "first_month": "2026-06",
+     "last_month": "2026-11",
+     "resolved": 15,
+     "open": 2,
+     "after_first_close": 21,
+     "recurring_after_close": true,
+     "channels": {
+      "政诉": 22
+     },
+     "depts": {
+      "市场监管": 13,
+      "12345热线": 5,
+      "消协": 3,
+      "媒体": 1
+     },
+     "cities": 15,
+     "stations": 8,
+     "template_l2_l4": 11,
+     "platform_l1_l4": 0,
+     "repeat_users": 0,
+     "demands": {
+      "赔偿": 1
+     },
+     "systemic": {
+      "中": 22
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [],
+    "case_ids": [
+     "GT-NO6RTCAX",
+     "GT-OESQKNFP",
+     "GT-3DQ4KFFG",
+     "GT-5R465KNV",
+     "GT-HR3L6CGR",
+     "GT-3IKF4GUL",
+     "GT-JCKKIB6J",
+     "GT-ZEA2MHP6",
+     "GT-MFQ4Y74J",
+     "GT-GNGP3SXX",
+     "GT-OREWHNHZ",
+     "GT-I5SVYCYZ",
+     "GT-VBBNJPIA",
+     "GT-AHZE4FU7",
+     "GT-76T56P4B",
+     "GT-2ZG3DASG",
+     "GT-M4BQTHTZ",
+     "GT-XYO2WHW2",
+     "GT-I55SLSEL",
+     "GT-U2Y2MAXA",
+     "GT-ITQN5CFU",
+     "GT-MJAAG4YM"
+    ]
+   },
+   {
+    "id": "SC-VXSBOD",
+    "level": "symptom",
+    "object_type": null,
+    "object_code": null,
+    "object_label": null,
+    "symptom": "S_INVOICE",
+    "symptom_label": "发票问题",
+    "score": 81,
+    "band": "高",
+    "score_breakdown": {
+     "persistence": 25,
+     "volume": 14,
+     "spread": 4,
+     "sensitivity": 12,
+     "systemic": 7.5,
+     "escalation": 10,
+     "regulator": 3.8,
+     "closed_but_recurring": 5
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 39,
+     "n_90d": 16,
+     "n_prev_90d": 23,
+     "months": {
+      "2026-06": 6,
+      "2026-07": 8,
+      "2026-08": 12,
+      "2026-09": 7,
+      "2026-10": 4,
+      "2026-11": 2
+     },
+     "active_months_6": 6,
+     "first_month": "2026-06",
+     "last_month": "2026-11",
+     "resolved": 24,
+     "open": 0,
+     "after_first_close": 38,
+     "recurring_after_close": true,
+     "channels": {
+      "政诉": 39
+     },
+     "depts": {
+      "市场监管": 19,
+      "税务": 11,
+      "12345热线": 9
+     },
+     "cities": 19,
+     "stations": 3,
+     "template_l2_l4": 24,
+     "platform_l1_l4": 1,
+     "repeat_users": 0,
+     "demands": {},
+     "systemic": {
+      "中": 39
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [],
+    "case_ids": [
+     "GT-3IHASECC",
+     "GT-3FFEBSJ6",
+     "GT-GQNEBNVU",
+     "GT-B2VNXOMI",
+     "GT-NW72TQSU",
+     "GT-GIY6UAMQ",
+     "GT-SZSSRR5F",
+     "GT-REGDQZ6I",
+     "GT-LGY6O63K",
+     "GT-JW6OTWFW",
+     "GT-FAWKRJDX",
+     "GT-I5VEIRFX",
+     "GT-AHK75LRU",
+     "GT-4ZKYF4WA",
+     "GT-ZTIVYLWV",
+     "GT-VJXPLTIV",
+     "GT-GEXIBSQ3",
+     "GT-LWKKPKF5",
+     "GT-WNUNLG35",
+     "GT-DLPZWO47",
+     "GT-VYYA7KRW",
+     "GT-HKSWYXZ7",
+     "GT-WHY44ODH",
+     "GT-VIZFSQHO",
+     "GT-RJHAW7CG",
+     "GT-FF5KH5JE",
+     "GT-I6IJOAGC",
+     "GT-5MPWHMTJ",
+     "GT-WWKYRPBR",
+     "GT-VPEWTBPF",
+     "GT-OH55EF5B",
+     "GT-PETJQ74J",
+     "GT-3XH7XCIM",
+     "GT-GXCWYIDN",
+     "GT-VM4YPVP6",
+     "GT-KDAESADC",
+     "GT-FZBWI7DG",
+     "GT-C6677SR7",
+     "GT-CXKPJDSS"
+    ]
+   },
+   {
+    "id": "SC-GCZO3Z",
+    "level": "object",
+    "object_type": "场站",
+    "object_code": "ST-3YBDB3",
+    "object_label": null,
+    "symptom": "S_OTHERS_DATA",
+    "symptom_label": "出现他人数据或非本人订单",
+    "score": 81,
+    "band": "高",
+    "score_breakdown": {
+     "persistence": 16.7,
+     "volume": 6.8,
+     "spread": 10,
+     "sensitivity": 20,
+     "systemic": 7.5,
+     "escalation": 10,
+     "regulator": 5,
+     "closed_but_recurring": 5
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 4,
+     "n_90d": 3,
+     "n_prev_90d": 1,
+     "months": {
+      "2026-07": 1,
+      "2026-09": 1,
+      "2026-10": 1,
+      "2026-11": 1
+     },
+     "active_months_6": 4,
+     "first_month": "2026-07",
+     "last_month": "2026-11",
+     "resolved": 3,
+     "open": 0,
+     "after_first_close": 2,
+     "recurring_after_close": true,
+     "channels": {
+      "政诉": 4
+     },
+     "depts": {
+      "网信": 2,
+      "市场监管": 2
+     },
+     "cities": 1,
+     "stations": 1,
+     "template_l2_l4": 2,
+     "platform_l1_l4": 0,
+     "repeat_users": 0,
+     "demands": {
+      "要求查处": 2,
+      "退款": 2
+     },
+     "systemic": {
+      "中": 4
+     },
+     "mechanisms": [],
+     "clues": [
+      {
+       "code": "C_NOT_MY_SESSION",
+       "n": 4
+      },
+      {
+       "code": "C_TIME_MISMATCH",
+       "n": 2
+      }
+     ]
+    },
+    "mechanisms": [],
+    "clues": [
+     {
+      "code": "C_NOT_MY_SESSION",
+      "label": "用户称记录不是本人这次的",
+      "n": 4,
+      "points_to": [
+       "数据串单(流水号重复、订单与设备会话错配)"
+      ]
+     },
+     {
+      "code": "C_TIME_MISMATCH",
+      "label": "订单时间或时长与实际不符",
+      "n": 2,
+      "points_to": [
+       "数据串单(流水号重复、订单与设备会话错配)"
+      ]
+     }
+    ],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [],
+    "case_ids": [
+     "GT-RCO2LSII",
+     "GT-FNFPIFTT",
+     "GT-IQBZK6L2",
+     "GT-CRPAX4NQ"
+    ]
+   },
+   {
+    "id": "SC-XVYP4K",
+    "level": "object",
+    "object_type": "场站",
+    "object_code": "ST-U6UHQP",
+    "object_label": null,
+    "symptom": "S_ENERGY_HIGH",
+    "symptom_label": "电量/度数偏高",
+    "score": 80,
+    "band": "高",
+    "score_breakdown": {
+     "persistence": 12.5,
+     "volume": 5.4,
+     "spread": 6.7,
+     "sensitivity": 20,
+     "systemic": 7.5,
+     "escalation": 10,
+     "regulator": 3.3,
+     "closed_but_recurring": 5,
+     "reference_case": 10
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 3,
+     "n_90d": 2,
+     "n_prev_90d": 1,
+     "months": {
+      "2026-07": 1,
+      "2026-09": 1,
+      "2026-10": 1
+     },
+     "active_months_6": 3,
+     "first_month": "2026-07",
+     "last_month": "2026-10",
+     "resolved": 3,
+     "open": 0,
+     "after_first_close": 2,
+     "recurring_after_close": true,
+     "channels": {
+      "政诉": 3
+     },
+     "depts": {
+      "市场监管": 2,
+      "其他": 1
+     },
+     "cities": 1,
+     "stations": 1,
+     "template_l2_l4": 1,
+     "platform_l1_l4": 0,
+     "repeat_users": 0,
+     "demands": {
+      "要求查处": 2,
+      "退款": 1
+     },
+     "systemic": {
+      "中": 3
+     },
+     "mechanisms": [],
+     "clues": [
+      {
+       "code": "C_MISMATCH_VEHICLE",
+       "n": 2
+      },
+      {
+       "code": "C_EXCEEDS_BATTERY",
+       "n": 1
+      }
+     ]
+    },
+    "mechanisms": [],
+    "clues": [
+     {
+      "code": "C_MISMATCH_VEHICLE",
+      "label": "与车辆仪表或车机显示不符",
+      "n": 2,
+      "points_to": [
+       "设备计量异常(硬件老化、校准、电表故障)",
+       "数据串单(流水号重复、订单与设备会话错配)"
+      ]
+     },
+     {
+      "code": "C_EXCEEDS_BATTERY",
+      "label": "充电量超过车辆电池容量",
+      "n": 1,
+      "points_to": [
+       "数据串单(流水号重复、订单与设备会话错配)",
+       "设备计量异常(硬件老化、校准、电表故障)"
+      ]
+     }
+    ],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [
+     {
+      "case_id": "RC-DEMO-01",
+      "title": "充电度数过高引发舆情",
+      "why": "现象相同:电量/度数偏高"
+     },
+     {
+      "case_id": "RC-DEMO-02",
+      "title": "设备流水号重复导致串单",
+      "why": "现象相同:电量/度数偏高"
+     }
+    ],
+    "case_ids": [
+     "GT-KYJZU34U",
+     "GT-72QY5JER",
+     "GT-C54AUWW3"
+    ]
+   },
+   {
+    "id": "SC-FLZRHC",
+    "level": "symptom",
+    "object_type": null,
+    "object_code": null,
+    "object_label": null,
+    "symptom": "S_STATION_MGMT",
+    "symptom_label": "场站秩序或设施管理",
+    "score": 79,
+    "band": "高",
+    "score_breakdown": {
+     "persistence": 25,
+     "volume": 12.2,
+     "spread": 10,
+     "sensitivity": 8,
+     "systemic": 7.5,
+     "escalation": 10,
+     "regulator": 1.7,
+     "closed_but_recurring": 5
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 26,
+     "n_90d": 11,
+     "n_prev_90d": 13,
+     "months": {
+      "2026-05": 3,
+      "2026-06": 2,
+      "2026-07": 4,
+      "2026-08": 6,
+      "2026-09": 4,
+      "2026-10": 6,
+      "2026-11": 1
+     },
+     "active_months_6": 6,
+     "first_month": "2026-05",
+     "last_month": "2026-11",
+     "resolved": 18,
+     "open": 1,
+     "after_first_close": 24,
+     "recurring_after_close": true,
+     "channels": {
+      "政诉": 26
+     },
+     "depts": {
+      "12345热线": 10,
+      "其他": 7,
+      "市场监管": 6,
+      "交通运输": 3
+     },
+     "cities": 15,
+     "stations": 19,
+     "template_l2_l4": 13,
+     "platform_l1_l4": 0,
+     "repeat_users": 0,
+     "demands": {},
+     "systemic": {
+      "中": 26
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [],
+    "case_ids": [
+     "GT-YEGY4BYB",
+     "GT-XATMWIPE",
+     "GT-MJ2SLKTP",
+     "GT-HRVM37NX",
+     "GT-ZK4UV5RF",
+     "GT-HXC7ECKA",
+     "GT-7Q3NYEGK",
+     "GT-NULWXFKG",
+     "GT-TNBHGP7Z",
+     "GT-TUPXSUPH",
+     "GT-7Z7MINGJ",
+     "GT-KCRAWRCQ",
+     "GT-I5TEKTIW",
+     "GT-DLEHFRYU",
+     "GT-5ZFUZSY2",
+     "GT-GPZJU4KN",
+     "GT-CIVWJTEF",
+     "GT-TIYQIX6P",
+     "GT-VGJ7VCMY",
+     "GT-7GJRFYTE",
+     "GT-S3BJBTJ4",
+     "GT-DMDTTW4D",
+     "GT-A7XTCYFY",
+     "GT-FYWA54V6",
+     "GT-HS3UYMZY",
+     "GT-KTNJOGUT"
+    ]
+   },
+   {
+    "id": "SC-DAG3UR",
+    "level": "symptom",
+    "object_type": null,
+    "object_code": null,
+    "object_label": null,
+    "symptom": "S_ACCOUNT",
+    "symptom_label": "账号异常或个人信息",
+    "score": 79,
+    "band": "高",
+    "score_breakdown": {
+     "persistence": 25,
+     "volume": 11.8,
+     "spread": 0,
+     "sensitivity": 16,
+     "systemic": 7.5,
+     "escalation": 10,
+     "regulator": 3.8,
+     "closed_but_recurring": 5
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 20,
+     "n_90d": 10,
+     "n_prev_90d": 9,
+     "months": {
+      "2026-05": 2,
+      "2026-06": 3,
+      "2026-07": 1,
+      "2026-08": 6,
+      "2026-09": 1,
+      "2026-10": 5,
+      "2026-11": 2
+     },
+     "active_months_6": 6,
+     "first_month": "2026-05",
+     "last_month": "2026-11",
+     "resolved": 11,
+     "open": 1,
+     "after_first_close": 19,
+     "recurring_after_close": true,
+     "channels": {
+      "政诉": 20
+     },
+     "depts": {
+      "市场监管": 8,
+      "12345热线": 5,
+      "个人信息保护": 4,
+      "网信": 3
+     },
+     "cities": 13,
+     "stations": 1,
+     "template_l2_l4": 10,
+     "platform_l1_l4": 1,
+     "repeat_users": 0,
+     "demands": {
+      "退款": 8,
+      "要求查处": 1
+     },
+     "systemic": {
+      "中": 20
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [],
+    "case_ids": [
+     "GT-KJRVMPJK",
+     "GT-LOZT6QK7",
+     "GT-GAR25HZS",
+     "GT-N2XWMMOZ",
+     "GT-UK2MT4N5",
+     "GT-G6QZJEY7",
+     "GT-HGLD2WMM",
+     "GT-DC5NTSHK",
+     "GT-PGNSXPTY",
+     "GT-ZITLXDUL",
+     "GT-VRSGY4YQ",
+     "GT-ROEXXZ44",
+     "GT-77NNNGVR",
+     "GT-45ACNQHK",
+     "GT-RUKNRIO2",
+     "GT-P5BGUN24",
+     "GT-4WESIJHI",
+     "GT-IMAVHDWO",
+     "GT-5KCC4MRW",
+     "GT-SFZNITUA"
+    ]
+   },
+   {
+    "id": "SC-V744SG",
+    "level": "object",
+    "object_type": "场站",
+    "object_code": "ST-KACJAH",
+    "object_label": null,
+    "symptom": "S_CHARGE_FAIL",
+    "symptom_label": "无法启动或中途断电",
+    "score": 70,
+    "band": "高",
+    "score_breakdown": {
+     "persistence": 16.7,
+     "volume": 9.6,
+     "spread": 10,
+     "sensitivity": 10,
+     "systemic": 7.5,
+     "escalation": 8.6,
+     "regulator": 2.1,
+     "closed_but_recurring": 5
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 7,
+     "n_90d": 6,
+     "n_prev_90d": 1,
+     "months": {
+      "2026-08": 1,
+      "2026-09": 2,
+      "2026-10": 2,
+      "2026-11": 2
+     },
+     "active_months_6": 4,
+     "first_month": "2026-08",
+     "last_month": "2026-11",
+     "resolved": 3,
+     "open": 1,
+     "after_first_close": 5,
+     "recurring_after_close": true,
+     "channels": {
+      "政诉": 7
+     },
+     "depts": {
+      "市场监管": 3,
+      "12345热线": 3,
+      "其他": 1
+     },
+     "cities": 1,
+     "stations": 1,
+     "template_l2_l4": 3,
+     "platform_l1_l4": 0,
+     "repeat_users": 0,
+     "demands": {
+      "退款": 3
+     },
+     "systemic": {
+      "中": 7
+     },
+     "mechanisms": [],
+     "clues": [
+      {
+       "code": "C_SAME_PILE_REPEAT",
+       "n": 4
+      }
+     ]
+    },
+    "mechanisms": [],
+    "clues": [
+     {
+      "code": "C_SAME_PILE_REPEAT",
+      "label": "同一桩或场站多次出现",
+      "n": 4,
+      "points_to": [
+       "设备计量异常(硬件老化、校准、电表故障)",
+       "设备故障(启停、枪锁、通信)"
+      ]
+     }
+    ],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [],
+    "case_ids": [
+     "GT-PZEGFXMS",
+     "GT-7XUNL44T",
+     "GT-CDJ5NTL7",
+     "GT-PJWJAJCC",
+     "GT-4UW3DJG2",
+     "GT-ADDKSU6L",
+     "GT-J6K6IXTH"
+    ]
+   },
+   {
+    "id": "SC-GVGQP7",
+    "level": "object",
+    "object_type": "场站",
+    "object_code": "ST-4ZBM3B",
+    "object_label": null,
+    "symptom": "S_PRICE_MISMATCH",
+    "symptom_label": "价格标示与实收不一致",
+    "score": 68,
+    "band": "高",
+    "score_breakdown": {
+     "persistence": 12.5,
+     "volume": 10.2,
+     "spread": 10,
+     "sensitivity": 16,
+     "systemic": 7.5,
+     "escalation": 5.7,
+     "regulator": 1.4,
+     "closed_but_recurring": 5
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 7,
+     "n_90d": 7,
+     "n_prev_90d": 0,
+     "months": {
+      "2026-09": 2,
+      "2026-10": 4,
+      "2026-11": 1
+     },
+     "active_months_6": 3,
+     "first_month": "2026-09",
+     "last_month": "2026-11",
+     "resolved": 4,
+     "open": 1,
+     "after_first_close": 6,
+     "recurring_after_close": true,
+     "channels": {
+      "政诉": 6,
+      "舆情": 1
+     },
+     "depts": {
+      "其他": 2,
+      "市场监管": 2,
+      "12345热线": 1,
+      "消协": 1,
+      "媒体": 1
+     },
+     "cities": 1,
+     "stations": 1,
+     "template_l2_l4": 2,
+     "platform_l1_l4": 1,
+     "repeat_users": 0,
+     "demands": {
+      "要求查处": 1,
+      "退款": 1
+     },
+     "systemic": {
+      "中": 7
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [],
+    "case_ids": [
+     "GT-YTNPXXXL",
+     "GT-3IOGIUZ2",
+     "GT-3BOK5BD3",
+     "GT-CSAL6UZM",
+     "GT-GUJDU7KM",
+     "GT-52UFRXE5",
+     "GT-IVLI4PQC"
+    ]
+   },
+   {
+    "id": "SC-SBQK4D",
+    "level": "symptom",
+    "object_type": null,
+    "object_code": null,
+    "object_label": null,
+    "symptom": "S_OTHER",
+    "symptom_label": "其他",
+    "score": 62,
+    "band": "中",
+    "score_breakdown": {
+     "persistence": 20.8,
+     "volume": 9.6,
+     "spread": 6,
+     "sensitivity": 4,
+     "systemic": 7.5,
+     "escalation": 6.7,
+     "regulator": 2,
+     "closed_but_recurring": 5
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 15,
+     "n_90d": 6,
+     "n_prev_90d": 8,
+     "months": {
+      "2026-05": 1,
+      "2026-06": 2,
+      "2026-07": 4,
+      "2026-08": 4,
+      "2026-10": 1,
+      "2026-11": 3
+     },
+     "active_months_6": 5,
+     "first_month": "2026-05",
+     "last_month": "2026-11",
+     "resolved": 9,
+     "open": 0,
+     "after_first_close": 13,
+     "recurring_after_close": true,
+     "channels": {
+      "政诉": 15
+     },
+     "depts": {
+      "12345热线": 6,
+      "市场监管": 4,
+      "其他": 3,
+      "交通运输": 2
+     },
+     "cities": 9,
+     "stations": 4,
+     "template_l2_l4": 5,
+     "platform_l1_l4": 0,
+     "repeat_users": 0,
+     "demands": {},
+     "systemic": {
+      "中": 15
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [],
+    "case_ids": [
+     "GT-5X3RQTR3",
+     "GT-VVUHD5P2",
+     "GT-5PR6CI4O",
+     "GT-VYDDMBSC",
+     "GT-L22CRIVP",
+     "GT-2YEF52NQ",
+     "GT-J2TWXT4W",
+     "GT-KDYCKZDN",
+     "GT-LSMKV5ZD",
+     "GT-VJZFTEYT",
+     "GT-WO4INCHL",
+     "GT-NXY3NP2A",
+     "GT-NVBTIIVV",
+     "GT-CKH753HT",
+     "GT-C32FGW6O"
+    ]
+   },
+   {
+    "id": "SC-LXG3IC",
+    "level": "object",
+    "object_type": "场站",
+    "object_code": "ST-EVM3OC",
+    "object_label": null,
+    "symptom": "S_OCCUPANCY_PARKING",
+    "symptom_label": "占位费或停车费争议",
+    "score": 60,
+    "band": "中",
+    "score_breakdown": {
+     "persistence": 8.3,
+     "volume": 5.4,
+     "spread": 3.3,
+     "sensitivity": 10,
+     "systemic": 7.5,
+     "escalation": 10,
+     "regulator": 5,
+     "reference_case": 10
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 2,
+     "n_90d": 2,
+     "n_prev_90d": 0,
+     "months": {
+      "2026-09": 1,
+      "2026-10": 1
+     },
+     "active_months_6": 2,
+     "first_month": "2026-09",
+     "last_month": "2026-10",
+     "resolved": 1,
+     "open": 0,
+     "after_first_close": 1,
+     "recurring_after_close": false,
+     "channels": {
+      "政诉": 2
+     },
+     "depts": {
+      "市场监管": 2
+     },
+     "cities": 1,
+     "stations": 1,
+     "template_l2_l4": 1,
+     "platform_l1_l4": 0,
+     "repeat_users": 0,
+     "demands": {},
+     "systemic": {
+      "中": 2
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [
+     {
+      "case_id": "RC-DEMO-03",
+      "title": "停车费减免规则告知不清被集中投诉",
+      "why": "现象相同:占位费或停车费争议"
+     }
+    ],
+    "case_ids": [
+     "GT-45OQ6S4G",
+     "GT-EKW5AVKS"
+    ]
+   },
+   {
+    "id": "SC-ZQFFFR",
+    "level": "object",
+    "object_type": "场站",
+    "object_code": "ST-JWOBEB",
+    "object_label": null,
+    "symptom": "S_OCCUPANCY_PARKING",
+    "symptom_label": "占位费或停车费争议",
+    "score": 59,
+    "band": "中",
+    "score_breakdown": {
+     "persistence": 8.3,
+     "volume": 3.4,
+     "spread": 6.7,
+     "sensitivity": 10,
+     "systemic": 7.5,
+     "escalation": 10,
+     "regulator": 3.3,
+     "reference_case": 10
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 3,
+     "n_90d": 1,
+     "n_prev_90d": 2,
+     "months": {
+      "2026-06": 2,
+      "2026-08": 1
+     },
+     "active_months_6": 2,
+     "first_month": "2026-06",
+     "last_month": "2026-08",
+     "resolved": 2,
+     "open": 0,
+     "after_first_close": 1,
+     "recurring_after_close": false,
+     "channels": {
+      "政诉": 3
+     },
+     "depts": {
+      "市场监管": 1,
+      "12345热线": 1,
+      "网信": 1
+     },
+     "cities": 1,
+     "stations": 1,
+     "template_l2_l4": 2,
+     "platform_l1_l4": 0,
+     "repeat_users": 0,
+     "demands": {
+      "退款": 1
+     },
+     "systemic": {
+      "中": 3
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [
+     {
+      "case_id": "RC-DEMO-03",
+      "title": "停车费减免规则告知不清被集中投诉",
+      "why": "现象相同:占位费或停车费争议"
+     }
+    ],
+    "case_ids": [
+     "GT-B3COECF3",
+     "GT-MN2LOPJF",
+     "GT-TE7FXVZU"
+    ]
+   },
+   {
+    "id": "SC-575JZX",
+    "level": "object",
+    "object_type": "场站",
+    "object_code": "ST-UI7YEL",
+    "object_label": null,
+    "symptom": "S_CHARGE_FAIL",
+    "symptom_label": "无法启动或中途断电",
+    "score": 59,
+    "band": "中",
+    "score_breakdown": {
+     "persistence": 12.5,
+     "volume": 5.4,
+     "spread": 6.7,
+     "sensitivity": 10,
+     "systemic": 7.5,
+     "escalation": 10,
+     "regulator": 1.7,
+     "closed_but_recurring": 5
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 3,
+     "n_90d": 2,
+     "n_prev_90d": 1,
+     "months": {
+      "2026-06": 1,
+      "2026-09": 1,
+      "2026-10": 1
+     },
+     "active_months_6": 3,
+     "first_month": "2026-06",
+     "last_month": "2026-10",
+     "resolved": 3,
+     "open": 0,
+     "after_first_close": 2,
+     "recurring_after_close": true,
+     "channels": {
+      "政诉": 3
+     },
+     "depts": {
+      "消协": 1,
+      "12345热线": 1,
+      "市场监管": 1
+     },
+     "cities": 1,
+     "stations": 1,
+     "template_l2_l4": 2,
+     "platform_l1_l4": 0,
+     "repeat_users": 0,
+     "demands": {
+      "退款": 2
+     },
+     "systemic": {
+      "中": 3
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [],
+    "case_ids": [
+     "GT-AQCKEVWC",
+     "GT-NJXB6BBN",
+     "GT-XJ6LMY47"
+    ]
+   },
+   {
+    "id": "SC-SDJSUJ",
+    "level": "object",
+    "object_type": "场站",
+    "object_code": "ST-AOQB4J",
+    "object_label": null,
+    "symptom": "S_VEHICLE_DAMAGE",
+    "symptom_label": "车辆受损或安全隐患",
+    "score": 57,
+    "band": "中",
+    "score_breakdown": {
+     "persistence": 8.3,
+     "volume": 5.4,
+     "spread": 3.3,
+     "sensitivity": 20,
+     "systemic": 7.5,
+     "escalation": 10,
+     "regulator": 2.5
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 2,
+     "n_90d": 2,
+     "n_prev_90d": 0,
+     "months": {
+      "2026-09": 1,
+      "2026-10": 1
+     },
+     "active_months_6": 2,
+     "first_month": "2026-09",
+     "last_month": "2026-10",
+     "resolved": 2,
+     "open": 0,
+     "after_first_close": 1,
+     "recurring_after_close": false,
+     "channels": {
+      "政诉": 2
+     },
+     "depts": {
+      "市场监管": 1,
+      "消协": 1
+     },
+     "cities": 1,
+     "stations": 1,
+     "template_l2_l4": 2,
+     "platform_l1_l4": 0,
+     "repeat_users": 0,
+     "demands": {
+      "赔偿": 2,
+      "诉讼": 1
+     },
+     "systemic": {
+      "中": 2
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [],
+    "case_ids": [
+     "GT-OITSVNKV",
+     "GT-GLACDFGW"
+    ]
+   },
+   {
+    "id": "SC-GK6R4O",
+    "level": "object",
+    "object_type": "场站",
+    "object_code": "ST-JWOBEB",
+    "object_label": null,
+    "symptom": "S_AMOUNT_HIGH",
+    "symptom_label": "金额高于实际或预期",
+    "score": 54,
+    "band": "中",
+    "score_breakdown": {
+     "persistence": 8.3,
+     "volume": 3.4,
+     "spread": 3.3,
+     "sensitivity": 16,
+     "systemic": 7.5,
+     "escalation": 10,
+     "regulator": 5
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 2,
+     "n_90d": 1,
+     "n_prev_90d": 1,
+     "months": {
+      "2026-08": 1,
+      "2026-09": 1
+     },
+     "active_months_6": 2,
+     "first_month": "2026-08",
+     "last_month": "2026-09",
+     "resolved": 2,
+     "open": 0,
+     "after_first_close": 1,
+     "recurring_after_close": false,
+     "channels": {
+      "政诉": 2
+     },
+     "depts": {
+      "市场监管": 2
+     },
+     "cities": 1,
+     "stations": 1,
+     "template_l2_l4": 1,
+     "platform_l1_l4": 0,
+     "repeat_users": 0,
+     "demands": {
+      "退款": 2,
+      "要求查处": 1
+     },
+     "systemic": {
+      "中": 2
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [],
+    "case_ids": [
+     "GT-DSLZRTMT",
+     "GT-OREOYGD4"
+    ]
+   },
+   {
+    "id": "SC-S6QQNQ",
+    "level": "object",
+    "object_type": "场站",
+    "object_code": "ST-B5QWMI",
+    "object_label": null,
+    "symptom": "S_OCCUPANCY_PARKING",
+    "symptom_label": "占位费或停车费争议",
+    "score": 53,
+    "band": "中",
+    "score_breakdown": {
+     "persistence": 12.5,
+     "volume": 3.4,
+     "spread": 6.7,
+     "sensitivity": 10,
+     "systemic": 7.5,
+     "escalation": 0,
+     "regulator": 3.3,
+     "reference_case": 10
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 3,
+     "n_90d": 1,
+     "n_prev_90d": 2,
+     "months": {
+      "2026-06": 1,
+      "2026-08": 1,
+      "2026-10": 1
+     },
+     "active_months_6": 3,
+     "first_month": "2026-06",
+     "last_month": "2026-10",
+     "resolved": 2,
+     "open": 0,
+     "after_first_close": 1,
+     "recurring_after_close": false,
+     "channels": {
+      "政诉": 3
+     },
+     "depts": {
+      "市场监管": 2,
+      "12345热线": 1
+     },
+     "cities": 1,
+     "stations": 1,
+     "template_l2_l4": 0,
+     "platform_l1_l4": 0,
+     "repeat_users": 0,
+     "demands": {
+      "退款": 2
+     },
+     "systemic": {
+      "中": 3
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [
+     {
+      "case_id": "RC-DEMO-03",
+      "title": "停车费减免规则告知不清被集中投诉",
+      "why": "现象相同:占位费或停车费争议"
+     }
+    ],
+    "case_ids": [
+     "GT-TOBQMZYD",
+     "GT-RKAB2VOG",
+     "GT-BNAKYIUI"
+    ]
+   },
+   {
+    "id": "SC-TLUHKN",
+    "level": "object",
+    "object_type": "场站",
+    "object_code": "ST-HYDTDO",
+    "object_label": null,
+    "symptom": "S_OCCUPANCY_PARKING",
+    "symptom_label": "占位费或停车费争议",
+    "score": 52,
+    "band": "中",
+    "score_breakdown": {
+     "persistence": 8.3,
+     "volume": 0,
+     "spread": 3.3,
+     "sensitivity": 10,
+     "systemic": 7.5,
+     "escalation": 10,
+     "regulator": 2.5,
+     "reference_case": 10
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 2,
+     "n_90d": 0,
+     "n_prev_90d": 2,
+     "months": {
+      "2026-07": 1,
+      "2026-08": 1
+     },
+     "active_months_6": 2,
+     "first_month": "2026-07",
+     "last_month": "2026-08",
+     "resolved": 1,
+     "open": 0,
+     "after_first_close": 0,
+     "recurring_after_close": false,
+     "channels": {
+      "政诉": 2
+     },
+     "depts": {
+      "市场监管": 1,
+      "12345热线": 1
+     },
+     "cities": 1,
+     "stations": 1,
+     "template_l2_l4": 2,
+     "platform_l1_l4": 0,
+     "repeat_users": 0,
+     "demands": {
+      "退款": 2
+     },
+     "systemic": {
+      "中": 2
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [
+     {
+      "case_id": "RC-DEMO-03",
+      "title": "停车费减免规则告知不清被集中投诉",
+      "why": "现象相同:占位费或停车费争议"
+     }
+    ],
+    "case_ids": [
+     "GT-U7DQ6FNY",
+     "GT-72HKLQ2F"
+    ]
+   },
+   {
+    "id": "SC-2SQC6R",
+    "level": "object",
+    "object_type": "场站",
+    "object_code": "ST-WPDLKN",
+    "object_label": null,
+    "symptom": "S_PRICE_MISMATCH",
+    "symptom_label": "价格标示与实收不一致",
+    "score": 51,
+    "band": "中",
+    "score_breakdown": {
+     "persistence": 8.3,
+     "volume": 5.4,
+     "spread": 3.3,
+     "sensitivity": 16,
+     "systemic": 7.5,
+     "escalation": 10,
+     "regulator": 0
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 2,
+     "n_90d": 2,
+     "n_prev_90d": 0,
+     "months": {
+      "2026-09": 1,
+      "2026-10": 1
+     },
+     "active_months_6": 2,
+     "first_month": "2026-09",
+     "last_month": "2026-10",
+     "resolved": 1,
+     "open": 0,
+     "after_first_close": 0,
+     "recurring_after_close": false,
+     "channels": {
+      "政诉": 2
+     },
+     "depts": {
+      "其他": 1,
+      "12345热线": 1
+     },
+     "cities": 1,
+     "stations": 1,
+     "template_l2_l4": 1,
+     "platform_l1_l4": 0,
+     "repeat_users": 0,
+     "demands": {
+      "退款": 1
+     },
+     "systemic": {
+      "中": 2
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [],
+    "case_ids": [
+     "GT-Z2EA2ZFG",
+     "GT-E563XSXY"
+    ]
+   },
+   {
+    "id": "SC-YMSG4C",
+    "level": "object",
+    "object_type": "场站",
+    "object_code": "ST-B5QWMI",
+    "object_label": null,
+    "symptom": "S_VEHICLE_DAMAGE",
+    "symptom_label": "车辆受损或安全隐患",
+    "score": 51,
+    "band": "中",
+    "score_breakdown": {
+     "persistence": 4.2,
+     "volume": 3.4,
+     "spread": 3.3,
+     "sensitivity": 20,
+     "systemic": 7.5,
+     "escalation": 10,
+     "regulator": 2.5
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 2,
+     "n_90d": 1,
+     "n_prev_90d": 0,
+     "months": {
+      "2026-05": 1,
+      "2026-08": 1
+     },
+     "active_months_6": 1,
+     "first_month": "2026-05",
+     "last_month": "2026-08",
+     "resolved": 1,
+     "open": 0,
+     "after_first_close": 0,
+     "recurring_after_close": false,
+     "channels": {
+      "政诉": 2
+     },
+     "depts": {
+      "其他": 1,
+      "市场监管": 1
+     },
+     "cities": 1,
+     "stations": 1,
+     "template_l2_l4": 1,
+     "platform_l1_l4": 0,
+     "repeat_users": 0,
+     "demands": {
+      "赔偿": 2,
+      "诉讼": 1
+     },
+     "systemic": {
+      "中": 2
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [],
+    "case_ids": [
+     "GT-RAUAP3Y3",
+     "GT-UXXEX2U5"
+    ]
+   },
+   {
+    "id": "SC-VZTKSZ",
+    "level": "object",
+    "object_type": "场站",
+    "object_code": "ST-C6I7LR",
+    "object_label": null,
+    "symptom": "S_AMOUNT_HIGH",
+    "symptom_label": "金额高于实际或预期",
+    "score": 49,
+    "band": "中",
+    "score_breakdown": {
+     "persistence": 8.3,
+     "volume": 5.4,
+     "spread": 6.7,
+     "sensitivity": 16,
+     "systemic": 7.5,
+     "escalation": 0,
+     "regulator": 0,
+     "closed_but_recurring": 5
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 3,
+     "n_90d": 2,
+     "n_prev_90d": 1,
+     "months": {
+      "2026-06": 1,
+      "2026-11": 2
+     },
+     "active_months_6": 2,
+     "first_month": "2026-06",
+     "last_month": "2026-11",
+     "resolved": 2,
+     "open": 1,
+     "after_first_close": 2,
+     "recurring_after_close": true,
+     "channels": {
+      "政诉": 3
+     },
+     "depts": {
+      "12345热线": 2,
+      "消协": 1
+     },
+     "cities": 1,
+     "stations": 1,
+     "template_l2_l4": 0,
+     "platform_l1_l4": 1,
+     "repeat_users": 0,
+     "demands": {
+      "退款": 3
+     },
+     "systemic": {
+      "中": 3
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [],
+    "case_ids": [
+     "GT-EPPRGXOK",
+     "GT-UGR27UMD",
+     "GT-B4CR54SV"
+    ]
+   },
+   {
+    "id": "SC-KXXI6U",
+    "level": "object",
+    "object_type": "场站",
+    "object_code": "ST-SQZWMM",
+    "object_label": null,
+    "symptom": "S_CHARGE_FAIL",
+    "symptom_label": "无法启动或中途断电",
+    "score": 48,
+    "band": "中",
+    "score_breakdown": {
+     "persistence": 8.3,
+     "volume": 3.4,
+     "spread": 3.3,
+     "sensitivity": 10,
+     "systemic": 7.5,
+     "escalation": 10,
+     "regulator": 5
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 2,
+     "n_90d": 1,
+     "n_prev_90d": 1,
+     "months": {
+      "2026-07": 1,
+      "2026-10": 1
+     },
+     "active_months_6": 2,
+     "first_month": "2026-07",
+     "last_month": "2026-10",
+     "resolved": 2,
+     "open": 0,
+     "after_first_close": 1,
+     "recurring_after_close": false,
+     "channels": {
+      "政诉": 2
+     },
+     "depts": {
+      "市场监管": 2
+     },
+     "cities": 1,
+     "stations": 1,
+     "template_l2_l4": 1,
+     "platform_l1_l4": 0,
+     "repeat_users": 0,
+     "demands": {
+      "退款": 1
+     },
+     "systemic": {
+      "中": 2
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [],
+    "case_ids": [
+     "GT-A36CQKE3",
+     "GT-UMSQWORT"
+    ]
+   },
+   {
+    "id": "SC-NPVCUP",
+    "level": "object",
+    "object_type": "场站",
+    "object_code": "ST-Y3S4PE",
+    "object_label": null,
+    "symptom": "S_CHARGE_FAIL",
+    "symptom_label": "无法启动或中途断电",
+    "score": 45,
+    "band": "中",
+    "score_breakdown": {
+     "persistence": 8.3,
+     "volume": 3.4,
+     "spread": 3.3,
+     "sensitivity": 10,
+     "systemic": 7.5,
+     "escalation": 10,
+     "regulator": 2.5
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 2,
+     "n_90d": 1,
+     "n_prev_90d": 1,
+     "months": {
+      "2026-08": 1,
+      "2026-09": 1
+     },
+     "active_months_6": 2,
+     "first_month": "2026-08",
+     "last_month": "2026-09",
+     "resolved": 2,
+     "open": 0,
+     "after_first_close": 1,
+     "recurring_after_close": false,
+     "channels": {
+      "政诉": 2
+     },
+     "depts": {
+      "市场监管": 1,
+      "12345热线": 1
+     },
+     "cities": 1,
+     "stations": 1,
+     "template_l2_l4": 1,
+     "platform_l1_l4": 0,
+     "repeat_users": 0,
+     "demands": {
+      "退款": 1,
+      "赔偿": 1
+     },
+     "systemic": {
+      "中": 2
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [],
+    "case_ids": [
+     "GT-NHEB6U6B",
+     "GT-QPK57YUT"
+    ]
+   },
+   {
+    "id": "SC-2LCRYK",
+    "level": "object",
+    "object_type": "场站",
+    "object_code": "ST-TDB3PP",
+    "object_label": null,
+    "symptom": "S_STATION_MGMT",
+    "symptom_label": "场站秩序或设施管理",
+    "score": 45,
+    "band": "中",
+    "score_breakdown": {
+     "persistence": 8.3,
+     "volume": 5.4,
+     "spread": 3.3,
+     "sensitivity": 8,
+     "systemic": 7.5,
+     "escalation": 10,
+     "regulator": 2.5
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 2,
+     "n_90d": 2,
+     "n_prev_90d": 0,
+     "months": {
+      "2026-09": 1,
+      "2026-10": 1
+     },
+     "active_months_6": 2,
+     "first_month": "2026-09",
+     "last_month": "2026-10",
+     "resolved": 1,
+     "open": 0,
+     "after_first_close": 0,
+     "recurring_after_close": false,
+     "channels": {
+      "政诉": 2
+     },
+     "depts": {
+      "其他": 1,
+      "交通运输": 1
+     },
+     "cities": 1,
+     "stations": 1,
+     "template_l2_l4": 1,
+     "platform_l1_l4": 0,
+     "repeat_users": 0,
+     "demands": {},
+     "systemic": {
+      "中": 2
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [],
+    "case_ids": [
+     "GT-HRVM37NX",
+     "GT-TNBHGP7Z"
+    ]
+   },
+   {
+    "id": "SC-3EGCOS",
+    "level": "object",
+    "object_type": "场站",
+    "object_code": "ST-5I4BYZ",
+    "object_label": null,
+    "symptom": "S_CHARGE_FAIL",
+    "symptom_label": "无法启动或中途断电",
+    "score": 44,
+    "band": "低",
+    "score_breakdown": {
+     "persistence": 8.3,
+     "volume": 3.4,
+     "spread": 6.7,
+     "sensitivity": 10,
+     "systemic": 7.5,
+     "escalation": 6.7,
+     "regulator": 1.7
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 3,
+     "n_90d": 1,
+     "n_prev_90d": 1,
+     "months": {
+      "2026-05": 1,
+      "2026-06": 1,
+      "2026-09": 1
+     },
+     "active_months_6": 2,
+     "first_month": "2026-05",
+     "last_month": "2026-09",
+     "resolved": 1,
+     "open": 1,
+     "after_first_close": 0,
+     "recurring_after_close": false,
+     "channels": {
+      "政诉": 3
+     },
+     "depts": {
+      "12345热线": 2,
+      "市场监管": 1
+     },
+     "cities": 1,
+     "stations": 1,
+     "template_l2_l4": 1,
+     "platform_l1_l4": 0,
+     "repeat_users": 0,
+     "demands": {
+      "退款": 1
+     },
+     "systemic": {
+      "中": 3
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [],
+    "case_ids": [
+     "GT-OQTNJYHJ",
+     "GT-25TYJDXU",
+     "GT-MVNB4TJS"
+    ]
+   },
+   {
+    "id": "SC-BB3FER",
+    "level": "object",
+    "object_type": "场站",
+    "object_code": "ST-XCJTFM",
+    "object_label": null,
+    "symptom": "S_PROMO",
+    "symptom_label": "优惠、会员或活动未兑现",
+    "score": 44,
+    "band": "低",
+    "score_breakdown": {
+     "persistence": 8.3,
+     "volume": 0,
+     "spread": 3.3,
+     "sensitivity": 12,
+     "systemic": 7.5,
+     "escalation": 10,
+     "regulator": 2.5
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 2,
+     "n_90d": 0,
+     "n_prev_90d": 2,
+     "months": {
+      "2026-06": 1,
+      "2026-07": 1
+     },
+     "active_months_6": 2,
+     "first_month": "2026-06",
+     "last_month": "2026-07",
+     "resolved": 2,
+     "open": 0,
+     "after_first_close": 1,
+     "recurring_after_close": false,
+     "channels": {
+      "政诉": 2
+     },
+     "depts": {
+      "消协": 1,
+      "市场监管": 1
+     },
+     "cities": 1,
+     "stations": 1,
+     "template_l2_l4": 2,
+     "platform_l1_l4": 0,
+     "repeat_users": 0,
+     "demands": {},
+     "systemic": {
+      "中": 2
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [],
+    "case_ids": [
+     "GT-5FWKLL64",
+     "GT-IJIEURED"
+    ]
+   },
+   {
+    "id": "SC-F4XXHZ",
+    "level": "object",
+    "object_type": "场站",
+    "object_code": "ST-W5IPFZ",
+    "object_label": null,
+    "symptom": "S_STATION_MGMT",
+    "symptom_label": "场站秩序或设施管理",
+    "score": 43,
+    "band": "低",
+    "score_breakdown": {
+     "persistence": 8.3,
+     "volume": 3.4,
+     "spread": 3.3,
+     "sensitivity": 8,
+     "systemic": 7.5,
+     "escalation": 10,
+     "regulator": 2.5
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 2,
+     "n_90d": 1,
+     "n_prev_90d": 1,
+     "months": {
+      "2026-07": 1,
+      "2026-10": 1
+     },
+     "active_months_6": 2,
+     "first_month": "2026-07",
+     "last_month": "2026-10",
+     "resolved": 2,
+     "open": 0,
+     "after_first_close": 1,
+     "recurring_after_close": false,
+     "channels": {
+      "政诉": 2
+     },
+     "depts": {
+      "市场监管": 1,
+      "12345热线": 1
+     },
+     "cities": 1,
+     "stations": 1,
+     "template_l2_l4": 2,
+     "platform_l1_l4": 0,
+     "repeat_users": 0,
+     "demands": {},
+     "systemic": {
+      "中": 2
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [],
+    "case_ids": [
+     "GT-MJ2SLKTP",
+     "GT-TIYQIX6P"
+    ]
+   },
+   {
+    "id": "SC-UCN64K",
+    "level": "object",
+    "object_type": "场站",
+    "object_code": "ST-W3VNVI",
+    "object_label": null,
+    "symptom": "S_CHARGE_FAIL",
+    "symptom_label": "无法启动或中途断电",
+    "score": 38,
+    "band": "低",
+    "score_breakdown": {
+     "persistence": 8.3,
+     "volume": 3.4,
+     "spread": 3.3,
+     "sensitivity": 10,
+     "systemic": 7.5,
+     "escalation": 0,
+     "regulator": 5
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 2,
+     "n_90d": 1,
+     "n_prev_90d": 1,
+     "months": {
+      "2026-07": 1,
+      "2026-10": 1
+     },
+     "active_months_6": 2,
+     "first_month": "2026-07",
+     "last_month": "2026-10",
+     "resolved": 1,
+     "open": 0,
+     "after_first_close": 1,
+     "recurring_after_close": false,
+     "channels": {
+      "政诉": 2
+     },
+     "depts": {
+      "网信": 1,
+      "市场监管": 1
+     },
+     "cities": 1,
+     "stations": 1,
+     "template_l2_l4": 0,
+     "platform_l1_l4": 0,
+     "repeat_users": 0,
+     "demands": {
+      "赔偿": 2
+     },
+     "systemic": {
+      "中": 2
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [],
+    "case_ids": [
+     "GT-UETZWSKV",
+     "GT-LA7NUX3U"
+    ]
+   },
+   {
+    "id": "SC-T44ISY",
+    "level": "object",
+    "object_type": "场站",
+    "object_code": "ST-Y3S4PE",
+    "object_label": null,
+    "symptom": "S_UNPLUG",
+    "symptom_label": "无法拔枪或无法结束",
+    "score": 38,
+    "band": "低",
+    "score_breakdown": {
+     "persistence": 8.3,
+     "volume": 3.4,
+     "spread": 3.3,
+     "sensitivity": 10,
+     "systemic": 7.5,
+     "escalation": 0,
+     "regulator": 5
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 2,
+     "n_90d": 1,
+     "n_prev_90d": 1,
+     "months": {
+      "2026-07": 1,
+      "2026-11": 1
+     },
+     "active_months_6": 2,
+     "first_month": "2026-07",
+     "last_month": "2026-11",
+     "resolved": 1,
+     "open": 0,
+     "after_first_close": 0,
+     "recurring_after_close": false,
+     "channels": {
+      "政诉": 2
+     },
+     "depts": {
+      "市场监管": 2
+     },
+     "cities": 1,
+     "stations": 1,
+     "template_l2_l4": 0,
+     "platform_l1_l4": 1,
+     "repeat_users": 0,
+     "demands": {},
+     "systemic": {
+      "中": 2
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [],
+    "case_ids": [
+     "GT-NGY37HDV",
+     "GT-GS6Z3TLB"
+    ]
+   },
+   {
+    "id": "SC-A7NVME",
+    "level": "object",
+    "object_type": "场站",
+    "object_code": "ST-AOQB4J",
+    "object_label": null,
+    "symptom": "S_STATION_MGMT",
+    "symptom_label": "场站秩序或设施管理",
+    "score": 37,
+    "band": "低",
+    "score_breakdown": {
+     "persistence": 8.3,
+     "volume": 0,
+     "spread": 3.3,
+     "sensitivity": 8,
+     "systemic": 7.5,
+     "escalation": 10,
+     "regulator": 0
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 2,
+     "n_90d": 0,
+     "n_prev_90d": 2,
+     "months": {
+      "2026-06": 1,
+      "2026-08": 1
+     },
+     "active_months_6": 2,
+     "first_month": "2026-06",
+     "last_month": "2026-08",
+     "resolved": 2,
+     "open": 0,
+     "after_first_close": 1,
+     "recurring_after_close": false,
+     "channels": {
+      "政诉": 2
+     },
+     "depts": {
+      "12345热线": 2
+     },
+     "cities": 1,
+     "stations": 1,
+     "template_l2_l4": 1,
+     "platform_l1_l4": 0,
+     "repeat_users": 0,
+     "demands": {},
+     "systemic": {
+      "中": 2
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [],
+    "case_ids": [
+     "GT-CIVWJTEF",
+     "GT-A7XTCYFY"
+    ]
+   },
+   {
+    "id": "SC-RQJ4P2",
+    "level": "object",
+    "object_type": "场站",
+    "object_code": "ST-AOQB4J",
+    "object_label": null,
+    "symptom": "S_CHARGE_FAIL",
+    "symptom_label": "无法启动或中途断电",
+    "score": 35,
+    "band": "低",
+    "score_breakdown": {
+     "persistence": 4.2,
+     "volume": 0,
+     "spread": 3.3,
+     "sensitivity": 10,
+     "systemic": 7.5,
+     "escalation": 10,
+     "regulator": 0
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 2,
+     "n_90d": 0,
+     "n_prev_90d": 2,
+     "months": {
+      "2026-05": 1,
+      "2026-08": 1
+     },
+     "active_months_6": 1,
+     "first_month": "2026-05",
+     "last_month": "2026-08",
+     "resolved": 1,
+     "open": 0,
+     "after_first_close": 0,
+     "recurring_after_close": false,
+     "channels": {
+      "政诉": 2
+     },
+     "depts": {
+      "12345热线": 2
+     },
+     "cities": 1,
+     "stations": 1,
+     "template_l2_l4": 1,
+     "platform_l1_l4": 0,
+     "repeat_users": 0,
+     "demands": {
+      "退款": 1,
+      "赔偿": 1
+     },
+     "systemic": {
+      "中": 2
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [],
+    "case_ids": [
+     "GT-GQE77JLI",
+     "GT-WN55FVTS"
+    ]
+   },
+   {
+    "id": "SC-T22O3P",
+    "level": "object",
+    "object_type": "场站",
+    "object_code": "ST-GPOCWP",
+    "object_label": null,
+    "symptom": "S_CHARGE_FAIL",
+    "symptom_label": "无法启动或中途断电",
+    "score": 35,
+    "band": "低",
+    "score_breakdown": {
+     "persistence": 4.2,
+     "volume": 0,
+     "spread": 3.3,
+     "sensitivity": 10,
+     "systemic": 7.5,
+     "escalation": 10,
+     "regulator": 0
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 2,
+     "n_90d": 0,
+     "n_prev_90d": 2,
+     "months": {
+      "2026-08": 2
+     },
+     "active_months_6": 1,
+     "first_month": "2026-08",
+     "last_month": "2026-08",
+     "resolved": 1,
+     "open": 0,
+     "after_first_close": 0,
+     "recurring_after_close": false,
+     "channels": {
+      "政诉": 2
+     },
+     "depts": {
+      "其他": 1,
+      "12345热线": 1
+     },
+     "cities": 1,
+     "stations": 1,
+     "template_l2_l4": 1,
+     "platform_l1_l4": 0,
+     "repeat_users": 0,
+     "demands": {
+      "退款": 2
+     },
+     "systemic": {
+      "中": 2
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [],
+    "case_ids": [
+     "GT-SREOAKII",
+     "GT-HUEQE7RQ"
+    ]
+   },
+   {
+    "id": "SC-DSHSIJ",
+    "level": "object",
+    "object_type": "场站",
+    "object_code": "ST-6BZCDK",
+    "object_label": null,
+    "symptom": "S_PROMO",
+    "symptom_label": "优惠、会员或活动未兑现",
+    "score": 34,
+    "band": "低",
+    "score_breakdown": {
+     "persistence": 8.3,
+     "volume": 0,
+     "spread": 3.3,
+     "sensitivity": 12,
+     "systemic": 7.5,
+     "escalation": 0,
+     "regulator": 2.5
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 2,
+     "n_90d": 0,
+     "n_prev_90d": 2,
+     "months": {
+      "2026-06": 1,
+      "2026-07": 1
+     },
+     "active_months_6": 2,
+     "first_month": "2026-06",
+     "last_month": "2026-07",
+     "resolved": 2,
+     "open": 0,
+     "after_first_close": 1,
+     "recurring_after_close": false,
+     "channels": {
+      "政诉": 2
+     },
+     "depts": {
+      "市场监管": 1,
+      "12345热线": 1
+     },
+     "cities": 1,
+     "stations": 1,
+     "template_l2_l4": 0,
+     "platform_l1_l4": 0,
+     "repeat_users": 0,
+     "demands": {},
+     "systemic": {
+      "中": 2
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [],
+    "case_ids": [
+     "GT-D2HLWMBC",
+     "GT-4IJCORNU"
+    ]
+   },
+   {
+    "id": "SC-DVWPY5",
+    "level": "object",
+    "object_type": "场站",
+    "object_code": "ST-FJQTHO",
+    "object_label": null,
+    "symptom": "S_CHARGE_FAIL",
+    "symptom_label": "无法启动或中途断电",
+    "score": 33,
+    "band": "低",
+    "score_breakdown": {
+     "persistence": 0,
+     "volume": 0,
+     "spread": 3.3,
+     "sensitivity": 10,
+     "systemic": 7.5,
+     "escalation": 10,
+     "regulator": 2.5
+    },
+    "status": "new",
+    "recurred_after_fix": 0,
+    "observing_until": null,
+    "stats": {
+     "n": 2,
+     "n_90d": 0,
+     "n_prev_90d": 0,
+     "months": {
+      "2026-05": 2
+     },
+     "active_months_6": 0,
+     "first_month": "2026-05",
+     "last_month": "2026-05",
+     "resolved": 2,
+     "open": 0,
+     "after_first_close": 1,
+     "recurring_after_close": false,
+     "channels": {
+      "政诉": 2
+     },
+     "depts": {
+      "交通运输": 1,
+      "其他": 1
+     },
+     "cities": 1,
+     "stations": 1,
+     "template_l2_l4": 1,
+     "platform_l1_l4": 0,
+     "repeat_users": 0,
+     "demands": {
+      "赔偿": 1
+     },
+     "systemic": {
+      "中": 2
+     },
+     "mechanisms": [],
+     "clues": []
+    },
+    "mechanisms": [],
+    "clues": [],
+    "verify_steps": [],
+    "review": null,
+    "review_key": null,
+    "reference_matches": [],
+    "case_ids": [
+     "GT-JUAFAVDP",
+     "GT-XAM4E7JL"
+    ]
+   }
+  ],
+  "overview": {
+   "matrix": [
+    {
+     "symptom": "S_ACCOUNT",
+     "dept_type": "12345热线",
+     "n": 5,
+     "symptom_label": "账号异常或个人信息"
+    },
+    {
+     "symptom": "S_ACCOUNT",
+     "dept_type": "个人信息保护",
+     "n": 4,
+     "symptom_label": "账号异常或个人信息"
+    },
+    {
+     "symptom": "S_ACCOUNT",
+     "dept_type": "市场监管",
+     "n": 8,
+     "symptom_label": "账号异常或个人信息"
+    },
+    {
+     "symptom": "S_ACCOUNT",
+     "dept_type": "网信",
+     "n": 3,
+     "symptom_label": "账号异常或个人信息"
+    },
+    {
+     "symptom": "S_AMOUNT_HIGH",
+     "dept_type": "12345热线",
+     "n": 14,
+     "symptom_label": "金额高于实际或预期"
+    },
+    {
+     "symptom": "S_AMOUNT_HIGH",
+     "dept_type": "交通运输",
+     "n": 2,
+     "symptom_label": "金额高于实际或预期"
+    },
+    {
+     "symptom": "S_AMOUNT_HIGH",
+     "dept_type": "其他",
+     "n": 3,
+     "symptom_label": "金额高于实际或预期"
+    },
+    {
+     "symptom": "S_AMOUNT_HIGH",
+     "dept_type": "媒体",
+     "n": 2,
+     "symptom_label": "金额高于实际或预期"
+    },
+    {
+     "symptom": "S_AMOUNT_HIGH",
+     "dept_type": "市场监管",
+     "n": 37,
+     "symptom_label": "金额高于实际或预期"
+    },
+    {
+     "symptom": "S_AMOUNT_HIGH",
+     "dept_type": "未知",
+     "n": 1,
+     "symptom_label": "金额高于实际或预期"
+    },
+    {
+     "symptom": "S_AMOUNT_HIGH",
+     "dept_type": "消协",
+     "n": 9,
+     "symptom_label": "金额高于实际或预期"
+    },
+    {
+     "symptom": "S_CHARGE_FAIL",
+     "dept_type": "12345热线",
+     "n": 14,
+     "symptom_label": "无法启动或中途断电"
+    },
+    {
+     "symptom": "S_CHARGE_FAIL",
+     "dept_type": "交通运输",
+     "n": 1,
+     "symptom_label": "无法启动或中途断电"
+    },
+    {
+     "symptom": "S_CHARGE_FAIL",
+     "dept_type": "公安",
+     "n": 2,
+     "symptom_label": "无法启动或中途断电"
+    },
+    {
+     "symptom": "S_CHARGE_FAIL",
+     "dept_type": "其他",
+     "n": 4,
+     "symptom_label": "无法启动或中途断电"
+    },
+    {
+     "symptom": "S_CHARGE_FAIL",
+     "dept_type": "市场监管",
+     "n": 30,
+     "symptom_label": "无法启动或中途断电"
+    },
+    {
+     "symptom": "S_CHARGE_FAIL",
+     "dept_type": "未知",
+     "n": 2,
+     "symptom_label": "无法启动或中途断电"
+    },
+    {
+     "symptom": "S_CHARGE_FAIL",
+     "dept_type": "消协",
+     "n": 5,
+     "symptom_label": "无法启动或中途断电"
+    },
+    {
+     "symptom": "S_CHARGE_FAIL",
+     "dept_type": "网信",
+     "n": 2,
+     "symptom_label": "无法启动或中途断电"
+    },
+    {
+     "symptom": "S_ENERGY_HIGH",
+     "dept_type": "12345热线",
+     "n": 5,
+     "symptom_label": "电量/度数偏高"
+    },
+    {
+     "symptom": "S_ENERGY_HIGH",
+     "dept_type": "其他",
+     "n": 5,
+     "symptom_label": "电量/度数偏高"
+    },
+    {
+     "symptom": "S_ENERGY_HIGH",
+     "dept_type": "媒体",
+     "n": 2,
+     "symptom_label": "电量/度数偏高"
+    },
+    {
+     "symptom": "S_ENERGY_HIGH",
+     "dept_type": "市场监管",
+     "n": 17,
+     "symptom_label": "电量/度数偏高"
+    },
+    {
+     "symptom": "S_ENERGY_HIGH",
+     "dept_type": "消协",
+     "n": 4,
+     "symptom_label": "电量/度数偏高"
+    },
+    {
+     "symptom": "S_INVOICE",
+     "dept_type": "12345热线",
+     "n": 9,
+     "symptom_label": "发票问题"
+    },
+    {
+     "symptom": "S_INVOICE",
+     "dept_type": "市场监管",
+     "n": 19,
+     "symptom_label": "发票问题"
+    },
+    {
+     "symptom": "S_INVOICE",
+     "dept_type": "税务",
+     "n": 11,
+     "symptom_label": "发票问题"
+    },
+    {
+     "symptom": "S_OCCUPANCY_PARKING",
+     "dept_type": "12345热线",
+     "n": 23,
+     "symptom_label": "占位费或停车费争议"
+    },
+    {
+     "symptom": "S_OCCUPANCY_PARKING",
+     "dept_type": "交通运输",
+     "n": 2,
+     "symptom_label": "占位费或停车费争议"
+    },
+    {
+     "symptom": "S_OCCUPANCY_PARKING",
+     "dept_type": "其他",
+     "n": 8,
+     "symptom_label": "占位费或停车费争议"
+    },
+    {
+     "symptom": "S_OCCUPANCY_PARKING",
+     "dept_type": "媒体",
+     "n": 3,
+     "symptom_label": "占位费或停车费争议"
+    },
+    {
+     "symptom": "S_OCCUPANCY_PARKING",
+     "dept_type": "市场监管",
+     "n": 34,
+     "symptom_label": "占位费或停车费争议"
+    },
+    {
+     "symptom": "S_OCCUPANCY_PARKING",
+     "dept_type": "未知",
+     "n": 4,
+     "symptom_label": "占位费或停车费争议"
+    },
+    {
+     "symptom": "S_OCCUPANCY_PARKING",
+     "dept_type": "网信",
+     "n": 1,
+     "symptom_label": "占位费或停车费争议"
+    },
+    {
+     "symptom": "S_OTHER",
+     "dept_type": "12345热线",
+     "n": 6,
+     "symptom_label": "其他"
+    },
+    {
+     "symptom": "S_OTHER",
+     "dept_type": "交通运输",
+     "n": 2,
+     "symptom_label": "其他"
+    },
+    {
+     "symptom": "S_OTHER",
+     "dept_type": "其他",
+     "n": 3,
+     "symptom_label": "其他"
+    },
+    {
+     "symptom": "S_OTHER",
+     "dept_type": "市场监管",
+     "n": 4,
+     "symptom_label": "其他"
+    },
+    {
+     "symptom": "S_OTHERS_DATA",
+     "dept_type": "12345热线",
+     "n": 1,
+     "symptom_label": "出现他人数据或非本人订单"
+    },
+    {
+     "symptom": "S_OTHERS_DATA",
+     "dept_type": "个人信息保护",
+     "n": 2,
+     "symptom_label": "出现他人数据或非本人订单"
+    },
+    {
+     "symptom": "S_OTHERS_DATA",
+     "dept_type": "市场监管",
+     "n": 4,
+     "symptom_label": "出现他人数据或非本人订单"
+    },
+    {
+     "symptom": "S_OTHERS_DATA",
+     "dept_type": "网信",
+     "n": 2,
+     "symptom_label": "出现他人数据或非本人订单"
+    },
+    {
+     "symptom": "S_PRICE_MISMATCH",
+     "dept_type": "12345热线",
+     "n": 15,
+     "symptom_label": "价格标示与实收不一致"
+    },
+    {
+     "symptom": "S_PRICE_MISMATCH",
+     "dept_type": "交通运输",
+     "n": 1,
+     "symptom_label": "价格标示与实收不一致"
+    },
+    {
+     "symptom": "S_PRICE_MISMATCH",
+     "dept_type": "其他",
+     "n": 7,
+     "symptom_label": "价格标示与实收不一致"
+    },
+    {
+     "symptom": "S_PRICE_MISMATCH",
+     "dept_type": "媒体",
+     "n": 1,
+     "symptom_label": "价格标示与实收不一致"
+    },
+    {
+     "symptom": "S_PRICE_MISMATCH",
+     "dept_type": "市场监管",
+     "n": 22,
+     "symptom_label": "价格标示与实收不一致"
+    },
+    {
+     "symptom": "S_PRICE_MISMATCH",
+     "dept_type": "未知",
+     "n": 1,
+     "symptom_label": "价格标示与实收不一致"
+    },
+    {
+     "symptom": "S_PRICE_MISMATCH",
+     "dept_type": "消协",
+     "n": 3,
+     "symptom_label": "价格标示与实收不一致"
+    },
+    {
+     "symptom": "S_PROMO",
+     "dept_type": "12345热线",
+     "n": 19,
+     "symptom_label": "优惠、会员或活动未兑现"
+    },
+    {
+     "symptom": "S_PROMO",
+     "dept_type": "交通运输",
+     "n": 1,
+     "symptom_label": "优惠、会员或活动未兑现"
+    },
+    {
+     "symptom": "S_PROMO",
+     "dept_type": "其他",
+     "n": 3,
+     "symptom_label": "优惠、会员或活动未兑现"
+    },
+    {
+     "symptom": "S_PROMO",
+     "dept_type": "媒体",
+     "n": 1,
+     "symptom_label": "优惠、会员或活动未兑现"
+    },
+    {
+     "symptom": "S_PROMO",
+     "dept_type": "市场监管",
+     "n": 21,
+     "symptom_label": "优惠、会员或活动未兑现"
+    },
+    {
+     "symptom": "S_PROMO",
+     "dept_type": "未知",
+     "n": 1,
+     "symptom_label": "优惠、会员或活动未兑现"
+    },
+    {
+     "symptom": "S_PROMO",
+     "dept_type": "消协",
+     "n": 4,
+     "symptom_label": "优惠、会员或活动未兑现"
+    },
+    {
+     "symptom": "S_REFUND",
+     "dept_type": "12345热线",
+     "n": 17,
+     "symptom_label": "退款、余额或预付款问题"
+    },
+    {
+     "symptom": "S_REFUND",
+     "dept_type": "交通运输",
+     "n": 1,
+     "symptom_label": "退款、余额或预付款问题"
+    },
+    {
+     "symptom": "S_REFUND",
+     "dept_type": "其他",
+     "n": 5,
+     "symptom_label": "退款、余额或预付款问题"
+    },
+    {
+     "symptom": "S_REFUND",
+     "dept_type": "媒体",
+     "n": 3,
+     "symptom_label": "退款、余额或预付款问题"
+    },
+    {
+     "symptom": "S_REFUND",
+     "dept_type": "市场监管",
+     "n": 26,
+     "symptom_label": "退款、余额或预付款问题"
+    },
+    {
+     "symptom": "S_REFUND",
+     "dept_type": "未知",
+     "n": 1,
+     "symptom_label": "退款、余额或预付款问题"
+    },
+    {
+     "symptom": "S_REFUND",
+     "dept_type": "消协",
+     "n": 3,
+     "symptom_label": "退款、余额或预付款问题"
+    },
+    {
+     "symptom": "S_SERVICE",
+     "dept_type": "12345热线",
+     "n": 5,
+     "symptom_label": "客服推诿或处置不力"
+    },
+    {
+     "symptom": "S_SERVICE",
+     "dept_type": "媒体",
+     "n": 1,
+     "symptom_label": "客服推诿或处置不力"
+    },
+    {
+     "symptom": "S_SERVICE",
+     "dept_type": "市场监管",
+     "n": 13,
+     "symptom_label": "客服推诿或处置不力"
+    },
+    {
+     "symptom": "S_SERVICE",
+     "dept_type": "消协",
+     "n": 3,
+     "symptom_label": "客服推诿或处置不力"
+    },
+    {
+     "symptom": "S_STATION_MGMT",
+     "dept_type": "12345热线",
+     "n": 10,
+     "symptom_label": "场站秩序或设施管理"
+    },
+    {
+     "symptom": "S_STATION_MGMT",
+     "dept_type": "交通运输",
+     "n": 3,
+     "symptom_label": "场站秩序或设施管理"
+    },
+    {
+     "symptom": "S_STATION_MGMT",
+     "dept_type": "其他",
+     "n": 7,
+     "symptom_label": "场站秩序或设施管理"
+    },
+    {
+     "symptom": "S_STATION_MGMT",
+     "dept_type": "市场监管",
+     "n": 6,
+     "symptom_label": "场站秩序或设施管理"
+    },
+    {
+     "symptom": "S_UNPLUG",
+     "dept_type": "12345热线",
+     "n": 3,
+     "symptom_label": "无法拔枪或无法结束"
+    },
+    {
+     "symptom": "S_UNPLUG",
+     "dept_type": "其他",
+     "n": 1,
+     "symptom_label": "无法拔枪或无法结束"
+    },
+    {
+     "symptom": "S_UNPLUG",
+     "dept_type": "市场监管",
+     "n": 12,
+     "symptom_label": "无法拔枪或无法结束"
+    },
+    {
+     "symptom": "S_VEHICLE_DAMAGE",
+     "dept_type": "12345热线",
+     "n": 4,
+     "symptom_label": "车辆受损或安全隐患"
+    },
+    {
+     "symptom": "S_VEHICLE_DAMAGE",
+     "dept_type": "公安",
+     "n": 1,
+     "symptom_label": "车辆受损或安全隐患"
+    },
+    {
+     "symptom": "S_VEHICLE_DAMAGE",
+     "dept_type": "其他",
+     "n": 2,
+     "symptom_label": "车辆受损或安全隐患"
+    },
+    {
+     "symptom": "S_VEHICLE_DAMAGE",
+     "dept_type": "媒体",
+     "n": 1,
+     "symptom_label": "车辆受损或安全隐患"
+    },
+    {
+     "symptom": "S_VEHICLE_DAMAGE",
+     "dept_type": "市场监管",
+     "n": 14,
+     "symptom_label": "车辆受损或安全隐患"
+    },
+    {
+     "symptom": "S_VEHICLE_DAMAGE",
+     "dept_type": "消协",
+     "n": 1,
+     "symptom_label": "车辆受损或安全隐患"
+    }
+   ],
+   "trend": [
+    {
+     "month": "2026-05",
+     "n": 38,
+     "systemic_high": 0
+    },
+    {
+     "month": "2026-06",
+     "n": 88,
+     "systemic_high": 0
+    },
+    {
+     "month": "2026-07",
+     "n": 97,
+     "systemic_high": 0
+    },
+    {
+     "month": "2026-08",
+     "n": 102,
+     "systemic_high": 0
+    },
+    {
+     "month": "2026-09",
+     "n": 95,
+     "systemic_high": 0
+    },
+    {
+     "month": "2026-10",
+     "n": 91,
+     "systemic_high": 0
+    },
+    {
+     "month": "2026-11",
+     "n": 51,
+     "systemic_high": 0
+    }
+   ]
+  },
+  "reference_cases": [
+   {
+    "id": "RC-DEMO-01",
+    "title": "充电度数过高引发舆情",
+    "symptom": "S_ENERGY_HIGH",
+    "mechanisms": [
+     "M_METER_FAULT"
+    ],
+    "consequence": "舆情+监管施压",
+    "summary": "单条投诉都按\"问题已解决\"关单,后来一条投诉碰上舆情才排查到设备计量电路老化。"
+   },
+   {
+    "id": "RC-DEMO-02",
+    "title": "设备流水号重复导致串单",
+    "symptom": "S_ENERGY_HIGH",
+    "mechanisms": [
+     "M_DATA_CROSSTALK"
+    ],
+    "consequence": "个人信息投诉",
+    "summary": "设备流水号重复,新用户被关联到老用户的充电数据,显示的电量和金额偏高。"
+   },
+   {
+    "id": "RC-DEMO-03",
+    "title": "停车费减免规则告知不清被集中投诉",
+    "symptom": "S_OCCUPANCY_PARKING",
+    "mechanisms": [
+     "M_PROMO_RULE",
+     "M_THIRD_PARTY_OPS"
+    ],
+    "consequence": "监管约谈",
+    "summary": "合作场站的停车减免时长与平台页面写法不一致,同一场站短期内集中被投诉。"
+   }
+  ],
+  "vocab": {
+   "symptoms": {
+    "S_ENERGY_HIGH": "电量/度数偏高",
+    "S_AMOUNT_HIGH": "金额高于实际或预期",
+    "S_OTHERS_DATA": "出现他人数据或非本人订单",
+    "S_PRICE_MISMATCH": "价格标示与实收不一致",
+    "S_CHARGE_FAIL": "无法启动或中途断电",
+    "S_UNPLUG": "无法拔枪或无法结束",
+    "S_VEHICLE_DAMAGE": "车辆受损或安全隐患",
+    "S_OCCUPANCY_PARKING": "占位费或停车费争议",
+    "S_INVOICE": "发票问题",
+    "S_PROMO": "优惠、会员或活动未兑现",
+    "S_REFUND": "退款、余额或预付款问题",
+    "S_ACCOUNT": "账号异常或个人信息",
+    "S_STATION_MGMT": "场站秩序或设施管理",
+    "S_SERVICE": "客服推诿或处置不力",
+    "S_OTHER": "其他"
+   },
+   "mechanisms": {
+    "M_METER_FAULT": "设备计量异常(硬件老化、校准、电表故障)",
+    "M_DATA_CROSSTALK": "数据串单(流水号重复、订单与设备会话错配)",
+    "M_BILLING_CONFIG": "计费规则或价格配置错误",
+    "M_PRICE_SYNC": "平台展示与场站价格不同步",
+    "M_DEVICE_FAULT": "设备故障(启停、枪锁、通信)",
+    "M_PAYMENT_SYSTEM": "支付、退款或余额系统问题",
+    "M_PROMO_RULE": "营销规则或告知不清",
+    "M_THIRD_PARTY_OPS": "第三方场站运营管理问题",
+    "M_SERVICE_HANDLING": "客服处置不当或未闭环",
+    "M_ACCOUNT_SECURITY": "账号安全或盗用",
+    "M_USER_MISUNDERSTANDING": "用户误解或操作问题",
+    "M_UNKNOWN": "无法判断"
+   },
+   "status": {
+    "new": "新发现",
+    "investigating": "核查中",
+    "confirmed": "根因确认",
+    "fixing": "整改中",
+    "fixed": "已修复",
+    "observing": "观察期",
+    "dismissed": "误报",
+    "closed": "关闭"
+   }
+  }
+ },
+ "generatedAt": "2026-11-19T10:16:53.544Z",
+ "history": [
+  {
+   "generatedAt": "2026-11-19T10:16:53.544Z",
+   "kpi": {
+    "cases": 562,
+    "candidates_high": 21,
+    "candidates_medium": 14,
+    "recurring_after_close_high": 21,
+    "recurred_after_fix": 0,
+    "open_cases_in_high": 26
+   },
+   "dataWindow": {
+    "from": "2026-05",
+    "to": "2026-11"
+   }
+  }
+ ],
+ "run": {
+  "id": 1,
+  "trigger": "upload",
+  "status": "succeeded",
+  "progress": {
+   "stage": "done"
+  },
+  "stats": {
+   "judge_prompt": "judge-v2",
+   "review_prompt": "review-v2",
+   "model": null,
+   "models": [],
+   "judged_by_model": 0,
+   "judged_new": 0,
+   "judged_cached": 0,
+   "judged_by_rules": 562,
+   "judge_deferred": 562,
+   "reviewed": 0,
+   "review_failed": 0,
+   "breaker": "ai_not_configured",
+   "errors": [],
+   "cases": 562,
+   "candidates": 45,
+   "duration_ms": 13
+  },
+  "error": null,
+  "createdAt": "2026-11-19T10:16:53.529Z",
+  "startedAt": "2026-11-19T10:16:53.530Z",
+  "finishedAt": "2026-11-19T10:16:53.544Z"
+ },
+ "dataset": {
+  "uploadedAt": "2026-11-19T10:16:53.528Z",
+  "caseCount": 562,
+  "dataWindow": {
+   "from": "2026-05",
+   "to": "2026-11"
+  },
+  "sources": [
+   {
+    "channel": "政诉",
+    "n": 556
+   },
+   {
+    "channel": "舆情",
+    "n": 6
+   }
+  ]
+ }
+}
