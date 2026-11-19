@@ -63,6 +63,75 @@ def _hash8(s: str) -> str:
     return hashlib.sha1(s.encode()).hexdigest()[:8]
 
 
+def _suffix(n: int) -> str:
+    """1->a, 26->z, 27->aa(双射 26 进制)。SCHEMA §2 的 _a/_b 后缀序列。"""
+    out = ""
+    while n > 0:
+        n, r = divmod(n - 1, 26)
+        out = chr(97 + r) + out
+    return out
+
+
+class PidRegistry:
+    """policy_id 占位表,兑现 SCHEMA §2「碰撞:加 _a _b 后缀」。
+
+    compute_pid 只截文号尾数(丢掉文种前缀与括号年),不同文档天然可能算出同一个
+    候选 id;上游文号抽错时更是成片相撞。这里按「文档身份」发号:
+      - 号还空着            -> 用候选号
+      - 已被同一份文档占着  -> 拿回原号(重跑幂等,不会越跑后缀越长)
+      - 已被别的文档占着    -> 顺延 _a/_b/... 到第一个可用号
+
+    身份 = 归一后的 URL(复用 dedup 口径)。生产实测 21 组碰撞里 20 组是不同 URL
+    的不同文档(必须分号),1 组是同 URL 重复入库(必须复用原号)。
+    """
+
+    def __init__(self) -> None:
+        self._owner: dict = {}          # pid -> identity
+
+    @staticmethod
+    def _norm(identity: str) -> str:
+        from .dedup import normalize_url
+        return normalize_url(identity) or identity or ""
+
+    def reserve(self, candidate: str, identity: str) -> str:
+        ident = self._norm(identity)
+        n = 0
+        while True:
+            pid = candidate if n == 0 else f"{candidate}_{_suffix(n)}"
+            owner = self._owner.get(pid)
+            if owner is None:
+                self._owner[pid] = ident
+                return pid
+            if owner == ident:
+                return pid
+            n += 1
+
+    @classmethod
+    def from_vault_policies(cls, policies_dir) -> "PidRegistry":
+        """扫 vault 现有 0_raw/policies/,把已发出去的号登记为已占用。"""
+        reg = cls()
+        for f in sorted(Path(policies_dir).glob("*.md")):
+            try:
+                txt = f.read_text(encoding="utf-8")[:4000]
+            except Exception:
+                continue
+            m = re.search(r"^---\n(.*?)\n---", txt, re.S)
+            if not m:
+                continue
+            try:
+                fm = yaml.safe_load(m.group(1)) or {}
+            except Exception:
+                continue
+            if not isinstance(fm, dict):
+                continue
+            pid = fm.get("id")
+            if not pid:
+                continue
+            url = ((fm.get("provenance") or {}).get("url")) or ""
+            reg._owner.setdefault(pid, cls._norm(url))
+        return reg
+
+
 def compute_pid(date: str, issuer: Optional[str], official_number: str,
                 title: str, city_code: Optional[str] = None,
                 channel_type: Optional[str] = None) -> str:
@@ -101,9 +170,16 @@ def ingest_one(*, url: str, title: str, official_number: str, date: str,
                city: Optional[str] = None, city_code: Optional[str] = None,
                province: Optional[str] = None, channel_type: Optional[str] = None,
                via: str = "trafilatura", confidence: float = 0.85,
-               out_dir: Path = POLICIES_DIR) -> tuple:
-    """生成 vault md 文件,返回 (md 路径, pid)。out_dir 默认 POLICIES_DIR,可覆盖用于 staging。"""
+               out_dir: Path = POLICIES_DIR,
+               registry: "PidRegistry | None" = None) -> tuple:
+    """生成 vault md 文件,返回 (md 路径, pid)。out_dir 默认 POLICIES_DIR,可覆盖用于 staging。
+
+    registry 省略时按 out_dir 现存文件临时建表(单篇入库够用);批量入库应由调用方
+    建一次传进来,避免每篇重扫一遍目录。
+    """
     pid = compute_pid(date, issuer, official_number, title, city_code, channel_type)
+    reg = registry if registry is not None else PidRegistry.from_vault_policies(out_dir)
+    pid = reg.reserve(pid, identity=url)
     region = _infer_region(issuer, city, city_code)
     fm = {
         "id": pid,

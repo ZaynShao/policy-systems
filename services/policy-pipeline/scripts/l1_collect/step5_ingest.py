@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from .ingester import ingest_one, validate_with_schema, POLICIES_DIR
+from .ingester import ingest_one, validate_with_schema, PidRegistry, POLICIES_DIR
 
 
 def ingest_extracted(in_dir: Path, ingest_log: Path, out_dir: Path = None) -> tuple:
@@ -12,6 +12,9 @@ def ingest_extracted(in_dir: Path, ingest_log: Path, out_dir: Path = None) -> tu
     failed = 0
     pids: list = []
     logs: list = []
+    # 全批共用一张占位表:既保证同批内同文号文档分号,也免得每篇重扫一遍 vault
+    target = out_dir or POLICIES_DIR
+    registry = PidRegistry.from_vault_policies(target)
     for f in in_dir.glob("*.json"):
         row = json.loads(f.read_text(encoding="utf-8"))
         try:
@@ -25,7 +28,8 @@ def ingest_extracted(in_dir: Path, ingest_log: Path, out_dir: Path = None) -> tu
                 province=row.get("province") or None,
                 channel_type=row.get("channel_type") or None,
                 via=row.get("via", "trafilatura"),
-                out_dir=out_dir or POLICIES_DIR,
+                out_dir=target,
+                registry=registry,
             )
             ok = validate_with_schema(md_path)
             if not ok:
