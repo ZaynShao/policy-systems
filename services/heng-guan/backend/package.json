@@ -1,0 +1,33 @@
+{
+  "name": "heng-guan-backend-standalone",
+  "version": "1.0.0",
+  "private": true,
+  "description": "公共事务平台里我写的后端几块（站内消息、L1 源质量审核、拜访语音解析、政策大盘按 L2 主题与区划代码聚合）脱离原平台的独立构建与测试",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "ts-node test/notification.service.spec.ts && ts-node test/notification.controller.spec.ts && ts-node test/l1-review.service.spec.ts && ts-node test/l1-review.controller.spec.ts && ts-node test/voice-visit-parser.service.spec.ts && ts-node test/dashboard-coverage.spec.ts"
+  },
+  "dependencies": {
+    "@nestjs/common": "10.4.22",
+    "class-validator": "0.14.4",
+    "reflect-metadata": "0.2.2",
+    "rxjs": "7.8.2"
+  },
+  "devDependencies": {
+    "@types/node": "20.19.41",
+    "ts-node": "10.9.2",
+    "typescript": "5.9.3"
+  },
+  "overrides": {
+    "@borewit/text-codec": "0.2.2",
+    "@jridgewell/resolve-uri": "3.1.2",
+    "@jridgewell/sourcemap-codec": "1.5.5",
+    "@tsconfig/node10": "1.0.12",
+    "acorn": "8.16.0",
+    "libphonenumber-js": "1.13.3",
+    "strtok3": "10.3.5",
+    "token-types": "6.1.2",
+    "uint8array-extras": "1.5.0"
+  }
+}

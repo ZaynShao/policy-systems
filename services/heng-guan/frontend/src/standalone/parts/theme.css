@@ -1,0 +1,64 @@
+/* 独立版补的:原平台的全局样式(颜色变量、卡片、按钮、标签等)是同事写的,不在本仓。
+   这里只给我的页面和组件用到的那些名字一个最小定义,数值是独立版自己定的。 */
+:root {
+  --ink: #0f172a;
+  --ink-1: #0f172a;
+  --ink-2: #334155;
+  --ink-3: #64748b;
+  --ink-4: #94a3b8;
+  --line: #e2e8f0;
+  --line-2: #edf1f6;
+  --bg: #f5f6f8;
+  --bg-1: #f8fafc;
+  --bg-2: #f1f5f9;
+  --white: #ffffff;
+  --orange: #f97316;
+  --orange-2: #ea580c;
+  --orange-soft: #fff1e6;
+  --orange-soft-2: #fed7aa;
+  --red: #dc2626;
+  --red-soft: #fee2e2;
+  --amber: #b45309;
+  --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.14);
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+.boot-status { padding: 40px 20px; text-align: center; color: var(--ink-3); }
+
+/* 页头 */
+.page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.page-title { font-size: 19px; font-weight: 700; color: var(--ink); }
+.page-sub { margin-top: 3px; font-size: 12.5px; color: var(--ink-3); }
+
+/* 卡片、空状态 */
+.card { background: var(--white); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+.empty { padding: 28px 12px; text-align: center; color: var(--ink-3); font-size: 13px; }
+
+/* 筛选条、按钮 */
+.filter-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.filter-select { height: 34px; min-width: 140px; padding: 0 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--white); color: var(--ink); }
+.btn { height: 34px; padding: 0 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--white); color: var(--ink-2); cursor: pointer; font-weight: 600; }
+.btn:hover { border-color: var(--orange-soft-2); background: var(--bg-1); }
+.btn:disabled { opacity: 0.6; cursor: default; }
+.btn-primary { background: var(--orange); border-color: var(--orange); color: #fff; }
+.btn-primary:hover { background: var(--orange-2); border-color: var(--orange-2); }
+
+/* 标签、辅助文字 */
+.pill { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 11px; font-size: 12px; font-weight: 600; }
+.pill-amber { background: #fff7e6; color: var(--amber); }
+.tbl-time { font-size: 12px; color: var(--ink-3); }
+.tbl-meta { font-size: 12px; color: var(--ink-3); }
+
+/* 拜访录入弹窗原来是手机上的底部弹层;宽屏演示时收窄居中,模拟手机宽度 */
+@media (min-width: 640px) {
+  body .mi-mask { justify-content: center; }
+  body .mi-mask .mi-panel { max-width: 440px; }
+}
