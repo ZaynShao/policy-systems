@@ -1,0 +1,144 @@
+/* 独立版补的:月刊页面要的样式变量与基础样式。原平台的全站样式是同事写的,不在本仓;
+   这里按页面里用到的类名和变量名(--orange-2、--line、--white、--ink、--ink-3 等)重新写了一份最小的。 */
+:root {
+  --orange: #f97316;
+  --orange-2: #ea580c;
+  --orange-soft: #fff7ed;
+  --orange-soft-2: #ffedd5;
+  --orange-line: #fdba74;
+  --teal: #0f766e;
+  --teal-soft: #f0fdfa;
+  --teal-line: #99f6e4;
+  --red: #dc2626;
+  --red-soft: #fef2f2;
+  --red-line: #fecaca;
+  --blue: #2563eb;
+  --ink: #111827;
+  --ink-2: #374151;
+  --ink-3: #6b7280;
+  --ink-4: #9ca3af;
+  --line: #e5e7eb;
+  --line-2: #f3f4f6;
+  --bg: #f6f7f9;
+  --white: #ffffff;
+  --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font: 14px/1.6 -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.boot-status { margin: 64px auto; text-align: center; color: var(--ink-3); }
+p { margin: 0; }
+h2, h3 { margin: 0; }
+
+/* ── 演示页顶栏 ── */
+.demo-bar { position: sticky; top: 0; z-index: 50; background: rgba(255, 255, 255, .96); border-bottom: 1px solid var(--line); backdrop-filter: blur(6px); }
+.demo-bar-inner { max-width: 1040px; margin: 0 auto; padding: 10px 20px 6px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.demo-brand { display: flex; align-items: center; gap: 8px; font-size: 15px; }
+.demo-brand b { font-weight: 700; }
+.demo-badge { font-size: 11px; font-weight: 700; color: #9a3412; background: var(--orange-soft); border: 1px solid var(--orange-line); border-radius: 999px; padding: 1px 8px; }
+.demo-sub { color: var(--ink-3); font-size: 13px; }
+.demo-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-left: auto; }
+.demo-nav a { font-size: 13px; color: var(--ink-2); text-decoration: none; padding: 4px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--white); }
+.demo-nav a:hover { border-color: var(--orange-line); color: var(--orange-2); }
+.demo-nav a.on { background: var(--orange); border-color: var(--orange); color: #fff; }
+.demo-note { max-width: 1040px; margin: 0 auto; padding: 0 20px 8px; font-size: 12px; color: var(--ink-3); }
+.demo-main { max-width: 1040px; margin: 0 auto; padding: 20px 20px 64px; }
+
+/* ── 页头 ── */
+.page-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; margin: 4px 0 16px; }
+.page-title { font-size: 20px; font-weight: 700; color: var(--ink); }
+.page-sub { margin-top: 4px; font-size: 12.5px; color: var(--ink-3); }
+.empty { padding: 48px 0; text-align: center; color: var(--ink-3); }
+
+/* ── 月刊正文 ── */
+.monthly-layout { display: block; }
+.monthly-doc { background: var(--white); border: 1px solid var(--line); border-radius: 12px; padding: 28px 36px 36px; }
+.monthly-cover { text-align: center; padding: 28px 0 30px; margin-bottom: 8px; border-bottom: 2px solid var(--orange); }
+.monthly-cover-en { font-family: var(--mono); font-size: 12px; letter-spacing: 4px; color: var(--orange-2); }
+.monthly-cover-cn { margin: 8px 0; font-size: 28px; font-weight: 800; letter-spacing: 3px; color: var(--ink); }
+.monthly-cover-meta { font-size: 12.5px; color: var(--ink-3); }
+
+.monthly-chapter { display: flex; align-items: center; gap: 12px; margin: 34px 0 16px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.monthly-chapter-num { flex: none; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 8px; background: var(--orange); color: #fff; font-weight: 700; font-size: 16px; }
+.monthly-chapter h2 { font-size: 18px; font-weight: 700; color: var(--ink); }
+.monthly-chapter .ch-sub { margin-left: auto; font-family: var(--mono); font-size: 11px; letter-spacing: 1.5px; color: var(--ink-4); }
+
+/* 正文段落是纯文字:段与段之间空一行,列表项各占一行 */
+.monthly-overview, .policy-content-text, .tip-box p { white-space: pre-line; overflow-wrap: anywhere; }
+.monthly-overview { padding: 16px 20px; margin-bottom: 12px; background: #fffaf5; border: 1px solid var(--orange-soft-2); border-radius: 10px; font-size: 14px; line-height: 1.9; color: var(--ink-2); }
+
+.overview-table { width: 100%; border-collapse: collapse; font-size: 13px; line-height: 1.6; border: 1px solid var(--line); }
+.overview-table th { background: var(--orange); color: #fff; font-weight: 600; text-align: left; padding: 9px 12px; white-space: nowrap; }
+.overview-table td { padding: 9px 12px; border-top: 1px solid var(--line-2); color: var(--ink-2); vertical-align: top; }
+.overview-table tbody tr:nth-child(even) td { background: #fcfcfd; }
+.overview-table .col-cat, .overview-table tbody tr:nth-child(even) td.col-cat { background: var(--orange-soft); color: var(--orange-2); font-weight: 600; white-space: nowrap; }
+
+.policy-block { position: relative; margin-bottom: 18px; padding: 22px 26px; background: var(--white); border: 1px solid var(--line); border-radius: 10px; }
+.policy-block-num { position: absolute; top: 16px; right: 22px; font-family: var(--mono); font-size: 28px; font-weight: 700; color: var(--orange-soft-2); }
+.policy-block h3 { padding-right: 56px; margin-bottom: 10px; font-size: 16px; line-height: 1.5; font-weight: 700; color: var(--ink); }
+.policy-section-tag { display: inline-block; margin: 12px 0 8px; padding: 2px 9px; border-radius: 4px; font-size: 12px; font-weight: 600; color: #fff; background: var(--ink-2); }
+.policy-section-tag.info { background: var(--blue); }
+.policy-section-tag.content { background: var(--ink-2); }
+.policy-section-tag.focus { background: var(--orange-2); }
+.policy-content-text { font-size: 14px; line-height: 1.85; color: var(--ink-2); }
+.policy-content-list { margin: 6px 0; padding-left: 20px; font-size: 14px; line-height: 1.85; color: var(--ink-2); }
+
+.tip-box { margin: 12px 0; padding: 12px 16px; background: var(--orange-soft); border: 1px solid var(--orange-soft-2); border-left: 4px solid var(--orange); border-radius: 8px; }
+.tip-box-label { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; font-size: 12.5px; font-weight: 700; color: var(--orange-2); }
+.tip-box-label .tb-icon { width: 18px; height: 18px; display: grid; place-items: center; border-radius: 50%; background: var(--orange); color: #fff; font-size: 11px; }
+.tip-box p { font-size: 13.5px; line-height: 1.8; color: var(--ink-2); }
+.tip-box.insight { background: var(--teal-soft); border-color: var(--teal-line); border-left-color: var(--teal); }
+.tip-box.insight .tip-box-label { color: var(--teal); }
+.tip-box.insight .tb-icon { background: var(--teal); }
+.tip-box.warn { background: var(--red-soft); border-color: var(--red-line); border-left-color: var(--red); }
+.tip-box.warn .tip-box-label { color: var(--red); }
+.tip-box.warn .tb-icon { background: var(--red); }
+
+.btn { font: inherit; font-size: 13px; padding: 7px 14px; border-radius: 8px; border: 1px solid var(--line); background: var(--white); color: var(--ink-2); cursor: pointer; }
+.btn-primary { background: var(--orange); border-color: var(--orange); color: #fff; font-weight: 600; }
+.btn-primary:hover:not(:disabled) { background: var(--orange-2); border-color: var(--orange-2); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+textarea { font: inherit; color: var(--ink); }
+textarea:focus, .btn:focus-visible, .monthly-card:focus-visible, .demo-nav a:focus-visible { outline: 2px solid var(--orange-line); outline-offset: 2px; }
+
+/* ── 列表卡片 ── */
+.monthly-card { display: flex; gap: 22px; margin-bottom: 14px; padding: 20px 22px; background: var(--white); border: 1px solid var(--line); border-radius: 12px; cursor: pointer; transition: box-shadow .15s, border-color .15s; }
+.monthly-card:hover { border-color: var(--orange-line); box-shadow: 0 6px 18px -8px rgba(17, 24, 39, .18); }
+.monthly-card.latest { border-left: 4px solid var(--orange); }
+.monthly-card-date { flex: none; width: 82px; height: 82px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 12px; background: var(--orange-soft); color: var(--orange-2); }
+.monthly-card-date .y { font-family: var(--mono); font-size: 11px; color: var(--ink-3); }
+.monthly-card-date .m { font-size: 28px; font-weight: 800; line-height: 1.1; }
+.monthly-card-date .mtag { font-family: var(--mono); font-size: 10px; letter-spacing: 2px; }
+.monthly-card-main { flex: 1; min-width: 0; }
+.monthly-card-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 12px; color: var(--ink-3); }
+.monthly-card-title { margin-bottom: 6px; font-size: 17px; font-weight: 600; color: var(--ink); }
+.monthly-card-summary { margin-bottom: 10px; font-size: 13px; line-height: 1.7; color: var(--ink-2); }
+.monthly-card-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.monthly-card-count { flex: none; display: flex; flex-direction: column; justify-content: center; padding-left: 20px; border-left: 1px solid var(--line); text-align: right; font-size: 11px; line-height: 1.8; color: var(--ink-3); }
+.tag { font-size: 12px; padding: 1px 9px; border-radius: 999px; background: var(--line-2); color: var(--ink-2); }
+.tag-orange { background: var(--orange-soft); color: var(--orange-2); }
+.pill { font-size: 11px; font-weight: 600; padding: 1px 8px; border-radius: 999px; }
+.pill-amber { background: #fef3c7; color: #92400e; }
+.pill-green { background: #dcfce7; color: #166534; }
+
+/* ── 窄屏 ── */
+@media (max-width: 720px) {
+  .demo-bar-inner, .demo-note { padding-left: 16px; padding-right: 16px; }
+  .demo-nav { margin-left: 0; }
+  .demo-main { padding: 14px 16px 48px; }
+  .monthly-doc { padding: 16px 14px 24px; border-radius: 10px; }
+  .monthly-cover-cn { font-size: 22px; }
+  .monthly-chapter .ch-sub { display: none; }
+  .overview-table { display: block; overflow-x: auto; }
+  .policy-block { padding: 16px 14px; }
+  .monthly-card { flex-direction: column; gap: 12px; padding: 16px; }
+  .monthly-card-date { width: auto; height: auto; flex-direction: row; gap: 8px; padding: 6px 12px; justify-content: flex-start; }
+  .monthly-card-count { flex-direction: row; gap: 8px; padding-left: 0; border-left: 0; text-align: left; }
+  .monthly-card-count br { display: none; }
+}
