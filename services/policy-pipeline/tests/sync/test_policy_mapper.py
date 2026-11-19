@@ -5,6 +5,7 @@ import pytest
 from scripts.sync.policy_mapper import (
     map_business_view,
     importance_to_enum,
+    normalize_level,
     parse_issue_date,
     map_policy_row,
 )
@@ -97,3 +98,43 @@ def test_map_policy_row_rejects_empty_content():
     core = {"title": "t", "issuer": "i", "date": "2025-05-27", "content": ""}
     with pytest.raises(ValueError):
         map_policy_row(_bv(), core, pipeline_version=1)
+
+# --- level 归一化(canonical 集合 国家/省/市/区/县) ---
+
+@pytest.mark.parametrize("canonical", ["国家", "省", "市", "区", "县"])
+def test_normalize_level_canonical_is_identity(canonical):
+    assert normalize_level(canonical) == canonical
+
+@pytest.mark.parametrize("raw,expect", [
+    ("国家级", "国家"), ("中央", "国家"), ("全国", "国家"), ("国", "国家"),
+    ("省级", "省"), ("省份", "省"), ("自治区", "省"), ("直辖市", "省"),
+    ("市级", "市"), ("地市", "市"), ("地级市", "市"),
+    ("区级", "区"), ("市辖区", "区"),
+    ("县级", "县"), ("县级市", "县"),
+])
+def test_normalize_level_maps_known_variants(raw, expect):
+    assert normalize_level(raw) == expect
+
+@pytest.mark.parametrize("raw", ["", "   ", None])
+def test_normalize_level_blank_is_none(raw):
+    assert normalize_level(raw) is None
+
+def test_normalize_level_strips_whitespace():
+    assert normalize_level("  省级  ") == "省"
+
+def test_normalize_level_passes_unknown_through_verbatim():
+    """未知取值原样透传:宁可让脏值可见,也不静默改写成假的 canonical 值。"""
+    assert normalize_level("特别行政区") == "特别行政区"
+    assert normalize_level("乡镇") == "乡镇"
+
+def test_map_policy_row_normalizes_level():
+    core = {
+        "title": "t", "issuer": "i", "date": "2025-05-27", "content": "c",
+        "region": "山东", "level": "省级", "adcode": "370000",
+    }
+    row = map_policy_row(_bv(), core, pipeline_version=1)
+    assert row["level"] == "省"
+
+def test_map_policy_row_blank_level_stays_none():
+    core = {"title": "t", "issuer": "i", "date": "2025-05-27", "content": "c", "level": "  "}
+    assert map_policy_row(_bv(), core, pipeline_version=1)["level"] is None
