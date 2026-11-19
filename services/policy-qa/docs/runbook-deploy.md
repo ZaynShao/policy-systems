@@ -146,18 +146,18 @@ d 这步是这套东西第一次接真库(此前只在本地用 vault 文件验�
 
 ### 启用
 
-画像文件在 vault 里:`_meta/framework/business_strategy.yaml`。本服务线上跑 pg
-backend、默认不挂 vault,所以要两步:
+画像文件在 vault 里:`_meta/framework/business_strategy.yaml`。vault 已经以只读方式
+常挂进容器(`/vault`),所以启用只有一步——配上路径:
 
 ```bash
-# 1) 平台 .env 增加一行
+# 平台 .env 增加一行
 POLICY_QA_STRATEGY_FILE=/vault/_meta/framework/business_strategy.yaml
 
-# 2) docker-compose.yml 的 policy-qa 段里,取消那行 vault 只读挂载的注释
-#    - /root/policy-vault:/vault:ro
-
-docker compose --profile policy-qa up -d --build policy-qa
+docker compose --profile policy-qa up -d policy-qa
 ```
+
+前置条件:宿主机 `/root/policy-vault` 是 pipeline 侧维护的 vault clone,且已 `git pull`
+到含 `business_strategy.yaml` 的版本。
 
 验证:
 
