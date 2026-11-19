@@ -97,6 +97,7 @@ body.embedded{padding-inline:0;padding-block:0 8px}
 .tipbox{max-width:calc(100vw - 48px)}
 .temp .tv.support{color:var(--green-2)}.temp .tv.risk{color:var(--red-2)}.temp .tv.watch{color:var(--amber-2)}.temp .tv.mixed{color:#6D28D9}
 .temp .st{font-size:10.5px;padding:1px 6px;border-radius:4px;font-weight:600;white-space:nowrap}
+.wc{font-size:10px;padding:1px 5px;border-radius:4px;font-weight:700;white-space:nowrap}.wc.core{background:var(--blue-soft);color:#1D4ED8;border:1px solid #BFDBFE}.wc.decisive{background:var(--red-soft);color:var(--red-2);border:1px solid #FECACA}
 .bipolar{flex:1;height:8px;background:var(--bg-2);border-radius:4px;position:relative}
 .bipolar::after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--ink-5)}
 .bipolar i{position:absolute;top:0;bottom:0;border-radius:4px}
@@ -314,7 +315,7 @@ body.embedded{padding-inline:0;padding-block:0 8px}
   <div class="foot-hint" id="footRules"></div>
 </div>
 
-<script src="./data.js?v=202609151901"></script>
+<script src="./data.js?v=202609152338"></script>
 <script>
 /* ======================= 数据与常量 ======================= */
 const ORDER = [['ridehail','网约车'],['freight','货运'],['two_wheel','两轮车'],['fuel','加油'],['charging','充电'],['power','电力'],['autonomous','自动驾驶'],['delivery','外卖'],['tourism','旅游'],['generation','发电'],['space','商业航天'],['embodied','具身智能'],['low_altitude','低空经济'],['healthcare','医疗'],['elderly','养老'],['ai','AI 产业'],['ecommerce','电商'],['industry','工业'],['overseas','出海'],['water','水利与水务'],['telecom','通信与网络'],['logistics','物流与供应链'],['storage_vpp','储能与虚拟电厂'],['computing','算力基础设施']];
@@ -385,6 +386,10 @@ function nodeOf(i,id){ return i.timeline.find(n=>n.id===id); }
 function nodeLink(i,id){ const n=nodeOf(i,id); return n?`<button type="button" class="chip" data-node="${esc(id)}" title="${esc(n.date+' '+n.title)}">${esc(id)}</button>`:`<span class="chip miss" title="时间链里没有这个节点">${esc(id)}?</span>`; }
 const linkable = n => /^https?:\/\/[^\/\s]+/i.test(n.url||'') && !/internal\.local/.test(n.url||'');
 function srcLine(n){ return linkable(n) ? `来源:${esc(n.source_name)} · 收录 <span class="mono">${esc(n.fetched_at)}</span> · <a class="ext" href="${esc(n.url)}" target="_blank" rel="noopener">原文 ↗</a>` : `来源:${esc(n.source_name)} · 收录 <span class="mono">${esc(n.fetched_at)}</span> · 内部件,不提供外链`; }
+const basisOf = i => (i.meta && i.meta.temp_basis) || {mode:'mean'};
+const decisiveNode = i => { const b=basisOf(i); return b.mode==='decisive' ? nodeOf(i,b.node_id) : null; };
+const coreNodes = i => i.timeline.filter(n=>n.weight_class==='core' && isCounted(n,i));
+function wcTag(n){ if(n.weight_class==='core') return '<span class="wc core" title="核心内部信息:按满额 ±100 计入温度,不打级别、层级、时效折扣">核心信息 · 满额计入</span>'; if(n.weight_class==='decisive') return `<span class="wc decisive" title="决定性事件:有绝对权重,行业温度直接取其给定值">决定性事件 · 温度 ${tempText(n.decisive_temp)}</span>`; return ''; }
 function tempSums(i){ const rows=i.temp_calc||[]; let up=0,dn=0,nd=0; rows.forEach(r=>{ if(r.contribution>0) up+=r.contribution; else dn+=r.contribution; if(r.contribution!==0) nd++; }); return {up, dn, n:rows.length, nd, sum:up+dn}; }
 const pwTag = r => (r.push_weight!=null && r.push_weight!==1) ? ` ×${r.push_weight}` : '';
 function fmtSigned(x){ return (x>0?'+':'')+x.toFixed(2); }
@@ -417,7 +422,8 @@ function renderKpi(){
 let filter='all', filterDir='all', sort='temp', selected=(READY[0]||{}).id;
 function tipHtml(i){
   const t=tempSums(i); const top=(i.temp_calc||[]).slice().sort((a,b)=>Math.abs(b.contribution)-Math.abs(a.contribution)).slice(0,5);
-  return `<div class="tipbox" role="tooltip"><div>监管温度 = Σ贡献 ÷(有方向节点 + 5)× 8;负 = 收紧、正 = 支持</div><table>${top.map(r=>`<tr><td>${esc(r.node_id)} ${PUSH[r.push]}${pwTag(r)} · ${r.tier_weight}×${r.level_weight}×${r.recency_weight}×${r.role_factor}</td><td>${fmtSigned(r.contribution)}</td></tr>`).join('')}${t.n>5?`<tr><td>…另 ${t.n-5} 个节点</td><td></td></tr>`:''}</table><div class="sum">支持 ${t.up.toFixed(1)} − 收紧 ${(-t.dn).toFixed(1)} = ${t.sum.toFixed(1)};÷(${t.nd}+5)×8 → <b>${tempText(i.temp)}</b>。点开详情看全表。</div></div>`;
+  const dn0=decisiveNode(i), cn=coreNodes(i);
+  return `<div class="tipbox" role="tooltip">${dn0?`<div style="color:#FCA5A5;margin-bottom:5px"><b>决定性事件</b> ${esc(dn0.id)} ${esc(dn0.title.slice(0,40))}${dn0.title.length>40?'…':''} → 温度直接取 <b>${tempText(dn0.decisive_temp)}</b>(绝对权重);其余节点均值 ${tempText(basisOf(i).mean_temp)} 只作参考</div>`:''}${cn.length?`<div style="color:#93C5FD;margin-bottom:5px">核心内部信息 ${cn.map(n=>esc(n.id)).join('、')} 按满额 ±100 计入</div>`:''}<div>监管温度 = Σ贡献 ÷(有方向节点 + 5)× 8;负 = 收紧、正 = 支持</div><table>${top.map(r=>`<tr><td>${esc(r.node_id)} ${PUSH[r.push]}${pwTag(r)} · ${r.weight_class?(r.weight_class==='core'?'核心信息满额':'决定性事件满额'):`${r.tier_weight}×${r.level_weight}×${r.recency_weight}×${r.role_factor}`}</td><td>${fmtSigned(r.contribution)}</td></tr>`).join('')}${t.n>5?`<tr><td>…另 ${t.n-5} 个节点</td><td></td></tr>`:''}</table><div class="sum">支持 ${t.up.toFixed(1)} − 收紧 ${(-t.dn).toFixed(1)} = ${t.sum.toFixed(1)};÷(${t.nd}+5)×8 → <b>${tempText(basisOf(i).mode==='decisive'?basisOf(i).mean_temp:i.temp)}</b>${dn0?`;决定性事件覆盖 → <b>${tempText(i.temp)}</b>`:''}。点开详情看全表。</div></div>`;
 }
 function renderGrid(){
   let list = LIST.filter(i=>i.missing ? (filter==='all'&&filterDir==='all') : ((filter==='all'||i.stance===filter)&&(filterDir==='all'||dirOf(i)===filterDir)));
@@ -486,11 +492,12 @@ function renderTempTable(i){
   const t=tempSums(i);
   const rows=(i.temp_calc||[]).slice().sort((a,b)=>Math.abs(b.contribution)-Math.abs(a.contribution));
   const mean = t.sum/(t.nd+5)*8;
-  return `<div class="tempbox"><div class="sl">监管温度逐节点贡献(D2 权重 × D7 均值化 × D12 软规则半额);收紧为负、支持为正</div>
+  const dn0=decisiveNode(i), cn=coreNodes(i);
+  return `<div class="tempbox">${dn0?`<div class="cap" style="margin-bottom:8px"><b>决定性事件覆盖</b>:${nodeLink(i,dn0.id)} ${esc(dn0.title)}(${esc(dn0.date)})属重大利${dn0.push==='up'?'空':'好'},有绝对权重,本行业温度直接取 <b>${tempText(dn0.decisive_temp)}</b>(${STANCE[i.stance]});下表均值 ${tempText(basisOf(i).mean_temp)} 只作参考。</div>`:''}${cn.length?`<div class="cap" style="margin-bottom:8px;background:var(--blue-soft);border-color:#BFDBFE;color:#1D4ED8"><b>核心内部信息</b>:${cn.map(n=>nodeLink(i,n.id)+' '+esc(n.title.slice(0,50))).join(';')} — 内部了解到的确定事实,按满额 ±100 计入,不打级别、层级、时效折扣。</div>`:''}<div class="sl">监管温度逐节点贡献(D2 权重 × D7 均值化 × D12 软规则半额 × D14 核心信息满额/决定性事件绝对权重);收紧为负、支持为正</div>
     <div class="scroll"><table class="mini-t" style="width:100%;border-collapse:collapse;font-size:11.5px"><thead><tr><th style="text-align:left">节点</th><th style="text-align:left">推力</th><th>级别</th><th>层级</th><th>时效</th><th>角色</th><th style="text-align:right">贡献</th></tr></thead><tbody>
     ${rows.map(r=>{ const n=nodeOf(i,r.node_id)||{}; return `<tr><td style="padding:3px 6px">${nodeLink(i,r.node_id)} <span style="color:var(--ink-3)">${esc((n.title||'').slice(0,34))}${(n.title||'').length>34?'…':''}</span></td><td style="padding:3px 6px">${PUSH[r.push]}${pwTag(r)?`<span style="color:var(--ink-4)">${pwTag(r)} 软规则</span>`:''}</td><td class="num" style="text-align:center">${r.tier_weight}</td><td class="num" style="text-align:center">${r.level_weight}</td><td class="num" style="text-align:center">${r.recency_weight}</td><td class="num" style="text-align:center">${r.role_factor}</td><td class="num" style="text-align:right;padding:3px 6px;font-family:var(--mono)">${fmtSigned(r.contribution)}</td></tr>`; }).join('')}
     </tbody></table></div>
-    <div class="foot-hint" style="margin-top:8px">贡献 = 推力符号(收紧 −1、放宽 +1)× 20 × 级别(S1 1.0/S2 0.8/S3 0.5/S4 0.5)× 层级(国家 1.0/省 0.7/市 0.4)× 时效(≤90 天 1.0/≤180 天 0.7/≤365 天 0.4)× 角色(事实 1.0/社会要素 0.5)× 软规则权重(指引/标准/程序性规则/征求意见稿 0.5,其余 1)。支持分 ${t.up.toFixed(1)} − 收紧分 ${(-t.dn).toFixed(1)} = ${t.sum.toFixed(1)};÷(有方向节点 ${t.nd} + 5)× 8 = ${mean.toFixed(1)} → 取整并夹在 ±100 = <b>${tempText(i.temp)}</b>(${STANCE[i.stance]})。分母只数有方向的节点,+5 是防单条饱和的先验(D12);窗外锚点、T0 后与待判定节点不计。</div></div>`;
+    <div class="foot-hint" style="margin-top:8px">贡献 = 推力符号(收紧 −1、放宽 +1)× 20 × 级别(S1 1.0/S2 0.8/S3 0.5/S4 0.5)× 层级(国家 1.0/省 0.7/市 0.4)× 时效(≤90 天 1.0/≤180 天 0.7/≤365 天 0.4)× 角色(事实 1.0/社会要素 0.5)× 软规则权重(指引/标准/程序性规则/征求意见稿 0.5,其余 1)。支持分 ${t.up.toFixed(1)} − 收紧分 ${(-t.dn).toFixed(1)} = ${t.sum.toFixed(1)};÷(有方向节点 ${t.nd} + 5)× 8 = ${mean.toFixed(1)} → 取整并夹在 ±100 = <b>${tempText(basisOf(i).mode==='decisive'?basisOf(i).mean_temp:i.temp)}</b>${dn0?`;决定性事件 ${esc(dn0.id)} 覆盖为 <b>${tempText(i.temp)}</b>(${STANCE[i.stance]})`:`(${STANCE[i.stance]})`}。分母只数有方向的节点,+5 是防单条饱和的先验(D12);窗外锚点、T0 后与待判定节点不计。</div></div>`;
 }
 
 function renderCard(i,c){
@@ -538,6 +545,7 @@ function renderTimeline(i){
       n.after_t0?'<span class="tag tag-green">T0 后</span>':'',
       n.pending?'<span class="tag tag-slate">待判定</span>':'',
       n.tier==='S4'?'<span class="tag tag-amber" title="S4 一手情报只作修正,不能单独支撑断言">内部 · 未见公开渠道</span>':'',
+      wcTag(n),
     ].join('');
     const meta = [n.issuer?esc(n.issuer):'', n.docno?'<span class="mono">'+esc(n.docno)+'</span>':'', n.issued_on&&n.issued_on!==n.date?'成文 <span class="mono">'+esc(n.issued_on)+'</span>':'', n.stage&&!isCtx?'阶段:'+esc(n.stage):''].filter(Boolean).join(' · ');
     out.push(`<div class="${cls}" id="node-${esc(n.id)}" style="--kc:${k.color}">
