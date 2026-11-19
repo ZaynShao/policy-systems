@@ -40,6 +40,7 @@ def test_collect_policy_rows(tmp_path):
     assert rows[0]["issue_date"] == datetime.date(2025, 5, 27)
     assert rows[0]["region"] == "北京市"
     assert rows[0]["level"] == "省"
+    assert rows[0]["adcode"] == "110000"
     assert rows[0]["pipeline_pid"] == "P_FAKE_0001"
     assert rows[0]["importance"] == "MAJOR"
 

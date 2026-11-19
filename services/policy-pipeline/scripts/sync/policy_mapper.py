@@ -70,5 +70,6 @@ def map_policy_row(bv: dict, core: dict, pipeline_version: int) -> dict:
         "source_url": core.get("source_url") or None,
         "region": core.get("region") or None,
         "level": core.get("level") or None,
+        "adcode": core.get("adcode") or None,             # L1 region.code(GB/T 2260 6位),省级匹配键
     })
     return row

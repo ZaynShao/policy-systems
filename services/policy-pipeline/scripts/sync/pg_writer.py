@@ -14,14 +14,14 @@ def build_policy_upsert(row: dict) -> tuple[str, dict]:
       ("id", "pipelinePid", "pipelineVersion", "importance",
        "pipelineScores", "pipelineThemes", "pipelineImpact", "syncedAt",
        "title", "issuer", "issueDate", "content", "source",
-       "docNumber", "sourceUrl", "region", "level", "updatedAt")
+       "docNumber", "sourceUrl", "region", "level", "adcode", "updatedAt")
     VALUES
       (gen_random_uuid()::text, %(pipeline_pid)s, %(pipeline_version)s,
        %(importance)s::"PolicyImportance",
        %(pipeline_scores)s::jsonb, %(pipeline_themes)s::jsonb,
        %(pipeline_impact)s, now(),
        %(title)s, %(issuer)s, %(issue_date)s, %(content)s, %(source)s::"PolicySource",
-       %(doc_number)s, %(source_url)s, %(region)s, %(level)s, now())
+       %(doc_number)s, %(source_url)s, %(region)s, %(level)s, %(adcode)s, now())
     ON CONFLICT ("pipelinePid") DO UPDATE SET
       "pipelineVersion" = EXCLUDED."pipelineVersion",
       "pipelineScores"  = EXCLUDED."pipelineScores",
@@ -37,6 +37,7 @@ def build_policy_upsert(row: dict) -> tuple[str, dict]:
       "sourceUrl"       = EXCLUDED."sourceUrl",
       "region"          = EXCLUDED."region",
       "level"           = EXCLUDED."level",
+      "adcode"          = EXCLUDED."adcode",
       "updatedAt"       = now(),
       "importance"      = CASE
         WHEN "Policy"."importanceOverride" IS NULL THEN EXCLUDED."importance"
@@ -59,6 +60,7 @@ def build_policy_upsert(row: dict) -> tuple[str, dict]:
         "source_url": row["source_url"],
         "region": row["region"],
         "level": row["level"],
+        "adcode": row.get("adcode"),
     }
     return sql, params
 

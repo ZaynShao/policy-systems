@@ -12,6 +12,7 @@ def _policy_row():
         "title": "标题", "issuer": "发文机关", "issue_date": "2025-05-27",
         "content": "正文", "source": "AUTO", "doc_number": "文号",
         "source_url": "https://example.com", "region": "全国", "level": "国家",
+        "adcode": "000000",
     }
 
 def test_policy_upsert_targets_pipeline_pid_conflict():
@@ -26,7 +27,7 @@ def test_policy_upsert_writes_core_not_null_fields():
     sql, params = build_policy_upsert(row)
     for col in ['"title"', '"issuer"', '"issueDate"', '"content"',
                 '"source"', '"docNumber"', '"sourceUrl"', '"region"',
-                '"level"', '"updatedAt"']:
+                '"level"', '"adcode"', '"updatedAt"']:
         assert col in sql
     assert '"updatedAt"' in sql
     assert 'now()' in sql
@@ -34,7 +35,7 @@ def test_policy_upsert_writes_core_not_null_fields():
     assert "importanceOverride" in sql
     assert "IS NULL" in sql
     for key in ["title", "issuer", "issue_date", "content", "source",
-                "doc_number", "source_url", "region", "level"]:
+                "doc_number", "source_url", "region", "level", "adcode"]:
         assert key in params
 
 def test_policy_upsert_respects_importance_override():
