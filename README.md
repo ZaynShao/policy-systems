@@ -7,6 +7,10 @@
 政策预判 V2 另有独立仓库 `ZaynShao/policy-predict-v2`，不在这里。政策分析 pipeline 并入公司项目之前的历史在我的
 `ZaynShao/policy-analysis-pipeline`；工单研判的本机取数、脱敏、上传客户端在我的 `ZaynShao/gov-ticket-risk`。
 
+## 直接看
+
+`离线页面/` 下是 6 个系统各一个单文件页面，下载下来双击就能打开，不用联网（说明见 `离线页面/README.md`）。
+
 ## 有哪些系统
 
 | 系统 | 在哪 | 离线页面（生成到各自的 dist/，不进仓库） |
@@ -104,3 +108,4 @@ python3 -m unittest tests/test_policy_predict_industry_board.py
 | 50 | 独立版说明：各系统在哪、怎么看、怎么跑 | 2026-11-19 |
 | 51 | 问答演示补上测试站上录的真实回答 | 2026-11-19 |
 | 52 | 总说明补上第 51 步 | 2026-11-19 |
+| 53 | 6 个离线页面放进仓库 | 2026-11-19 |
