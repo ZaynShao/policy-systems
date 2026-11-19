@@ -74,37 +74,43 @@ body.embedded{padding-inline:0;padding-block:0 8px}
 
 /* 行业方块 */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:12px;margin-bottom:18px}
-.tile{position:relative;background:var(--white);border:1px solid var(--line);border-radius:12px;padding:14px 14px 12px 18px;text-align:left;min-height:168px;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow);transition:transform .18s cubic-bezier(.16,1,.3,1),box-shadow .18s,border-color .12s;overflow:visible;color:var(--ink);font-size:13px}
+.tile{position:relative;background:var(--white);border:1px solid var(--line);border-radius:12px;padding:14px 14px 12px 18px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow);transition:transform .18s cubic-bezier(.16,1,.3,1),box-shadow .18s,border-color .12s;overflow:visible;color:var(--ink);font-size:13px}
 .tile::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--slate);border-radius:12px 0 0 12px}
 .tile.support::before{background:var(--green)}.tile.risk::before{background:var(--red)}.tile.watch::before{background:var(--amber)}.tile.mixed::before{background:linear-gradient(180deg,var(--green),var(--red))}
 .tile:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);border-color:var(--ink-5)}
+.tile:hover,.tile:focus-within{z-index:25}
 .tile.active{border-color:var(--orange);box-shadow:0 0 0 3px rgba(249,115,22,.18),var(--shadow-md)}
 .tile.pending{border-style:dashed;background:var(--bg-2);color:var(--ink-4);justify-content:center;align-items:center;cursor:default}
 .tile.pending::before{background:var(--ink-5)}
 .tile .t-head{display:flex;justify-content:space-between;align-items:flex-start;gap:6px}
+.tile .t-head>div{min-width:0}
 .tile .t-name{font-size:15px;font-weight:700;line-height:1.3}
-.tile .t-group{font-size:11px;color:var(--ink-4);margin-top:1px}
+.tile .t-group{font-size:11px;color:var(--ink-4);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap;line-height:1.5}
+.pill.dir-s{background:var(--green-soft);color:var(--green-2)}.pill.dir-n{background:var(--slate-soft);color:var(--slate)}.pill.dir-r{background:var(--red-soft);color:var(--red-2)}
 .pill.support{background:var(--green-soft);color:var(--green-2)}.pill.risk{background:var(--red-soft);color:var(--red-2)}.pill.watch{background:var(--amber-soft);color:var(--amber-2)}.pill.mixed{background:var(--purple-soft);color:#6D28D9}
+.dirline{padding:8px 20px 0;font-size:12px;color:var(--ink-2);line-height:1.6}
+.dirline b{color:var(--ink);font-weight:700}
+.dirline .chip{margin:0 1px}
 .temp{display:flex;align-items:center;gap:8px;position:relative}
 .temp .tv{font-size:20px;font-weight:800;min-width:44px;line-height:1;cursor:help;border-bottom:1px dotted var(--ink-5)}
 .tipbox{max-width:calc(100vw - 48px)}
 .temp .tv.support{color:var(--green-2)}.temp .tv.risk{color:var(--red-2)}.temp .tv.watch{color:var(--amber-2)}.temp .tv.mixed{color:#6D28D9}
+.temp .st{font-size:10.5px;padding:1px 6px;border-radius:4px;font-weight:600;white-space:nowrap}
 .bipolar{flex:1;height:8px;background:var(--bg-2);border-radius:4px;position:relative}
 .bipolar::after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--ink-5)}
 .bipolar i{position:absolute;top:0;bottom:0;border-radius:4px}
-.bipolar i.neg{right:50%;background:var(--green)}.bipolar i.pos{left:50%;background:var(--red)}
-.tipbox{display:none;position:absolute;left:0;top:calc(100% + 6px);z-index:20;width:260px;background:var(--ink);color:#E2E8F0;border-radius:8px;padding:9px 11px;font-size:11px;line-height:1.5;box-shadow:var(--shadow-md);text-align:left;white-space:normal}
+.bipolar i.neg{right:50%;background:var(--red)}.bipolar i.pos{left:50%;background:var(--green)}
+.tipbox{display:none;position:absolute;left:0;top:calc(100% + 6px);z-index:40;width:300px;background:var(--ink);color:#E2E8F0;border-radius:8px;padding:9px 11px;font-size:11px;line-height:1.5;box-shadow:var(--shadow-md);text-align:left;white-space:normal}
 .tipbox table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:10.5px}
 .tipbox td{padding:1px 0;color:#CBD5E1}
 .tipbox td:last-child{text-align:right;color:#FDBA74}
 .tipbox .sum{margin-top:5px;border-top:1px solid #334155;padding-top:5px;color:#F8FAFC}
 .temp:hover .tipbox,.tile:focus-visible .tipbox{display:block}
-.tile .t-line{font-size:12px;color:var(--ink-2);line-height:1.5;flex:1}
-.tile .t-foot{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:var(--ink-4);border-top:1px dashed var(--line);padding-top:8px;flex-wrap:wrap}
-.tile .t-foot b{color:var(--ink-3);font-weight:600}
-.sig{display:inline-flex;gap:6px}
-.sig .up{color:var(--red-2)}.sig .dn{color:var(--green-2)}
+.tile details.t-line{position:relative;margin:0;font-size:12px;color:var(--ink-2);line-height:1.55}
+.tile details.t-line>summary{font-size:11.5px}
+.tile details.t-line>div{position:absolute;left:-19px;right:-15px;top:calc(100% + 16px);z-index:30;background:var(--white);border:1px solid var(--orange-border);border-radius:10px;box-shadow:var(--shadow-md);padding:10px 12px}
+.tile:has(details.t-line[open]){z-index:31;border-color:var(--orange-border)}
 
 /* 详情面板 */
 .detail{background:var(--white);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
@@ -273,7 +279,7 @@ body.embedded{padding-inline:0;padding-block:0 8px}
   <div class="page-head">
     <div>
       <h1>政策预测 <span class="beta">beta</span></h1>
-      <div class="sub">按行业陈列监管走向预判。点开一个行业,看证据链(政策事实与社会要素同一条时间链)、推理过程,以及结论是怎么加工出来的。每条事实回链原文。</div>
+      <div class="sub">按行业陈列监管走向预判。点开一个行业,看预测卡、证据链(政策事实与社会要素同一条时间链)、推理过程,以及结论是怎么加工出来的。每条事实回链原文。</div>
     </div>
     <div class="head-meta" id="headMeta"></div>
   </div>
@@ -308,7 +314,7 @@ body.embedded{padding-inline:0;padding-block:0 8px}
   <div class="foot-hint" id="footRules"></div>
 </div>
 
-<script src="./data.js?v=202609150018"></script>
+<script src="./data.js?v=202609151326"></script>
 <script>
 /* ======================= 数据与常量 ======================= */
 const ORDER = [['ridehail','网约车'],['freight','货运'],['two_wheel','两轮车'],['fuel','加油'],['charging','充电'],['power','电力'],['autonomous','自动驾驶'],['delivery','外卖'],['tourism','旅游'],['generation','发电'],['space','商业航天'],['embodied','具身智能'],['low_altitude','低空经济'],['healthcare','医疗'],['elderly','养老'],['ai','AI 产业'],['ecommerce','电商'],['industry','工业'],['overseas','出海']];
@@ -327,6 +333,11 @@ const KINDS = {
   media:   {label:'媒体解读', color:'#F59E0B'},
 };
 const STANCE = {support:'国家支持', risk:'收紧风险', watch:'观察中', mixed:'支持与收紧并存'};
+const STANCE_TAG = {support:'tag-green', risk:'tag-red', watch:'tag-amber', mixed:'tag-purple'};
+const DIR = {'支持':['产业支持','dir-s'], '中性':['产业中性','dir-n'], '限制':['产业限制','dir-r']};
+const dirOf = i => (i.direction && DIR[i.direction.stance]) ? i.direction.stance : null;
+const dirCls = i => dirOf(i) ? DIR[dirOf(i)][1] : 'dir-n';
+const dirLabel = i => dirOf(i) ? DIR[dirOf(i)][0] : '方向未判';
 const PUSH = {up:'收紧', dn:'支持', '0':'中性'};
 const EFFECT = {trigger:'触发', amplify:'放大', suppress:'抑制', background:'背景'};
 const OPS = {HISTORICAL_ANALOGY:'历史类比', WORDING_CHANGE:'措辞变化', TARGET_REVERSE_INFERENCE:'目标反推', CROSS_SOURCE_COMBINATION:'多源组合'};
@@ -358,7 +369,8 @@ function nodeOf(i,id){ return i.timeline.find(n=>n.id===id); }
 function nodeLink(i,id){ const n=nodeOf(i,id); return n?`<button type="button" class="chip" data-node="${esc(id)}" title="${esc(n.date+' '+n.title)}">${esc(id)}</button>`:`<span class="chip miss" title="时间链里没有这个节点">${esc(id)}?</span>`; }
 const linkable = n => /^https?:\/\/[^\/\s]+/i.test(n.url||'') && !/internal\.local/.test(n.url||'');
 function srcLine(n){ return linkable(n) ? `来源:${esc(n.source_name)} · 抓取 <span class="mono">${esc(n.fetched_at)}</span> · <a class="ext" href="${esc(n.url)}" target="_blank" rel="noopener">原文 ↗</a>` : `来源:${esc(n.source_name)} · 抓取 <span class="mono">${esc(n.fetched_at)}</span> · 内部件,不提供外链`; }
-function tempSums(i){ const rows=i.temp_calc||[]; let up=0,dn=0; rows.forEach(r=>{ if(r.contribution>0) up+=r.contribution; else dn+=r.contribution; }); return {up, dn, n:rows.length, sum:up+dn}; }
+function tempSums(i){ const rows=i.temp_calc||[]; let up=0,dn=0,nd=0; rows.forEach(r=>{ if(r.contribution>0) up+=r.contribution; else dn+=r.contribution; if(r.contribution!==0) nd++; }); return {up, dn, n:rows.length, nd, sum:up+dn}; }
+const pwTag = r => (r.push_weight!=null && r.push_weight!==1) ? ` ×${r.push_weight}` : '';
 function fmtSigned(x){ return (x>0?'+':'')+x.toFixed(2); }
 function levelBadge(l){ return l?`<span class="lv ${l==='国家'?'g':''}">${esc(l)}</span>`:''; }
 function s1Stats(i){ const s=i.timeline.filter(n=>n.role==='fact'&&n.tier==='S1'&&isCounted(n,i)&&n.date>=winFrom(i)); const c={国家:0,省:0,市:0}; s.forEach(n=>{ if(c[n.issuer_level]!==undefined) c[n.issuer_level]++; }); return {n:s.length, ...c}; }
@@ -370,7 +382,8 @@ function renderHead(){
 }
 function renderKpi(){
   const c = {support:0,risk:0,watch:0,mixed:0};
-  READY.forEach(i=>c[i.stance]++);
+  const dc = {'支持':0,'中性':0,'限制':0};
+  READY.forEach(i=>{ c[i.stance]++; if(dirOf(i)) dc[dirOf(i)]++; });
   const open = READY.reduce((n,i)=>n+openCards(i).length,0);
   const judged = READY.reduce((n,i)=>n+judgedCards(i),0);
   const sig = READY.reduce((n,i)=>{ const s=signals(i); return n+s.up+s.dn; },0);
@@ -385,26 +398,24 @@ function renderKpi(){
 }
 
 /* ======================= 方块 ======================= */
-let filter='all', sort='temp', selected=(READY[0]||{}).id;
+let filter='all', filterDir='all', sort='temp', selected=(READY[0]||{}).id;
 function tipHtml(i){
   const t=tempSums(i); const top=(i.temp_calc||[]).slice().sort((a,b)=>Math.abs(b.contribution)-Math.abs(a.contribution)).slice(0,5);
-  return `<div class="tipbox" role="tooltip"><div>温度 = Σ贡献 ÷ 计入节点 × 8(D2+D7)</div><table>${top.map(r=>`<tr><td>${esc(r.node_id)} ${PUSH[r.push]} · ${r.tier_weight}×${r.level_weight}×${r.recency_weight}×${r.role_factor}</td><td>${fmtSigned(r.contribution)}</td></tr>`).join('')}${t.n>5?`<tr><td>…另 ${t.n-5} 个节点</td><td></td></tr>`:''}</table><div class="sum">收紧 ${t.up.toFixed(1)} − 支持 ${(-t.dn).toFixed(1)} = ${t.sum.toFixed(1)};÷${t.n}×8 → <b>${tempText(i.temp)}</b>。点开详情看全表。</div></div>`;
+  return `<div class="tipbox" role="tooltip"><div>监管温度 = Σ贡献 ÷(有方向节点 + 5)× 8;负 = 收紧、正 = 支持</div><table>${top.map(r=>`<tr><td>${esc(r.node_id)} ${PUSH[r.push]}${pwTag(r)} · ${r.tier_weight}×${r.level_weight}×${r.recency_weight}×${r.role_factor}</td><td>${fmtSigned(r.contribution)}</td></tr>`).join('')}${t.n>5?`<tr><td>…另 ${t.n-5} 个节点</td><td></td></tr>`:''}</table><div class="sum">支持 ${t.up.toFixed(1)} − 收紧 ${(-t.dn).toFixed(1)} = ${t.sum.toFixed(1)};÷(${t.nd}+5)×8 → <b>${tempText(i.temp)}</b>。点开详情看全表。</div></div>`;
 }
 function renderGrid(){
-  let list = LIST.filter(i=>i.missing ? filter==='all' : (filter==='all'||i.stance===filter));
+  let list = LIST.filter(i=>i.missing ? (filter==='all'&&filterDir==='all') : ((filter==='all'||i.stance===filter)&&(filterDir==='all'||dirOf(i)===filterDir)));
   if(sort==='temp') list = list.slice().sort((a,b)=>(b.missing?-1e3:Math.abs(b.temp))-(a.missing?-1e3:Math.abs(a.temp)));
   else if(sort==='recent') list = list.slice().sort((a,b)=>(b.missing?'':lastFact(b)) > (a.missing?'':lastFact(a)) ? 1 : -1);
   $('#grid').innerHTML = list.map(i=>{
     if(i.missing) return `<div class="tile pending" aria-disabled="true"><div class="t-name">${esc(i.name)}</div><div class="t-group">待采集 · 该行业组尚未交付</div></div>`;
     const w = Math.min(50, Math.abs(i.temp)/2);
     const bar = i.temp<0 ? `<i class="neg" style="width:${w}%"></i>` : `<i class="pos" style="width:${w}%"></i>`;
-    const s = signals(i);
-    return `<button type="button" class="tile ${i.stance} ${i.id===selected?'active':''}" data-id="${i.id}" aria-pressed="${i.id===selected}" aria-describedby="tip-${i.id}">
-      <div class="t-head"><div><div class="t-name">${esc(i.name)}</div><div class="t-group">${esc(i.group)} · ${esc(i.stage)}阶段</div></div><span class="pill ${i.stance}">${STANCE[i.stance]}</span></div>
+    return `<div role="button" tabindex="0" class="tile ${i.stance} ${i.id===selected?'active':''}" data-id="${i.id}" aria-pressed="${i.id===selected}" aria-describedby="tip-${i.id}">
+      <div class="t-head"><div><div class="t-name">${esc(i.name)}</div><div class="t-group" title="${esc(i.group)} · ${esc(i.stage)}阶段">${esc(i.group)} · ${esc(i.stage)}阶段</div></div><span class="pill ${i.stance}">${STANCE[i.stance]}</span></div>
       <div class="temp"><span class="tv num ${i.stance}">${tempText(i.temp)}</span><div class="bipolar" aria-label="监管温度 ${i.temp}">${bar}</div><span id="tip-${i.id}">${tipHtml(i)}</span></div>
-      <div class="t-line">${esc(i.line)}</div>
-      <div class="t-foot"><span class="sig"><span class="up">收紧 ${s.up}</span><span class="dn">支持 ${s.dn}</span></span><span><b>${i.cards.length}</b> 张卡 · 下一节点 <b class="num">${esc(i.next.date.slice(5))}</b></span></div>
-    </button>`;
+      <details class="t-line"><summary>要点</summary><div>${esc(i.line)}</div></details>
+    </div>`;
   }).join('') || '<div style="color:var(--ink-4);padding:20px">该筛选下没有行业。</div>';
 }
 
@@ -444,9 +455,9 @@ function renderDetail(){
     <div class="panel ${dtab==='evidence'?'active':''}" id="p-evidence">${renderTimeline(i)}</div>
     <div class="panel ${dtab==='reason'?'active':''}" id="p-reason">${renderReasoning(i)}</div>
     <div class="panel ${dtab==='process'?'active':''}" id="p-process">${renderProcess(i)}</div>`;
-  $('#footRules').innerHTML = `监管温度范围 −100(强支持)到 +100(强收紧)。${esc(SIGNAL_RULE)}
+  $('#footRules').innerHTML = `监管温度范围 −100(收紧风险)到 +100(国家支持),负值向左、正值向右。${esc(SIGNAL_RULE)}
     <div class="rules">
-      <div><b>温度与态度规则(meta.stance_rule)</b>${esc(i.meta.stance_rule||'—')}</div>
+      <div><b>温度与标签规则(meta.stance_rule)</b>${esc(i.meta.stance_rule||'—')}</div>
       <div><b>S1 准入规则(meta.s1_admission_rule)</b>${esc(i.meta.s1_admission_rule||'—')}</div>
       <div><b>锚点规则(meta.anchor_rule)</b>${esc(i.meta.anchor_rule||'—')}</div>
       <div><b>档位规则(schema cards[].level)</b>${esc(LEVEL_RULE)}</div>
@@ -457,12 +468,12 @@ function renderDetail(){
 function renderTempTable(i){
   const t=tempSums(i);
   const rows=(i.temp_calc||[]).slice().sort((a,b)=>Math.abs(b.contribution)-Math.abs(a.contribution));
-  const mean = t.sum/Math.max(t.n,1)*8;
-  return `<div class="tempbox"><div class="sl">监管温度逐节点贡献(D2 权重 × D7 均值化)</div>
+  const mean = t.sum/(t.nd+5)*8;
+  return `<div class="tempbox"><div class="sl">监管温度逐节点贡献(D2 权重 × D7 均值化 × D12 软规则半额);收紧为负、支持为正</div>
     <div class="scroll"><table class="mini-t" style="width:100%;border-collapse:collapse;font-size:11.5px"><thead><tr><th style="text-align:left">节点</th><th style="text-align:left">推力</th><th>级别</th><th>层级</th><th>时效</th><th>角色</th><th style="text-align:right">贡献</th></tr></thead><tbody>
-    ${rows.map(r=>{ const n=nodeOf(i,r.node_id)||{}; return `<tr><td style="padding:3px 6px">${nodeLink(i,r.node_id)} <span style="color:var(--ink-3)">${esc((n.title||'').slice(0,34))}${(n.title||'').length>34?'…':''}</span></td><td style="padding:3px 6px">${PUSH[r.push]}</td><td class="num" style="text-align:center">${r.tier_weight}</td><td class="num" style="text-align:center">${r.level_weight}</td><td class="num" style="text-align:center">${r.recency_weight}</td><td class="num" style="text-align:center">${r.role_factor}</td><td class="num" style="text-align:right;padding:3px 6px;font-family:var(--mono)">${fmtSigned(r.contribution)}</td></tr>`; }).join('')}
+    ${rows.map(r=>{ const n=nodeOf(i,r.node_id)||{}; return `<tr><td style="padding:3px 6px">${nodeLink(i,r.node_id)} <span style="color:var(--ink-3)">${esc((n.title||'').slice(0,34))}${(n.title||'').length>34?'…':''}</span></td><td style="padding:3px 6px">${PUSH[r.push]}${pwTag(r)?`<span style="color:var(--ink-4)">${pwTag(r)} 软规则</span>`:''}</td><td class="num" style="text-align:center">${r.tier_weight}</td><td class="num" style="text-align:center">${r.level_weight}</td><td class="num" style="text-align:center">${r.recency_weight}</td><td class="num" style="text-align:center">${r.role_factor}</td><td class="num" style="text-align:right;padding:3px 6px;font-family:var(--mono)">${fmtSigned(r.contribution)}</td></tr>`; }).join('')}
     </tbody></table></div>
-    <div class="foot-hint" style="margin-top:8px">贡献 = 推力符号 × 20 × 级别(S1 1.0/S2 0.8/S3 0.5/S4 0.5)× 层级(国家 1.0/省 0.7/市 0.4)× 时效(≤90 天 1.0/≤180 天 0.7/≤365 天 0.4)× 角色(事实 1.0/社会要素 0.5)。收紧分 ${t.up.toFixed(1)} − 支持分 ${(-t.dn).toFixed(1)} = ${t.sum.toFixed(1)};÷ 计入节点 ${t.n} × 8 = ${mean.toFixed(1)} → 取整并夹在 ±100 = <b>${tempText(i.temp)}</b>(${STANCE[i.stance]})。窗外锚点、T0 后与待判定节点不计。</div></div>`;
+    <div class="foot-hint" style="margin-top:8px">贡献 = 推力符号(收紧 −1、放宽 +1)× 20 × 级别(S1 1.0/S2 0.8/S3 0.5/S4 0.5)× 层级(国家 1.0/省 0.7/市 0.4)× 时效(≤90 天 1.0/≤180 天 0.7/≤365 天 0.4)× 角色(事实 1.0/社会要素 0.5)× 软规则权重(指引/标准/程序性规则/征求意见稿 0.5,其余 1)。支持分 ${t.up.toFixed(1)} − 收紧分 ${(-t.dn).toFixed(1)} = ${t.sum.toFixed(1)};÷(有方向节点 ${t.nd} + 5)× 8 = ${mean.toFixed(1)} → 取整并夹在 ±100 = <b>${tempText(i.temp)}</b>(${STANCE[i.stance]})。分母只数有方向的节点,+5 是防单条饱和的先验(D12);窗外锚点、T0 后与待判定节点不计。</div></div>`;
 }
 
 function renderCard(i,c){
@@ -521,7 +532,7 @@ function renderTimeline(i){
       ${rel}
       ${n.use?`<div class="e-link">在推理中的作用:${esc(n.use)}</div>`:''}
       ${n.note?`<div class="e-link">备注:${esc(n.note)}</div>`:''}
-      <div class="e-dir dir-${n.push}">${PUSH[n.push]||esc(n.push)}${n.tier==='S4'?'<br><span style="font-weight:500;font-size:10px">仅修正</span>':''}</div>
+      <div class="e-dir dir-${n.push}">${PUSH[n.push]||esc(n.push)}${n.push_weight!=null&&n.push_weight!==1?'<br><span style="font-weight:500;font-size:10px">软规则 ×'+n.push_weight+'</span>':''}${n.tier==='S4'?'<br><span style="font-weight:500;font-size:10px">仅修正</span>':''}</div>
     </div>`);
   });
   if(!t0Inserted) out.push(`<div class="ev t0"><div class="t0txt">证据冻结点 T0 = ${i.t0}</div></div>`);
@@ -674,15 +685,19 @@ function sparkline(arr){
 /* ======================= 事件 ======================= */
 document.addEventListener('click', e=>{
   const tile = e.target.closest('.tile[data-id]');
+  if(tile && e.target.closest('details')) return;
   if(tile){ selected=tile.dataset.id; dtab='evidence'; tlFilter='all'; showTemp=false; renderGrid(); renderDetail(); $('#detail').scrollIntoView({behavior:'smooth',block:'start'}); return; }
   const nb = e.target.closest('[data-node]');
   if(nb){ hlNode=nb.dataset.node; dtab='evidence'; tlFilter='all'; renderDetail(); return; }
   if(e.target.closest('#tempToggle')){ showTemp=!showTemp; renderDetail(); return; }
+  const fd = e.target.closest('[data-fd]'); if(fd){ filterDir=fd.dataset.fd; document.querySelectorAll('[data-fd]').forEach(b=>{b.classList.toggle('active',b===fd);b.setAttribute('aria-pressed',b===fd);}); renderGrid(); return; }
   const f = e.target.closest('[data-f]'); if(f){ filter=f.dataset.f; document.querySelectorAll('[data-f]').forEach(b=>{b.classList.toggle('active',b===f);b.setAttribute('aria-pressed',b===f);}); renderGrid(); return; }
   const s = e.target.closest('[data-s]'); if(s){ sort=s.dataset.s; document.querySelectorAll('[data-s]').forEach(b=>{b.classList.toggle('active',b===s);b.setAttribute('aria-pressed',b===s);}); renderGrid(); return; }
   const t = e.target.closest('.d-tab'); if(t){ dtab=t.dataset.t; renderDetail(); return; }
   const tl = e.target.closest('[data-tl]'); if(tl){ tlFilter=tl.dataset.tl; renderDetail(); return; }
 });
+document.addEventListener('toggle', e=>{ const d=e.target; if(d.matches && d.matches('details.t-line') && d.open){ document.querySelectorAll('details.t-line[open]').forEach(o=>{ if(o!==d) o.open=false; }); } }, true);
+document.addEventListener('keydown', e=>{ const t=e.target; if((e.key==='Enter'||e.key===' ') && t.classList && t.classList.contains('tile') && t.dataset.id){ e.preventDefault(); t.click(); } });
 /* 嵌入 portal(policy-predict.html 的 iframe)时:隐藏自带页签条、去掉外边距、把内容高度上报给父页 */
 const EMBED = window.self!==window.top || new URLSearchParams(location.search).get('embed')==='1';
 /* 量 .page 底边而不是 documentElement.scrollHeight:后者被 iframe 视口撑着,只会涨不会缩 */
