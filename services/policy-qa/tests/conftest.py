@@ -78,6 +78,10 @@ def _bv_yaml(
         pass
     else:
         out = [f"pid: {pid}", "themes: []"]
+    if themes:
+        # vault 的 business_view 把"主"主题单列一个键;投影到 pg 时才合成
+        # [{id,isPrimary}]。契约测试对着两种形状比,所以 fixture 两边都要有。
+        out.append(f"primary_theme: {themes[0]}")
     out.append("scores:")
     for k, v in scores.items():
         out.append(f"  {k}: {v}")
@@ -192,6 +196,25 @@ def mini_vault(tmp_path: Path) -> Path:
             date="2026-02-01",
             issuer=["某部门"],
         ),
+    )
+
+    # 主题登记表。没有它,主题检索与规划会**静默失效**——不是报错,是所有
+    # theme_id 都过不了合法性校验,查出来永远是空,看起来像"库里没这类政策"。
+    _write(
+        root / "_meta" / "themes_registry.yaml",
+        "schema_version: 1.0\n"
+        "themes:\n"
+        "  - id: charging_infra\n"
+        "    dir_name: CHARGING_INFRA\n"
+        "    zh: 充电基础设施\n"
+        "    aliases:\n"
+        "      - 充电桩\n"
+        "  - id: power_market\n"
+        "    dir_name: POWER_MARKET\n"
+        "    zh: 电力市场\n"
+        "  - id: energy_storage_theme\n"
+        "    dir_name: ENERGY_STORAGE_THEME\n"
+        "    zh: 新型储能\n",
     )
 
     bv = root / "_meta" / "business_view"

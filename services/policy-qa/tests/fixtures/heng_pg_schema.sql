@@ -70,7 +70,10 @@ INSERT INTO "Policy" (
   '2026-06-01 00:00:00', '正文一。要求2026年底前建成充电桩10万个。',
   'https://example.invalid/1', 'MAJOR', '全国', '国家', NULL, 'P_2026_NDRC_1',
   '{"D1": 4, "importance": 8}'::jsonb,
-  '[{"id": "charging", "isPrimary": true}]'::jsonb,
+  -- 主题 id 用真实登记表里的值(见 vault 的 _meta/themes_registry.yaml)。
+  -- 挂两个主题、只有一个是"主",才测得出 primary_theme_only 的区分力。
+  '[{"id": "charging_infra", "isPrimary": true, "isComprehensive": false},
+    {"id": "power_market", "isPrimary": false, "isComprehensive": false}]'::jsonb,
   '{"充电": "直接利好充电业务。", "加油": "未直接涉及。"}',
   '2026-06-08 09:07:47.762'
 ),

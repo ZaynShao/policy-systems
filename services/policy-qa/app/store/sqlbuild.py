@@ -60,6 +60,8 @@ def build_search_sql(
     region_keyword: str | None = None,
     min_importance: str | None = None,
     issuer_keyword: str | None = None,
+    theme_id: str | None = None,
+    primary_theme_only: bool = False,
 ) -> tuple[str, dict]:
     """粗滤 SQL。
 
@@ -95,6 +97,16 @@ def build_search_sql(
         # 只匹配 issuer 会静默漏掉三分之一的库。两处任一命中即算。
         where.append('("issuer" ILIKE %(issuer_kw)s OR "title" ILIKE %(issuer_kw)s)')
         params["issuer_kw"] = _like(issuer_keyword)
+
+    if theme_id:
+        # pipelineThemes 是 jsonb 数组 [{id,isPrimary,isComprehensive}],用包含判定。
+        # primary_only 时把 isPrimary:true 一起放进判定对象——jsonb 的 @> 是
+        # "被包含对象的每个键值都要匹配",所以这一个操作符就够,不用拆两条件。
+        probe: dict = {"id": theme_id}
+        if primary_theme_only:
+            probe["isPrimary"] = True
+        where.append('"pipelineThemes" @> %(theme_json)s::jsonb')
+        params["theme_json"] = json.dumps([probe], ensure_ascii=False)
 
     if min_importance:
         floor = IMPORTANCE_ORDER.get(min_importance, 0)
@@ -155,6 +167,16 @@ def build_commentary_sql(pid: str) -> tuple[str, dict]:
         'ORDER BY "confidence" DESC NULLS LAST, "commentaryId" ASC'
     )
     return sql, {"pid_json": json.dumps([pid], ensure_ascii=False)}
+
+
+def build_themes_sql() -> tuple[str, dict]:
+    """主题登记表。heng 已经把 vault 的 _meta/themes_registry.yaml 投影成
+    KnowledgeTheme,所以取主题体系不需要另开数据通道。"""
+    sql = (
+        'SELECT "id", "name", "aliases", "count" FROM "KnowledgeTheme" '
+        'ORDER BY "count" DESC NULLS LAST, "id" ASC'
+    )
+    return sql, {}
 
 
 def build_stats_sql() -> tuple[str, dict]:
